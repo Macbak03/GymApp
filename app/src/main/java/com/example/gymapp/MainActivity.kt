@@ -2,6 +2,8 @@ package com.example.gymapp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import com.example.gymapp.model.Weight
+import com.example.gymapp.model.WeightUnit
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -9,3 +11,4 @@ class MainActivity : ComponentActivity() {
         setContentView(R.layout.activity_main)
     }
 }
+

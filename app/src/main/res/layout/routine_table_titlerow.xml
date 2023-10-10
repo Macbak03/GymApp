@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TableRow
+        android:id="@+id/tableRowTitleRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textViewExerciseTitle"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Exercise"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/textViewProgressionTitle"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Progression"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/textViewBreakTitle"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:text="Break"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/textViewLoadTitle"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:text="Load"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/textViewSeriesTitle"
+            android:layout_width="45dp"
+            android:layout_height="wrap_content"
+            android:text="Series"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/textViewRpeTitle"
+            android:layout_width="35dp"
+            android:layout_height="wrap_content"
+            android:text="RPE"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/textViewRmTitle"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:text="%RM"
+            android:textAlignment="center"/>
+
+    </TableRow>
+</androidx.constraintlayout.widget.ConstraintLayout>
