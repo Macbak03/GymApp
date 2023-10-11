@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">GymApp</string>
+    <string name="reps">Reps</string>
+    <string name="series">Series</string>
+    <string name="load">Load</string>
+    <string name="pause">Pause</string>
+    <string name="progression">Progression</string>
+    <string name="exercise">Exercise</string>
+    <string name="rpe">RPE</string>
 </resources>
