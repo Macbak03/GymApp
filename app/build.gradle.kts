@@ -1,3 +1,8 @@
+import org.jetbrains.kotlin.fir.declarations.getDeprecationsProviderFromAccessors
+
+
+
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -35,6 +40,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -47,6 +53,8 @@ android {
 }
 
 dependencies {
+
+    implementation("androidx.appcompat:appcompat:1.6.1")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")

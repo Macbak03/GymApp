@@ -1,14 +1,22 @@
 package com.example.gymapp
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import com.example.gymapp.model.Weight
-import com.example.gymapp.model.WeightUnit
+import com.example.gymapp.databinding.ActivityMainBinding
+
 
 class MainActivity : ComponentActivity() {
+    private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.buttonCreateRoutine.setOnClickListener{
+            val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
+            startActivity(explicitIntent)
+        }
     }
 }
 

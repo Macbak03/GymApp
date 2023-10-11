@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TableRow
-        android:id="@+id/tableRowTitleRow"
+        android:id="@+id/tableRowRoutineRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
@@ -15,52 +15,45 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/textViewExerciseTitle"
+            android:id="@+id/textViewExercise"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="@string/exercise"
             android:textAlignment="center" />
 
         <TextView
-            android:id="@+id/textViewProgressionTitle"
+            android:id="@+id/textViewProgression"
             android:layout_width="80dp"
             android:layout_height="wrap_content"
-            android:text="@string/progression"
             android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/textViewBreakTitle"
+            android:id="@+id/textViewBreak"
             android:layout_width="45dp"
             android:layout_height="wrap_content"
-            android:text="@string/pause"
             android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/textViewLoadTitle"
+            android:id="@+id/textViewLoad"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
-            android:text="@string/load"
             android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/textViewSeriesTitle"
+            android:id="@+id/textViewSeries"
             android:layout_width="45dp"
             android:layout_height="wrap_content"
-            android:text="@string/series"
             android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/textViewRepsTitle"
+            android:id="@+id/textViewReps"
             android:layout_width="42dp"
             android:layout_height="wrap_content"
-            android:text="@string/reps"
             android:textAlignment="center"/>
 
         <TextView
-            android:id="@+id/textViewRpeTitle"
+            android:id="@+id/textViewRpe"
             android:layout_width="35dp"
             android:layout_height="wrap_content"
-            android:text="@string/rpe"
             android:textAlignment="center"/>
 
     </TableRow>
