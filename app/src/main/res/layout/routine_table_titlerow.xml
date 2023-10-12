@@ -16,7 +16,7 @@
 
         <TextView
             android:id="@+id/textViewExerciseTitle"
-            android:layout_width="100dp"
+            android:layout_width="80dp"
             android:layout_height="wrap_content"
             android:text="@string/exercise"
             android:textAlignment="center" />
@@ -30,35 +30,35 @@
 
         <TextView
             android:id="@+id/textViewBreakTitle"
-            android:layout_width="45dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:text="@string/pause"
             android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/textViewLoadTitle"
-            android:layout_width="40dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:text="@string/load"
             android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/textViewSeriesTitle"
-            android:layout_width="45dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:text="@string/series"
             android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/textViewRepsTitle"
-            android:layout_width="42dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:text="@string/reps"
             android:textAlignment="center"/>
 
         <TextView
             android:id="@+id/textViewRpeTitle"
-            android:layout_width="35dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:text="@string/rpe"
             android:textAlignment="center"/>

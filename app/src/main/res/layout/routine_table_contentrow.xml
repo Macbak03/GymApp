@@ -2,59 +2,70 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constrainLayoutContentRow"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+
+
 
     <TableRow
         android:id="@+id/tableRowRoutineRow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@color/material_dynamic_neutral20"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textViewExercise"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center" />
+        <EditText
+            android:id="@+id/editTextExercise"
+            style="@style/routine_table_row_item"
+            android:layout_width="160dp"
+            android:layout_column="0"
+            android:hint="Exercise" />
 
-        <TextView
-            android:id="@+id/textViewProgression"
+        <!--<EditText
+            android:id="@+id/editTextProgression"
             android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"/>
+            android:layout_height="48dp"
+            android:hint="Progression"
+            android:textAlignment="center"
+            android:textSize="12sp"
+            android:background="null"/>-->
 
-        <TextView
-            android:id="@+id/textViewBreak"
-            android:layout_width="45dp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"/>
+        <EditText
+            android:id="@+id/editTextBreak"
+            style="@style/routine_table_row_item"
+            android:layout_width="48dp"
+            android:layout_column="1"
+            android:hint="Break" />
 
-        <TextView
-            android:id="@+id/textViewLoad"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"/>
+        <EditText
+            android:id="@+id/editTextLoad"
+            style="@style/routine_table_row_item"
+            android:layout_width="48dp"
+            android:hint="Load" />
 
-        <TextView
-            android:id="@+id/textViewSeries"
-            android:layout_width="45dp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"/>
+        <EditText
+            android:id="@+id/editTextSeries"
+            style="@style/routine_table_row_item"
+            android:layout_width="48dp"
+            android:hint="Series" />
 
-        <TextView
-            android:id="@+id/textViewReps"
-            android:layout_width="42dp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"/>
+        <EditText
+            android:id="@+id/editTextReps"
+            style="@style/routine_table_row_item"
+            android:layout_width="48dp"
+            android:hint="Reps" />
 
-        <TextView
-            android:id="@+id/textViewRpe"
-            android:layout_width="35dp"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"/>
+        <EditText
+            android:id="@+id/editTextRpe"
+            style="@style/routine_table_row_item"
+            android:layout_width="48dp"
+            android:hint="Rpe" />
 
     </TableRow>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
