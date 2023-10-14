@@ -1,141 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RoutineLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TableLayout
-        android:id="@+id/tableLayoutRoutine"
-        android:layout_width="411dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
 
-
-        <TableRow
-            android:id="@+id/tableRowTitleRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/cardview_shadow_start_color"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-
-            <TextView
-                android:id="@+id/textViewExerciseTitle"
-                style="@style/routine_table_title_row_item"
-                android:layout_width="160dp"
-                android:text="@string/exercise" />
-
-           <!-- <TextView
-                android:id="@+id/textViewProgressionTitle"
-                style="@style/routine_table_title_row_item"
-                android:layout_width="80dp"
-                android:text="@string/progression" />-->
-
-            <TextView
-                android:id="@+id/textViewBreakTitle"
-                style="@style/routine_table_title_row_item"
-                android:layout_width="48dp"
-                android:text="@string/pause" />
-
-            <TextView
-                android:id="@+id/textViewLoadTitle"
-                style="@style/routine_table_title_row_item"
-                android:layout_width="48dp"
-                android:text="@string/load" />
-
-            <TextView
-                android:id="@+id/textViewSeriesTitle"
-                style="@style/routine_table_title_row_item"
-                android:layout_width="48dp"
-                android:text="@string/series" />
-
-            <TextView
-                android:id="@+id/textViewRepsTitle"
-                style="@style/routine_table_title_row_item"
-                android:layout_width="48dp"
-                android:text="@string/reps" />
-
-            <TextView
-                android:id="@+id/textViewRpeTitle"
-                style="@style/routine_table_title_row_item"
-                android:layout_width="48dp"
-                android:text="@string/rpe" />
-
-        </TableRow>
-
-        <TableRow
-            android:id="@+id/tableRowRoutineRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/material_dynamic_neutral20"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <EditText
-                android:id="@+id/editTextExercise"
-                style="@style/routine_table_row_item"
-                android:layout_width="160dp"
-                android:hint="a" />
-
-           <!-- <EditText
-                android:id="@+id/editTextProgression"
-                android:layout_width="80dp"
-                android:layout_height="48dp"
-                android:hint="a"
-                android:inputType="text"
-                android:textAlignment="center"
-                android:textSize="12sp"
-                android:background="null"/>-->
-
-            <EditText
-                android:id="@+id/editTextBreak"
-                style="@style/routine_table_row_item"
-                android:layout_width="48dp"
-                android:hint="a" />
-
-            <EditText
-                android:id="@+id/editTextLoad"
-                style="@style/routine_table_row_item"
-                android:layout_width="48dp"
-                android:hint="a" />
-
-            <EditText
-                android:id="@+id/editTextSeries"
-                style="@style/routine_table_row_item"
-                android:layout_width="48dp"
-                android:hint="a" />
-
-            <EditText
-                android:id="@+id/editTextReps"
-                style="@style/routine_table_row_item"
-                android:layout_width="48dp"
-                android:hint="a" />
-
-            <EditText
-                android:id="@+id/editTextRpe"
-                style="@style/routine_table_row_item"
-                android:layout_width="48dp"
-                android:hint="a" />
-
-
-        </TableRow>
-
-    </TableLayout>
+    <ExpandableListView
+        android:id="@+id/ExpandableListViewRoutineItems"
+        android:layout_width="410dp"
+        android:layout_height="452dp"
+        android:layout_marginBottom="232dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/buttonSaveRoutine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="212dp"
         android:layout_marginBottom="16dp"
         android:text="Add to workout plan"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -145,10 +30,11 @@
         android:id="@+id/buttonAddExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Add exercise"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableLayoutRoutine" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/editTextRoutineName"

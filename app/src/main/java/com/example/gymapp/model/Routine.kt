@@ -6,7 +6,7 @@ import kotlin.time.Duration
 
 data class Routine(
     val exerciseName: String,
-    val progression: EnumSet<ProgressionType>,
+    //val progression: EnumSet<ProgressionType>,
     val pause: Duration,
     val load: Weight,
     val series: Int,

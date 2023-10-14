@@ -3,23 +3,20 @@
 
     <style name="Theme.GymApp" parent="@style/Theme.AppCompat" />
 
-    <style name="routine_table_row_item" parent="@android:style/TextAppearance.Small">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">12sp</item>
+    <style name="routine_text_view_item" parent="@android:style/TextAppearance.Small">
+        <item name="android:textSize">16sp</item>
         <item name="android:inputType">text</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:background">null</item>
-        <item name="android:layout_marginRight">1dp</item>
-        <item name="android:layout_marginEnd">1dp</item>
+        <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_height">48dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="routine_table_title_row_item" parent="@android:style/TextAppearance.Small">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:textAlignment">center</item>
-        <item name="android:layout_marginRight">1dp</item>
-        <item name="android:layout_marginEnd">1dp</item>
-        <item name="android:layout_height">40dp</item>
+    <style name="routine_edit_text_item" parent="@android:style/TextAppearance.Small">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_width">130dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">12sp</item>
     </style>
 </resources>

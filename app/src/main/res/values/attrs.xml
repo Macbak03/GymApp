@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RoutineExpandableLayout">
+        <attr name="editTextLoadText" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="RoutineExpandableTitleLayout">
+        <attr name="editTextExerciseText" format="string"/>
+    </declare-styleable>
+</resources>
