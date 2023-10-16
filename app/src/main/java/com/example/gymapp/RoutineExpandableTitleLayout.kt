@@ -2,8 +2,8 @@ package com.example.gymapp
 
 import android.content.Context
 import android.util.AttributeSet
-import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 
 class RoutineExpandableTitleLayout (
     private val context: Context,
@@ -12,7 +12,7 @@ class RoutineExpandableTitleLayout (
     {
 
         init {
-            LinearLayout.inflate(context, R.layout.routine_parent_element_layout, this)
+            inflate(context, R.layout.routine_expandable_title_layout, this)
             val customAttributesStyle = context.obtainStyledAttributes(
                 attributes,
                 R.styleable.RoutineExpandableTitleLayout,
@@ -32,10 +32,10 @@ class RoutineExpandableTitleLayout (
                 0
             )
 
-            val exerciseEditText = findViewById<EditText>(R.id.editTextExercise)
+            val exerciseEditText = findViewById<TextView>(R.id.textViewExercise)
 
             try {
-                exerciseEditText.setText(text)
+                exerciseEditText.text = text
             } finally {
                 customAttributesStyle.recycle()
             }

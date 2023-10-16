@@ -14,11 +14,11 @@ class RoutineExpandableLayout(
         inflate(context, R.layout.routine_expandable_layout, this)
         val customAttributesStyle = context.obtainStyledAttributes(attributes, R.styleable.RoutineExpandableLayout, 0, 0)
 
-        setLoadText(customAttributesStyle.getString(R.styleable.RoutineExpandableLayout_editTextLoadText))
+        setRoutine(customAttributesStyle.getString(R.styleable.RoutineExpandableLayout_editTextLoadText))
         customAttributesStyle.recycle()
     }
 
-    fun setLoadText(text: String?)
+    fun setRoutine(text: String?)
     {
         val customAttributesStyle = context.obtainStyledAttributes(attributes, R.styleable.RoutineExpandableLayout, 0, 0)
 

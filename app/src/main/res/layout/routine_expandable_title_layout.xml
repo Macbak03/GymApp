@@ -10,21 +10,12 @@
 
 
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="0dp"
+        android:id="@+id/textViewExercise"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_weight="1"
+        android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
         android:text="Exercise name"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <EditText
-        android:id="@+id/editTextExercise"
-        android:layout_width="130dp"
-        android:layout_height="wrap_content"
-        android:hint="Enter exercise name"
-        android:layout_weight="1"
-        android:layout_marginStart="5dp"
-        />
+        android:textSize="22sp"
+        android:textStyle="bold"
+        tools:ignore="RtlSymmetry" />
 </LinearLayout>

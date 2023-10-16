@@ -4,19 +4,20 @@
     <style name="Theme.GymApp" parent="@style/Theme.AppCompat" />
 
     <style name="routine_text_view_item" parent="@android:style/TextAppearance.Small">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:inputType">text</item>
         <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:paddingStart">?android:attr/expandableListPreferredItemPaddingLeft</item>
     </style>
 
     <style name="routine_edit_text_item" parent="@android:style/TextAppearance.Small">
         <item name="android:layout_height">48dp</item>
         <item name="android:layout_width">130dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 </resources>

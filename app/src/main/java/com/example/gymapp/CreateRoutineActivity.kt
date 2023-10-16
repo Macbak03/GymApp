@@ -1,27 +1,36 @@
 package com.example.gymapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.ExpandableListAdapter
 import android.widget.ExpandableListView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
+import com.example.gymapp.model.ExactReps
 import com.example.gymapp.model.Routine
+import com.example.gymapp.model.Rpe
+import com.example.gymapp.model.Weight
+import com.example.gymapp.model.WeightUnit
+import kotlin.time.Duration.Companion.minutes
+
 
 class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
     private lateinit var expandableListView: ExpandableListView
     private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
-    private lateinit var routines: List<Routine>
+    private val routines: MutableList<Routine> = ArrayList()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateRoutineBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         expandableListView = binding.ExpandableListViewRoutineItems
-        routines = ArrayList<Routine>()
+        val routine = Routine("exercise", 2.minutes, Weight(100f, WeightUnit.kg),
+            10, ExactReps(3), Rpe(8))
+        routines.add(routine)
+        routines.add(routine)
         routineExpandableListAdapter = RoutineExpandableListAdapter(this, routines)
         expandableListView.setAdapter(routineExpandableListAdapter)
+
 
         expandableListView.setOnGroupExpandListener { groupPosition ->
             Toast.makeText(

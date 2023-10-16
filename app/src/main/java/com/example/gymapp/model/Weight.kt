@@ -1,9 +1,13 @@
 package com.example.gymapp.model
 
-data class Weight private constructor(
+data class Weight constructor(
     val weight: Float,
     val unit: WeightUnit
 ) {
+
+    override fun toString(): String {
+        return weight.toString() + unit.toString()
+    }
     companion object {
         operator fun invoke(weight: Float, unit: WeightUnit): Weight? {
             return if (weight < 0) {

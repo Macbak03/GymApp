@@ -10,7 +10,7 @@
         <TextView
             android:id="@+id/textViewLoad"
             style="@style/routine_text_view_item"
-            android:text="Load" />
+            android:text="Load"/>
 
         <EditText
             android:id="@+id/editTextLoad"
