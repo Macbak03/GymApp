@@ -39,7 +39,7 @@ class RoutineExpandableListAdapter(
         }
         val routine = getChild(listPosition, expandedListPosition) as Routine
         val routineExpandableLayout = view as RoutineExpandableLayout?
-        routineExpandableLayout?.setRoutine(routine.load.toString())
+        routineExpandableLayout?.setRoutine(routine)
         return view
     }
 

@@ -2,10 +2,10 @@ package com.example.gymapp
 
 import android.os.Bundle
 import android.widget.ExpandableListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
 import com.example.gymapp.model.ExactReps
+import com.example.gymapp.model.Pace
 import com.example.gymapp.model.Routine
 import com.example.gymapp.model.Rpe
 import com.example.gymapp.model.Weight
@@ -24,30 +24,15 @@ class CreateRoutineActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         expandableListView = binding.ExpandableListViewRoutineItems
-        val routine = Routine("exercise", 2.minutes, Weight(100f, WeightUnit.kg),
-            10, ExactReps(3), Rpe(8))
+        val routine = Routine("exercise1", 2.minutes, Weight(100f, WeightUnit.kg),
+            10, ExactReps(3), Rpe(8), Pace(2,0,2,1)
+        )
+        val routine1 = Routine("exercise2", 4.minutes, Weight(70f, WeightUnit.kg),
+            5, ExactReps(8), Rpe(9), Pace(3,1,1,1))
         routines.add(routine)
-        routines.add(routine)
+        routines.add(routine1)
         routineExpandableListAdapter = RoutineExpandableListAdapter(this, routines)
         expandableListView.setAdapter(routineExpandableListAdapter)
-
-
-        expandableListView.setOnGroupExpandListener { groupPosition ->
-            Toast.makeText(
-                applicationContext,
-                "${routines[groupPosition]} List Expanded.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
-        expandableListView.setOnGroupCollapseListener { groupPosition ->
-            Toast.makeText(
-                applicationContext,
-                "${routines[groupPosition]} List Collapsed.",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-
     }
 
 }

@@ -20,7 +20,6 @@ class RoutineExpandableTitleLayout (
                 0
             )
 
-            setExerciseText(customAttributesStyle.getString(R.styleable.RoutineExpandableTitleLayout_editTextExerciseText))
             customAttributesStyle.recycle()
         }
 
@@ -32,10 +31,10 @@ class RoutineExpandableTitleLayout (
                 0
             )
 
-            val exerciseEditText = findViewById<TextView>(R.id.textViewExercise)
+            val exerciseTextView = findViewById<TextView>(R.id.textViewExercise)
 
             try {
-                exerciseEditText.text = text
+                exerciseTextView.text = text
             } finally {
                 customAttributesStyle.recycle()
             }

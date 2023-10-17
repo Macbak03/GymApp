@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:text="Exercise name"
+        android:text="@string/exercise_name"
         android:textSize="22sp"
         android:textStyle="bold"
         tools:ignore="RtlSymmetry" />

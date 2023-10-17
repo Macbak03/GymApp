@@ -5,15 +5,100 @@
     android:id="@+id/expandableLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textViewLoad"
-            style="@style/routine_text_view_item"
-            android:text="Load"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/editTextLoad"
-            style="@style/routine_edit_text_item"
-            android:hint="Enter load"/>
+                <TextView
+                    android:id="@+id/textViewExercise"
+                    style="@style/routine_text_view_item"
+                    android:text="@string/exercise" />
+
+                <EditText
+                    android:id="@+id/editTextExercise"
+                    style="@style/routine_edit_text_item"
+                    android:hint="@string/enter_exercise_name"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewLoad"
+                    style="@style/routine_text_view_item"
+                    android:text="@string/load"/>
+
+                <EditText
+                    android:id="@+id/editTextLoad"
+                    style="@style/routine_edit_text_item"
+                    android:hint="@string/enter_load"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewReps"
+                    style="@style/routine_text_view_item"
+                    android:text="@string/reps"/>
+
+                <EditText
+                    android:id="@+id/editTextReps"
+                    style="@style/routine_edit_text_item"
+                    android:hint="@string/enter_reps"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewSeries"
+                    style="@style/routine_text_view_item"
+                    android:text="@string/series"/>
+
+                <EditText
+                    android:id="@+id/editTextSeries"
+                    style="@style/routine_edit_text_item"
+                    android:hint="@string/enter_series"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewRpe"
+                    style="@style/routine_text_view_item"
+                    android:text="@string/rpe"/>
+
+                <EditText
+                    android:id="@+id/editTextRpe"
+                    style="@style/routine_edit_text_item"
+                    android:hint="@string/enter_rpe"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewPace"
+                    style="@style/routine_text_view_item"
+                    android:text="@string/pace"/>
+
+                <EditText
+                    android:id="@+id/editTextPace"
+                    style="@style/routine_edit_text_item"
+                    android:hint="@string/enter_pace"/>
+        </LinearLayout>
 </LinearLayout>

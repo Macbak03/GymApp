@@ -7,4 +7,12 @@
     <string name="progression">Progression</string>
     <string name="exercise">Exercise</string>
     <string name="rpe">RPE</string>
+    <string name="enter_exercise_name">Enter Exercise Name</string>
+    <string name="enter_load">Enter load</string>
+    <string name="enter_reps">Enter reps</string>
+    <string name="enter_series">Enter series</string>
+    <string name="enter_rpe">Enter RPE</string>
+    <string name="pace">Pace</string>
+    <string name="enter_pace">Enter Pace</string>
+    <string name="exercise_name">Exercise name</string>
 </resources>
