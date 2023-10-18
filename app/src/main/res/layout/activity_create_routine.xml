@@ -1,151 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RoutineLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:windowSoftInputMode="adjustPan">
 
-    <TableLayout
-        android:id="@+id/tableLayout"
-        android:layout_width="411dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:measureAllChildren="true"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName">
 
-        <TableRow
-            android:id="@+id/tableRowTitleRow"
-            android:layout_width="wrap_content"
+        <ExpandableListView
+            android:id="@+id/ExpandableListViewRoutineItems"
+            android:nestedScrollingEnabled="true"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-
-            app:layout_constraintEnd_toEndOf="parent"
+            android:descendantFocusability="beforeDescendants"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName" />
 
-            <TextView
-                android:id="@+id/textViewExerciseTitle"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:text="@string/exercise"
-                android:textAlignment="center" />
-
-            <TextView
-                android:id="@+id/textViewProgressionTitle"
-                android:layout_width="80dp"
-                android:layout_height="wrap_content"
-                android:text="@string/progression"
-                android:textAlignment="center"/>
-
-            <TextView
-                android:id="@+id/textViewBreakTitle"
-                android:layout_width="45dp"
-                android:layout_height="wrap_content"
-                android:text="@string/pause"
-                android:textAlignment="center"/>
-
-            <TextView
-                android:id="@+id/textViewLoadTitle"
-                android:layout_width="40dp"
-                android:layout_height="wrap_content"
-                android:text="@string/load"
-                android:textAlignment="center"/>
-
-            <TextView
-                android:id="@+id/textViewSeriesTitle"
-                android:layout_width="45dp"
-                android:layout_height="wrap_content"
-                android:text="@string/series"
-                android:textAlignment="center"/>
-
-            <TextView
-                android:id="@+id/textViewRepsTitle"
-                android:layout_width="42dp"
-                android:layout_height="wrap_content"
-                android:text="@string/reps"
-                android:textAlignment="center"/>
-
-            <TextView
-                android:id="@+id/textViewRpeTitle"
-                android:layout_width="35dp"
-                android:layout_height="wrap_content"
-                android:text="@string/rpe"
-                android:textAlignment="center"/>
-
-        </TableRow>
-        <TableRow
-            android:id="@+id/tableRowRoutineRow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <EditText
-                android:id="@+id/textViewExercise"
-                android:layout_width="80dp"
-                android:layout_height="48dp"
-                android:hint="a"
-                android:inputType="text"
-                android:textAlignment="center" />
-
-            <EditText
-                android:id="@+id/textViewProgression"
-                android:layout_width="80dp"
-                android:layout_height="48dp"
-                android:inputType="text"
-                android:hint="a"
-                android:textAlignment="center"/>
-
-            <EditText
-                android:id="@+id/textViewBreak"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:inputType="text"
-                android:hint="a"
-                android:textAlignment="center"/>
-
-            <EditText
-                android:id="@+id/textViewLoad"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:inputType="text"
-                android:hint="a"
-                android:textAlignment="center"/>
-
-            <EditText
-                android:id="@+id/textViewSeries"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:inputType="text"
-                android:hint="a"
-                android:textAlignment="center"/>
-
-            <EditText
-                android:id="@+id/textViewReps"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:inputType="text"
-                android:hint="a"
-                android:textAlignment="center"/>
-
-            <EditText
-                android:id="@+id/textViewRpe"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:inputType="text"
-                android:hint="a"
-                android:textAlignment="center"/>
-
-
-        </TableRow>
-    </TableLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/buttonSaveRoutine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="212dp"
         android:layout_marginBottom="16dp"
         android:text="Add to workout plan"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -155,10 +44,11 @@
         android:id="@+id/buttonAddExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="172dp"
         android:text="Add exercise"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editTextRoutineName"
@@ -169,6 +59,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/buttonDeleteExercise"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="28dp"
+        android:layout_marginBottom="16dp"
+        android:text="Delete Exercise"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
