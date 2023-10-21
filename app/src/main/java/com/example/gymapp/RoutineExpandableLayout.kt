@@ -37,6 +37,9 @@ class RoutineExpandableLayout(
         val exerciseEditText = findViewById<EditText>(R.id.editTextExercise)
         routineEditTexts.add(exerciseEditText)
 
+        val pauseEditText = findViewById<EditText>(R.id.editTextPause)
+        routineEditTexts.add(pauseEditText)
+
         val loadEditText = findViewById<EditText>(R.id.editTextLoad)
         routineEditTexts.add(loadEditText)
 
@@ -59,10 +62,32 @@ class RoutineExpandableLayout(
     {
         val layoutElements = findLayoutElements()
         layoutElements[0].setText(routine?.exerciseName)
-        layoutElements[1].setText(routine?.load.toString())
-        layoutElements[2].setText(routine?.reps.toString())
-        layoutElements[3].setText(routine?.series.toString())
-        layoutElements[4].setText(routine?.rpe.toString())
-        layoutElements[5].setText(routine?.pace.toString())
+        layoutElements[1].setText(routine?.pause.toString())
+        layoutElements[2].setText(routine?.load.toString())
+        layoutElements[3].setText(routine?.reps.toString())
+        layoutElements[4].setText(routine?.series.toString())
+        layoutElements[5].setText(routine?.rpe.toString())
+        layoutElements[6].setText(routine?.pace.toString())
+    }
+
+    fun getRoutineText() : ArrayList<String>
+    {
+        val layoutElements = findLayoutElements()
+        val routineTexts = ArrayList<String>()
+        val exerciseName = layoutElements[0].text.toString()
+        routineTexts.add(exerciseName)
+        val pause = layoutElements[1].text.toString()
+        routineTexts.add(pause)
+        val load = layoutElements[2].text.toString()
+        routineTexts.add(load)
+        val reps = layoutElements[3].text.toString()
+        routineTexts.add(reps)
+        val series = layoutElements[4].text.toString()
+        routineTexts.add(series)
+        val rpe = layoutElements[5].text.toString()
+        routineTexts.add(rpe)
+        val pace = layoutElements[6].text.toString()
+        routineTexts.add(pace)
+        return routineTexts
     }
 }

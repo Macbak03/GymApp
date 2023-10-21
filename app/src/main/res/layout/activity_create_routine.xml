@@ -10,21 +10,22 @@
 
 
     <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="match_parent"
         android:layout_height="450dp"
+        android:fillViewport="true"
+        android:measureAllChildren="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        android:measureAllChildren="true"
-        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName">
 
         <ExpandableListView
             android:id="@+id/ExpandableListViewRoutineItems"
-            android:nestedScrollingEnabled="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:descendantFocusability="beforeDescendants"
+            android:nestedScrollingEnabled="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName" />
 
@@ -34,21 +35,20 @@
         android:id="@+id/buttonSaveRoutine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="212dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="156dp"
+        android:layout_marginEnd="200dp"
         android:text="Add to workout plan"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
 
     <Button
         android:id="@+id/buttonAddExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="172dp"
         android:text="Add exercise"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
 
     <EditText
         android:id="@+id/editTextRoutineName"
@@ -64,11 +64,11 @@
         android:id="@+id/buttonDeleteExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="156dp"
         android:layout_marginEnd="28dp"
-        android:layout_marginBottom="16dp"
         android:text="Delete Exercise"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollView2" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

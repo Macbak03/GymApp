@@ -12,9 +12,10 @@ import com.example.gymapp.model.Routine
 class RoutineExpandableListAdapter(
     private val context: Context,
     private val routines: List<Routine>,
+
 ): BaseExpandableListAdapter(){
 
-
+    var routineElements = ArrayList<String>()
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
         return routines[listPosition]
     }
@@ -40,12 +41,25 @@ class RoutineExpandableListAdapter(
         val routine = getChild(listPosition, expandedListPosition) as Routine
         val routineExpandableLayout = view as RoutineExpandableLayout?
         routineExpandableLayout?.setRoutine(routine)
+        if (routineExpandableLayout != null) {
+            routineElements = routineExpandableLayout.getRoutineText()
+        }
         return view
     }
 
     override fun getChildrenCount(listPosition: Int): Int {
         return 1
     }
+
+    @SuppressLint("InflateParams")
+/*    fun getRoutine() : ArrayList<String>
+    {
+        val inflater =
+            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val view = inflater.inflate(R.layout.routine_expandable_layout_helper, null)
+        val routineExpandableLayout = view as RoutineExpandableLayout
+        return routineExpandableLayout.getRoutineText()
+    }*/
 
     override fun getGroup(listPosition: Int): Any {
         return routines[listPosition]

@@ -15,4 +15,5 @@
     <string name="pace">Pace</string>
     <string name="enter_pace">Enter Pace</string>
     <string name="exercise_name">Exercise name</string>
+    <string name="enter_pause">Enter pause</string>
 </resources>
