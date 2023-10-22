@@ -1,27 +1,20 @@
 package com.example.gymapp
 
 import android.os.Bundle
-import android.view.View
-import android.view.View.MeasureSpec
-import android.view.ViewGroup
-import android.widget.ExpandableListAdapter
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
-import com.example.gymapp.model.ExactReps
-import com.example.gymapp.model.Pace
-import com.example.gymapp.model.Routine
-import com.example.gymapp.model.Rpe
-import com.example.gymapp.model.Weight
+import com.example.gymapp.model.Exercise
+import com.example.gymapp.model.ExerciseDraft
+import com.example.gymapp.model.TimeUnit
 import com.example.gymapp.model.WeightUnit
-import kotlin.time.Duration.Companion.minutes
 
 
 class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
     private lateinit var expandableListView: ExpandableListView
     private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
-    private val routines: MutableList<Routine> = ArrayList()
+    private val exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,19 +22,17 @@ class CreateRoutineActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         expandableListView = binding.ExpandableListViewRoutineItems
-        val routine2 = Routine(
-            "exercise$exerciseCount", 2.minutes, Weight(100f, WeightUnit.kg),
-            10, ExactReps(3), Rpe(8), Pace(2, 0, 2, 1)
-        )
+        val exercise2 = ExerciseDraft(
+            "exercise$exerciseCount", null,
+            TimeUnit.min, null, WeightUnit.kg, null, null,null, null, true)
         exerciseCount++
-        val routine1 = Routine(
-            "exercise$exerciseCount", 4.minutes, Weight(70f, WeightUnit.kg),
-            5, ExactReps(8), Rpe(9), Pace(3, 1, 1, 1)
-        )
+        val exercise1 = ExerciseDraft(
+            "exercise$exerciseCount", null,
+            TimeUnit.min, null, WeightUnit.kg, null, null,null, null, true)
         exerciseCount++
-        routines.add(routine2)
-        routines.add(routine1)
-        routineExpandableListAdapter = RoutineExpandableListAdapter(this, routines)
+        exercises.add(exercise2)
+        exercises.add(exercise1)
+        routineExpandableListAdapter = RoutineExpandableListAdapter(this, exercises)
         expandableListView.setAdapter(routineExpandableListAdapter)
         /*expandableListView.setOnGroupClickListener { parent, _, groupPosition, _ ->
             setScrollListViewHeightBasedOnChildren(parent, groupPosition)
@@ -56,8 +47,8 @@ class CreateRoutineActivity : AppCompatActivity() {
     private fun addExercise() {
         binding.buttonAddExercise.setOnClickListener()
         {
-            val routine = Routine("exercise$exerciseCount", null, null, null, null, null, null)
-            routines.add(routine)
+            val exercise = ExerciseDraft("exercise$exerciseCount", null, TimeUnit.min, null, WeightUnit.kg, null, null, null, null, true)
+            exercises.add(exercise)
             exerciseCount++
             routineExpandableListAdapter.notifyDataSetChanged()
         }
@@ -66,8 +57,8 @@ class CreateRoutineActivity : AppCompatActivity() {
     private fun removeExercise() {
         binding.buttonDeleteExercise.setOnClickListener()
         {
-            if (routines.isNotEmpty()) {
-                routines.removeAt(routines.lastIndex)
+            if (exercises.isNotEmpty()) {
+                exercises.removeAt(exercises.lastIndex)
                 exerciseCount--
                 routineExpandableListAdapter.notifyDataSetChanged()
             }
@@ -82,11 +73,14 @@ class CreateRoutineActivity : AppCompatActivity() {
             val routineName = binding.editTextRoutineName.text.toString()
             for(i in 0..routineExpandableListAdapter.groupCount)
             {
-                val routineElements = routineExpandableListAdapter.routineElements
-                dataBase.addRoutineToDB(routineElements, routineName)
+                val exerciseDraft = routineExpandableListAdapter.exercise
+                //dataBase.addExercise(exercise, routineName)
             }
         }
     }
+
+    //TODO add exercise order
+
     /*private fun setScrollListViewHeightBasedOnChildren(
          expandableListView: ExpandableListView,
          group: Int

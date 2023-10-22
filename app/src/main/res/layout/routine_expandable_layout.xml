@@ -20,7 +20,7 @@
                 <EditText
                     android:id="@+id/editTextExercise"
                     style="@style/routine_edit_text_item"
-                    android:hint="@string/enter_exercise_name"/>
+                    android:hint="@string/enter_exercise_name" />
         </LinearLayout>
 
         <LinearLayout
@@ -36,7 +36,15 @@
                 <EditText
                     android:id="@+id/editTextPause"
                     style="@style/routine_edit_text_item"
-                    android:hint="@string/enter_pause"/>
+                    android:hint="@string/enter_pause"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"/>
+
+                <Spinner
+                    android:id="@+id/spinnerPause"
+                    android:layout_width="75dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="30dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -52,7 +60,14 @@
                 <EditText
                     android:id="@+id/editTextLoad"
                     style="@style/routine_edit_text_item"
-                    android:hint="@string/enter_load"/>
+                    android:hint="@string/enter_load"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"/>
+                <Spinner
+                    android:id="@+id/spinnerLoad"
+                    android:layout_width="75dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="30dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -84,7 +99,8 @@
                 <EditText
                     android:id="@+id/editTextSeries"
                     style="@style/routine_edit_text_item"
-                    android:hint="@string/enter_series"/>
+                    android:hint="@string/enter_series"
+                    android:inputType="number"/>
         </LinearLayout>
 
         <LinearLayout

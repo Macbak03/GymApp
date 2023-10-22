@@ -5,24 +5,31 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.gymapp.model.Routine
+import com.example.gymapp.model.ExactReps
+import com.example.gymapp.model.ExactRpe
+import com.example.gymapp.model.Exercise
+import com.example.gymapp.model.RangeReps
+import com.example.gymapp.model.RangeRpe
 import java.time.LocalDate
 
-class DataBaseHelper (context: Context, factory: SQLiteDatabase.CursorFactory?) :
+class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
     // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
         // below is a sqlite query, where column names
         // along with their data types is given
-        val query = ("CREATE TABLE " + TABLE_NAME + " ("
-                + DATE_COLUMN + " TEXT, " +
-                ROUTINE_NAME_COLUMN + " TEXT," +
-                EXERCISE_NAME_COLUMN + " TEXT" +
-                PAUSE_COLUMN + " TEXT," +
-                LOAD_COLUMN + " TEXT" +
-                REPS_COLUMN + " TEXT" +
-                SERIES_COLUMN + " TEXT" +
-                RPE_COLUMN + " TEXT" +
+        val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
+                + DATE_COLUMN + " TEXT NOT NULL, " +
+                ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
+                EXERCISE_NAME_COLUMN + " TEXT NOT NULL," +
+                PAUSE_COLUMN + " INTEGER NOT NULL," +
+                LOAD_VALUE_COLUMN + " REAL NOT NULL," +
+                LOAD_UNIT_COLUMN + " TEXT NOT NULL," +
+                REPS_RANGE_FROM_COLUMN + " INTEGER NOT NULL," +
+                REPS_RANGE_TO_COLUMN + " INTEGER NOT NULL," +
+                SERIES_COLUMN + " INTEGER NOT NULL," +
+                RPE_RANGE_FROM_COLUMN + " INTEGER," +
+                RPE_RANGE_TO_COLUMN + " INTEGER," +
                 PACE_COLUMN + " TEXT" + ")")
 
         // we are calling sqlite
@@ -32,12 +39,11 @@ class DataBaseHelper (context: Context, factory: SQLiteDatabase.CursorFactory?) 
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
         // this method is to check if table already exists
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_NAME")
         onCreate(db)
     }
 
     // This method is for adding data in our database
-    fun addRoutineToDB(routineText: ArrayList<String>?, routineName: String){
+    fun addExercise(exercise: Exercise, routineName: String) {
 
         // below we are creating
         // a content values variable
@@ -47,13 +53,33 @@ class DataBaseHelper (context: Context, factory: SQLiteDatabase.CursorFactory?) 
         // in the form of key-value pair
         values.put(DATE_COLUMN, LocalDate.now().toString())
         values.put(ROUTINE_NAME_COLUMN, routineName)
-        values.put(EXERCISE_NAME_COLUMN, routineText!![0])
-        values.put(PAUSE_COLUMN, routineText[1])
-        values.put(LOAD_COLUMN, routineText[2])
-        values.put(REPS_COLUMN, routineText[3])
-        values.put(SERIES_COLUMN, routineText[4])
-        values.put(RPE_COLUMN, routineText[5])
-        values.put(PACE_COLUMN, routineText[6])
+        values.put(EXERCISE_NAME_COLUMN, exercise.name)
+        values.put(PAUSE_COLUMN, exercise.pause.inWholeSeconds)
+        values.put(LOAD_VALUE_COLUMN, exercise.load.weight)
+        values.put(LOAD_UNIT_COLUMN, exercise.load.unit.toString())
+        when (exercise.reps) {
+            is ExactReps -> {
+                values.put(REPS_RANGE_FROM_COLUMN, exercise.reps.value)
+                values.put(REPS_RANGE_TO_COLUMN, exercise.reps.value)
+            }
+            is RangeReps -> {
+                values.put(REPS_RANGE_FROM_COLUMN, exercise.reps.from)
+                values.put(REPS_RANGE_TO_COLUMN, exercise.reps.to)
+            }
+        }
+        values.put(SERIES_COLUMN, exercise.series)
+        when (exercise.rpe) {
+            is ExactRpe -> {
+                values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.value)
+                values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.value)
+            }
+            is RangeRpe -> {
+                values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.from)
+                values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.to)
+            }
+            null -> {}
+        }
+        values.put(PACE_COLUMN, exercise.pace.toString())
 
         // here we are creating a
         // writable variable of
@@ -84,19 +110,22 @@ class DataBaseHelper (context: Context, factory: SQLiteDatabase.CursorFactory?) 
 
     }
 
-    companion object{
+    companion object {
         private const val DATABASE_NAME = "GymApp"
         private val DATABASE_VERSION = 1
 
         const val TABLE_NAME = "routine"
         const val DATE_COLUMN = "Date"
-        const val ROUTINE_NAME_COLUMN = "Routine name"
-        const val EXERCISE_NAME_COLUMN = "Exercise name"
+        const val ROUTINE_NAME_COLUMN = "RoutineName"
+        const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"
-        const val LOAD_COLUMN = "Load"
-        const val REPS_COLUMN = "Reps"
+        const val LOAD_VALUE_COLUMN = "LoadValue"
+        const val LOAD_UNIT_COLUMN = "LoadUnit"
+        const val REPS_RANGE_FROM_COLUMN = "RepsRangeFrom"
+        const val REPS_RANGE_TO_COLUMN = "RepsRangeTo"
         const val SERIES_COLUMN = "Series"
-        const val RPE_COLUMN = "RPE"
+        const val RPE_RANGE_FROM_COLUMN = "RPERangeFrom"
+        const val RPE_RANGE_TO_COLUMN = "RPERangeTo"
         const val PACE_COLUMN = "Pace"
     }
 }

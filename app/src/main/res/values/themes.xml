@@ -8,16 +8,16 @@
         <item name="android:inputType">text</item>
         <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">100dp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:paddingStart">?android:attr/expandableListPreferredItemPaddingLeft</item>
+        <item name="android:textAlignment">textEnd</item>
+        <item name="android:paddingRight">10dp</item>
     </style>
 
     <style name="routine_edit_text_item" parent="@android:style/TextAppearance.Small">
         <item name="android:layout_height">48dp</item>
-        <item name="android:layout_width">130dp</item>
-        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:textSize">16sp</item>
+        <item name="android:layout_marginRight">10dp</item>
     </style>
 </resources>
