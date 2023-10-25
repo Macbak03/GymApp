@@ -1,18 +1,31 @@
 package com.example.gymapp.model
 
-sealed interface Pace
+import com.example.gymapp.exception.ValidationException
+
+sealed interface Pace {
+    companion object {
+        fun fromChar(pace: Char): Pace {
+            val intPace = pace.digitToIntOrNull()
+            return if (intPace != null) {
+                NumericPace(intPace)
+            } else if (pace.compareTo('x') == 0) {
+                MaxPace
+            } else {
+                throw ValidationException("pace must be in correct form, eg. 21x1")
+            }
+        }
+    }
+}
 
 data class NumericPace(
     val value: Int
-): Pace
-{
+) : Pace {
     override fun toString(): String {
         return value.toString()
     }
 }
 
-object MaxPace: Pace
-{
+object MaxPace : Pace {
     override fun toString(): String {
         return "x"
     }
@@ -26,5 +39,25 @@ data class ExercisePace(
 ) {
     override fun toString(): String {
         return "$eccentricPhase$midLiftPause$concentricPhase$endLiftPause"
+    }
+
+    companion object {
+        fun fromString(pace: String?): ExercisePace {
+            if (pace == null) {
+                throw ValidationException("pace cannot be empty")
+            }
+            val regex = Regex("""^[x\d]{4}$""")
+            val match = regex.matchEntire(pace)
+            if (match == null) {
+                throw ValidationException("pace must be in correct form, eg. 21x1")
+            }
+            val exercisePace = match.value
+            return ExercisePace(
+                Pace.fromChar(exercisePace[0]),
+                Pace.fromChar(exercisePace[1]),
+                Pace.fromChar(exercisePace[2]),
+                Pace.fromChar(exercisePace[3]),
+            )
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.gymapp
+package com.example.gymapp.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,6 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import com.example.gymapp.R
+import com.example.gymapp.layout.RoutineExpandableLayout
+import com.example.gymapp.layout.RoutineExpandableTitleLayout
+import com.example.gymapp.model.Exercise
 import com.example.gymapp.model.ExerciseDraft
 
 
@@ -50,10 +54,19 @@ class RoutineExpandableListAdapter(
         return 1
     }
 
-    @SuppressLint("InflateParams")
-    fun getExercise()
+    fun getRoutine() : ArrayList<Exercise>
     {
-
+        val routine = ArrayList<Exercise>()
+        for (i: Int in 0..groupCount)
+        {
+            val routineExpandableLayout = getChildView(i, 0, true, null, null) as RoutineExpandableLayout?
+            val exercise = routineExpandableLayout?.getExerciseDraft()?.toExercise()
+            if(exercise != null)
+            {
+                routine.add(exercise)
+            }
+        }
+        return routine
     }
 
     override fun getGroup(listPosition: Int): Any {

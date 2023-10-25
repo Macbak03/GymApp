@@ -1,4 +1,4 @@
-package com.example.gymapp
+package com.example.gymapp.persistence
 
 import android.content.ContentValues
 import android.content.Context

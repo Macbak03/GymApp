@@ -1,9 +1,10 @@
-package com.example.gymapp
+package com.example.gymapp.layout
 
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.gymapp.R
 
 class RoutineExpandableTitleLayout (
     private val context: Context,

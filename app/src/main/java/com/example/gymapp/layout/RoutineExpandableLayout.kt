@@ -1,4 +1,4 @@
-package com.example.gymapp
+package com.example.gymapp.layout
 
 import android.content.Context
 import android.text.Editable
@@ -7,9 +7,8 @@ import android.util.AttributeSet
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
+import com.example.gymapp.R
 import com.example.gymapp.model.ExerciseDraft
-import com.example.gymapp.model.TimeUnit
-import com.example.gymapp.model.WeightUnit
 
 class RoutineExpandableLayout(
     private val context: Context,
@@ -56,7 +55,6 @@ class RoutineExpandableLayout(
             }
 
         })
-
         pauseEditText.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -65,7 +63,7 @@ class RoutineExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                exercise?.load = pauseEditText.text.toString().toFloat()
+                exercise?.pause = pauseEditText.text.toString()
                 exercise?.wasModified = true
             }
 
@@ -78,7 +76,7 @@ class RoutineExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                exercise?.load = loadEditText.text.toString().toFloat()
+                exercise?.load = loadEditText.text.toString()
                 exercise?.wasModified = true
             }
 
@@ -91,7 +89,7 @@ class RoutineExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                exercise?.load = repsEditText.text.toString().toFloat()
+                exercise?.reps = repsEditText.text.toString()
                 exercise?.wasModified = true
             }
 
@@ -104,7 +102,7 @@ class RoutineExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                exercise?.load = seriesEditText.text.toString().toFloat()
+                exercise?.series = seriesEditText.text.toString()
                 exercise?.wasModified = true
             }
 
@@ -117,7 +115,7 @@ class RoutineExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                exercise?.load = rpeEditText.text.toString().toFloat()
+                exercise?.rpe = rpeEditText.text.toString()
                 exercise?.wasModified = true
             }
 
@@ -130,7 +128,7 @@ class RoutineExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                exercise?.load = paceEditText.text.toString().toFloat()
+                exercise?.pace = paceEditText.text.toString()
                 exercise?.wasModified = true
             }
 
@@ -158,25 +156,13 @@ class RoutineExpandableLayout(
         exerciseEditText.setText(exercise?.name)
         pauseEditText.setText(exercise?.pause.toString())
         loadEditText.setText(exercise?.load.toString())
-        repsEditText.setText(exercise?.reps.toString())
         seriesEditText.setText(exercise?.series.toString())
+        repsEditText.setText(exercise?.reps.toString())
         rpeEditText.setText(exercise?.rpe.toString())
         paceEditText.setText(exercise?.pace.toString())
     }
 
     fun getExerciseDraft(): ExerciseDraft? {
         return this.exercise
-        /*return ExerciseDraft(
-            exerciseEditText.text.toString(),
-            pauseEditText.text.toString().toFloat(),
-            TimeUnit.min,
-            loadEditText.text.toString().toFloat(),
-            WeightUnit.kg,
-            repsEditText.text.toString().toInt(),
-            seriesEditText.text.toString(),
-            rpeEditText.text.toString(),
-            paceEditText.text.toString(),
-            false
-        )*/
     }
 }

@@ -1,10 +1,11 @@
-package com.example.gymapp
+package com.example.gymapp.activity
 
 import android.os.Bundle
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.gymapp.persistence.DataBaseHelper
+import com.example.gymapp.adapter.RoutineExpandableListAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
-import com.example.gymapp.model.Exercise
 import com.example.gymapp.model.ExerciseDraft
 import com.example.gymapp.model.TimeUnit
 import com.example.gymapp.model.WeightUnit
@@ -23,15 +24,10 @@ class CreateRoutineActivity : AppCompatActivity() {
 
         expandableListView = binding.ExpandableListViewRoutineItems
         val exercise2 = ExerciseDraft(
-            "exercise$exerciseCount", null,
-            TimeUnit.min, null, WeightUnit.kg, null, null,null, null, true)
-        exerciseCount++
-        val exercise1 = ExerciseDraft(
-            "exercise$exerciseCount", null,
-            TimeUnit.min, null, WeightUnit.kg, null, null,null, null, true)
+            "exercise$exerciseCount", "",
+            TimeUnit.min, "", WeightUnit.kg, "", "","", "", true)
         exerciseCount++
         exercises.add(exercise2)
-        exercises.add(exercise1)
         routineExpandableListAdapter = RoutineExpandableListAdapter(this, exercises)
         expandableListView.setAdapter(routineExpandableListAdapter)
         /*expandableListView.setOnGroupClickListener { parent, _, groupPosition, _ ->
@@ -47,7 +43,7 @@ class CreateRoutineActivity : AppCompatActivity() {
     private fun addExercise() {
         binding.buttonAddExercise.setOnClickListener()
         {
-            val exercise = ExerciseDraft("exercise$exerciseCount", null, TimeUnit.min, null, WeightUnit.kg, null, null, null, null, true)
+            val exercise = ExerciseDraft("exercise$exerciseCount", "", TimeUnit.min, "", WeightUnit.kg, "", "", "", "", true)
             exercises.add(exercise)
             exerciseCount++
             routineExpandableListAdapter.notifyDataSetChanged()
@@ -71,10 +67,9 @@ class CreateRoutineActivity : AppCompatActivity() {
         {
             val dataBase = DataBaseHelper(this, null)
             val routineName = binding.editTextRoutineName.text.toString()
-            for(i in 0..routineExpandableListAdapter.groupCount)
+            for(exercise in routineExpandableListAdapter.getRoutine())
             {
-                val exerciseDraft = routineExpandableListAdapter.exercise
-                //dataBase.addExercise(exercise, routineName)
+                dataBase.addExercise(exercise, routineName)
             }
         }
     }
