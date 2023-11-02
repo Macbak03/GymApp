@@ -42,9 +42,10 @@
 
                 <Spinner
                     android:id="@+id/spinnerPause"
-                    android:layout_width="75dp"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="30dp" />
+                    android:spinnerMode="dropdown"
+                    android:layout_marginEnd="5dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -65,9 +66,10 @@
                     android:inputType="numberDecimal"/>
                 <Spinner
                     android:id="@+id/spinnerLoad"
-                    android:layout_width="75dp"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="30dp" />
+                    android:spinnerMode="dropdown"
+                    android:layout_marginEnd="5dp"/>
         </LinearLayout>
 
         <LinearLayout

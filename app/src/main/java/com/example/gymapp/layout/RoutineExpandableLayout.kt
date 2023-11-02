@@ -4,16 +4,22 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.Toast
 import com.example.gymapp.R
 import com.example.gymapp.model.ExerciseDraft
+import com.example.gymapp.model.TimeUnit
+import com.example.gymapp.model.WeightUnit
 
 class RoutineExpandableLayout(
     private val context: Context,
     private val attributes: AttributeSet
-) : LinearLayout(context, attributes) {
+) : LinearLayout(context, attributes), AdapterView.OnItemSelectedListener {
 
     private val exerciseEditText: EditText
     private val pauseEditText: EditText
@@ -42,7 +48,7 @@ class RoutineExpandableLayout(
         rpeEditText = findViewById(R.id.editTextRpe)
         paceEditText = findViewById(R.id.editTextPace)
 
-        exerciseEditText.addTextChangedListener(object : TextWatcher{
+        exerciseEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -55,7 +61,7 @@ class RoutineExpandableLayout(
             }
 
         })
-        pauseEditText.addTextChangedListener(object : TextWatcher{
+        pauseEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -68,7 +74,7 @@ class RoutineExpandableLayout(
             }
 
         })
-        loadEditText.addTextChangedListener(object : TextWatcher{
+        loadEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -81,7 +87,7 @@ class RoutineExpandableLayout(
             }
 
         })
-        repsEditText.addTextChangedListener(object : TextWatcher{
+        repsEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -94,7 +100,7 @@ class RoutineExpandableLayout(
             }
 
         })
-        seriesEditText.addTextChangedListener(object : TextWatcher{
+        seriesEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -107,7 +113,7 @@ class RoutineExpandableLayout(
             }
 
         })
-        rpeEditText.addTextChangedListener(object : TextWatcher{
+        rpeEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -120,7 +126,7 @@ class RoutineExpandableLayout(
             }
 
         })
-        paceEditText.addTextChangedListener(object : TextWatcher{
+        paceEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -134,8 +140,10 @@ class RoutineExpandableLayout(
 
         })
 
-
+        setTimeUnitSpinner()
+        setWeightUnitSpinner()
         customAttributesStyle.recycle()
+
     }
 
     fun setExercise(exercise: ExerciseDraft?) {
@@ -165,4 +173,38 @@ class RoutineExpandableLayout(
     fun getExerciseDraft(): ExerciseDraft? {
         return this.exercise
     }
+
+    private fun setTimeUnitSpinner() {
+        val spinner: Spinner = findViewById(R.id.spinnerPause)
+        val units = arrayOf(TimeUnit.min, TimeUnit.s)
+        val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, units)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        with(spinner)
+        {
+            setSelection(0,false)
+            onItemSelectedListener = this@RoutineExpandableLayout
+        }
+    }
+
+    private fun setWeightUnitSpinner() {
+        val spinner: Spinner = findViewById(R.id.spinnerLoad)
+        val units = arrayOf(WeightUnit.kg, WeightUnit.lbs)
+        val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, units)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        with(spinner)
+        {
+            setSelection(0, false)
+            onItemSelectedListener = this@RoutineExpandableLayout
+        }
+    }
+
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>?) {
+    }
+
+
 }

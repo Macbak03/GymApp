@@ -2,6 +2,7 @@ package com.example.gymapp.activity
 
 import android.os.Bundle
 import android.widget.ExpandableListView
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gymapp.persistence.DataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
@@ -30,10 +31,6 @@ class CreateRoutineActivity : AppCompatActivity() {
         exercises.add(exercise2)
         routineExpandableListAdapter = RoutineExpandableListAdapter(this, exercises)
         expandableListView.setAdapter(routineExpandableListAdapter)
-        /*expandableListView.setOnGroupClickListener { parent, _, groupPosition, _ ->
-            setScrollListViewHeightBasedOnChildren(parent, groupPosition)
-            false
-        }*/
         addExercise()
         removeExercise()
         saveRoutineIntoDB()
@@ -74,38 +71,7 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
     }
 
+
     //TODO add exercise order
 
-    /*private fun setScrollListViewHeightBasedOnChildren(
-         expandableListView: ExpandableListView,
-         group: Int
-     ) {
-         val listAdapter = expandableListView.expandableListAdapter as ExpandableListAdapter
-         var totalHeight = 0
-         val desiredWidth = MeasureSpec.makeMeasureSpec(
-             expandableListView.width,
-             MeasureSpec.EXACTLY
-         )
-         for (i in 0 until listAdapter.groupCount) {
-             val groupItem = listAdapter.getGroupView(i, false, null, expandableListView)
-             groupItem.measure(desiredWidth, MeasureSpec.UNSPECIFIED)
-             totalHeight += groupItem.measuredHeight
-             if (expandableListView.isGroupExpanded(i) && i != group || !expandableListView.isGroupExpanded(i) && i == group) {
-                 for (j in 0 until listAdapter.getChildrenCount(i)) {
-                     val listItem = listAdapter.getChildView(
-                         i, j, false, null,
-                         expandableListView
-                     )
-                     listItem.measure(desiredWidth, MeasureSpec.UNSPECIFIED)
-                     totalHeight += listItem.measuredHeight
-                 }
-             }
-         }
-         val params = expandableListView.layoutParams
-         var height = totalHeight + expandableListView.dividerHeight * (listAdapter.groupCount - 1)
-         if (height < 10) height = 200
-         params.height = height
-         expandableListView.layoutParams = params
-         expandableListView.requestLayout()
-     }*/
 }
