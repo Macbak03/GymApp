@@ -1,6 +1,8 @@
 package com.example.gymapp.model
 
-data class Weight constructor(
+import com.example.gymapp.exception.ValidationException
+
+data class Weight private constructor(
     val weight: Float,
     val unit: WeightUnit
 ) {
@@ -15,6 +17,24 @@ data class Weight constructor(
             } else {
                 Weight(weight, unit)
             }
+        }
+
+        fun fromStringWithUnit(weight: String?, unit: WeightUnit) : Weight
+        {
+            if(weight.isNullOrBlank())
+            {
+                throw ValidationException("weight cannot be empty")
+            }
+            val floatWeight = weight.toFloatOrNull()
+            if(floatWeight == null)
+            {
+                throw ValidationException("weight must be a number")
+            }
+            if(floatWeight < 0)
+            {
+                throw ValidationException("weight cannot be negative")
+            }
+            return Weight(floatWeight, unit)
         }
 
 /*        fun Float.kg(): Weight? {

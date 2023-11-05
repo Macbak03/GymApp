@@ -1,4 +1,4 @@
-package com.example.gymapp
+package com.example.gymapp.activity
 
 import android.content.Intent
 import android.os.Bundle

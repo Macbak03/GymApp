@@ -20,7 +20,32 @@
                 <EditText
                     android:id="@+id/editTextExercise"
                     style="@style/routine_edit_text_item"
-                    android:hint="@string/enter_exercise_name"/>
+                    android:hint="@string/enter_exercise_name" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textViewPause"
+                    style="@style/routine_text_view_item"
+                    android:text="@string/pause" />
+
+                <EditText
+                    android:id="@+id/editTextPause"
+                    style="@style/routine_edit_text_item"
+                    android:hint="@string/enter_pause"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"/>
+
+                <Spinner
+                    android:id="@+id/spinnerPause"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:spinnerMode="dropdown"
+                    android:layout_marginEnd="5dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -36,7 +61,15 @@
                 <EditText
                     android:id="@+id/editTextLoad"
                     style="@style/routine_edit_text_item"
-                    android:hint="@string/enter_load"/>
+                    android:hint="@string/enter_load"
+                    android:layout_weight="1"
+                    android:inputType="numberDecimal"/>
+                <Spinner
+                    android:id="@+id/spinnerLoad"
+                    android:layout_width="100dp"
+                    android:layout_height="match_parent"
+                    android:spinnerMode="dropdown"
+                    android:layout_marginEnd="5dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -68,7 +101,8 @@
                 <EditText
                     android:id="@+id/editTextSeries"
                     style="@style/routine_edit_text_item"
-                    android:hint="@string/enter_series"/>
+                    android:hint="@string/enter_series"
+                    android:inputType="number"/>
         </LinearLayout>
 
         <LinearLayout
