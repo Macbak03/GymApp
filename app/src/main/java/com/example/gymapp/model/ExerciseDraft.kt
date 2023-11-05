@@ -1,6 +1,5 @@
 package com.example.gymapp.model
 
-import androidx.core.text.isDigitsOnly
 import com.example.gymapp.exception.ValidationException
 import kotlin.time.Duration
 
@@ -20,12 +19,12 @@ data class ExerciseDraft (
     fun toExercise() : Exercise
     {
         val name = name
-        val series = series
-        if(name == null)
+        if(name.isNullOrBlank())
         {
             throw ValidationException("name cannot be empty")
+
         }
-        if(pause == null)
+        if(pause.isNullOrBlank())
         {
             throw ValidationException("pause cannot be empty")
         }
@@ -33,9 +32,11 @@ data class ExerciseDraft (
         {
             throw ValidationException("pause must be a number")
         }
-        val pauseDuration = Duration.parse(pause + pauseUnit.toString())
+        val pauseDuration = Duration.parse(pause + pauseUnit.toString()[0])
         val weight = Weight.fromStringWithUnit(load, loadUnit)
-        if(series == null)
+        val reps = Reps.fromString(reps)
+        val series = series
+        if(series.isNullOrBlank())
         {
             throw ValidationException("series cannot be empty")
         }
@@ -44,7 +45,6 @@ data class ExerciseDraft (
             throw ValidationException("series must be a number")
         }
         val intSeries = series.toInt()
-        val reps = Reps.fromString(reps)
         val rpe = Rpe.fromString(rpe)
         val pace = ExercisePace.fromString(pace)
 

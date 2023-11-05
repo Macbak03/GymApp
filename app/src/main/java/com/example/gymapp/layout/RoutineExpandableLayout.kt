@@ -10,7 +10,6 @@ import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
-import android.widget.Toast
 import com.example.gymapp.R
 import com.example.gymapp.model.ExerciseDraft
 import com.example.gymapp.model.TimeUnit
@@ -153,14 +152,14 @@ class RoutineExpandableLayout(
         this.exercise = exercise
 
         try {
-            exerciseSetText(exercise)
+            setExerciseText(exercise)
         } finally {
             customAttributesStyle.recycle()
         }
     }
 
 
-    private fun exerciseSetText(exercise: ExerciseDraft?) {
+    private fun setExerciseText(exercise: ExerciseDraft?) {
         exerciseEditText.setText(exercise?.name)
         pauseEditText.setText(exercise?.pause.toString())
         loadEditText.setText(exercise?.load.toString())
@@ -175,12 +174,11 @@ class RoutineExpandableLayout(
     }
 
     private fun setTimeUnitSpinner() {
-        val spinner: Spinner = findViewById(R.id.spinnerPause)
         val units = arrayOf(TimeUnit.min, TimeUnit.s)
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, units)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-        with(spinner)
+        pauseSpinner.adapter = adapter
+        with(pauseSpinner)
         {
             setSelection(0,false)
             onItemSelectedListener = this@RoutineExpandableLayout
@@ -188,12 +186,11 @@ class RoutineExpandableLayout(
     }
 
     private fun setWeightUnitSpinner() {
-        val spinner: Spinner = findViewById(R.id.spinnerLoad)
         val units = arrayOf(WeightUnit.kg, WeightUnit.lbs)
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, units)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-        with(spinner)
+        loadSpinner.adapter = adapter
+        with(loadSpinner)
         {
             setSelection(0, false)
             onItemSelectedListener = this@RoutineExpandableLayout

@@ -5,7 +5,7 @@ import com.example.gymapp.exception.ValidationException
 sealed interface Reps {
     companion object {
         fun fromString(reps: String?): Reps {
-            if (reps == null) {
+            if (reps.isNullOrBlank()) {
                 throw ValidationException("reps cannot be empty")
             }
             val regex = Regex("""^(\d+)$|^(\d+)-(\d+)$""")

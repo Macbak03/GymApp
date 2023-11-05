@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.Toast
 import com.example.gymapp.R
+import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.layout.RoutineExpandableTitleLayout
 import com.example.gymapp.model.Exercise
@@ -46,7 +48,6 @@ class RoutineExpandableListAdapter(
         val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
         val routineExpandableLayout = view as RoutineExpandableLayout?
         routineExpandableLayout?.setExercise(exercise)
-        this.exercise = routineExpandableLayout?.getExerciseDraft()
         return view
     }
 
@@ -57,13 +58,16 @@ class RoutineExpandableListAdapter(
     fun getRoutine() : ArrayList<Exercise>
     {
         val routine = ArrayList<Exercise>()
-        for (i: Int in 0..groupCount)
+        for (i: Int in 0..groupCount-1)
         {
             val routineExpandableLayout = getChildView(i, 0, true, null, null) as RoutineExpandableLayout?
-            val exercise = routineExpandableLayout?.getExerciseDraft()?.toExercise()
-            if(exercise != null)
-            {
-                routine.add(exercise)
+            try {
+                val exercise = routineExpandableLayout?.getExerciseDraft()?.toExercise()
+                if (exercise != null) {
+                    routine.add(exercise)
+                }
+            } catch (exception: ValidationException) {
+                Toast.makeText(context, exception.message, Toast.LENGTH_LONG).show()
             }
         }
         return routine

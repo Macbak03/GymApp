@@ -10,7 +10,6 @@ import com.example.gymapp.model.ExactRpe
 import com.example.gymapp.model.Exercise
 import com.example.gymapp.model.RangeReps
 import com.example.gymapp.model.RangeRpe
-import java.time.LocalDate
 
 class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
@@ -19,8 +18,7 @@ class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         // below is a sqlite query, where column names
         // along with their data types is given
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                + DATE_COLUMN + " TEXT NOT NULL, " +
-                ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
+                + ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
                 EXERCISE_NAME_COLUMN + " TEXT NOT NULL," +
                 PAUSE_COLUMN + " INTEGER NOT NULL," +
                 LOAD_VALUE_COLUMN + " REAL NOT NULL," +
@@ -38,7 +36,6 @@ class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     }
 
     override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
-        // this method is to check if table already exists
         onCreate(db)
     }
 
@@ -51,7 +48,6 @@ class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
         // we are inserting our values
         // in the form of key-value pair
-        values.put(DATE_COLUMN, LocalDate.now().toString())
         values.put(ROUTINE_NAME_COLUMN, routineName)
         values.put(EXERCISE_NAME_COLUMN, exercise.name)
         values.put(PAUSE_COLUMN, exercise.pause.inWholeSeconds)
@@ -110,12 +106,12 @@ class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
 
     }
 
+
     companion object {
         private const val DATABASE_NAME = "GymApp"
         private val DATABASE_VERSION = 1
 
         const val TABLE_NAME = "routine"
-        const val DATE_COLUMN = "Date"
         const val ROUTINE_NAME_COLUMN = "RoutineName"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"
