@@ -17,6 +17,11 @@ class MainActivity : ComponentActivity() {
             val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
             startActivity(explicitIntent)
         }
+
+        binding.buttonTrainingPlans.setOnClickListener{
+            val explicitIntent = Intent(applicationContext, TrainingPlansActivity::class.java)
+            startActivity(explicitIntent)
+        }
     }
 }
 

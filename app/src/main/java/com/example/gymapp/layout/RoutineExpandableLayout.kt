@@ -11,16 +11,16 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.example.gymapp.R
-import com.example.gymapp.model.ExerciseDraft
-import com.example.gymapp.model.TimeUnit
-import com.example.gymapp.model.WeightUnit
+import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.TimeUnit
+import com.example.gymapp.model.routine.WeightUnit
 
 class RoutineExpandableLayout(
     private val context: Context,
-    private val attributes: AttributeSet
+    private val attributes: AttributeSet,
 ) : LinearLayout(context, attributes) {
 
-    private val exerciseEditText: EditText
+    val exerciseEditText: EditText
     private val pauseEditText: EditText
     private val pauseSpinner: Spinner
     private val loadEditText: EditText
@@ -31,6 +31,7 @@ class RoutineExpandableLayout(
     private val paceEditText: EditText
 
     private var exercise: ExerciseDraft? = null
+
 
     init {
         inflate(context, R.layout.routine_expandable_layout, this)

@@ -5,13 +5,13 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.gymapp.model.ExactReps
-import com.example.gymapp.model.ExactRpe
-import com.example.gymapp.model.Exercise
-import com.example.gymapp.model.RangeReps
-import com.example.gymapp.model.RangeRpe
+import com.example.gymapp.model.routine.ExactReps
+import com.example.gymapp.model.routine.ExactRpe
+import com.example.gymapp.model.routine.Exercise
+import com.example.gymapp.model.routine.RangeReps
+import com.example.gymapp.model.routine.RangeRpe
 
-class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
+class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
     // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {

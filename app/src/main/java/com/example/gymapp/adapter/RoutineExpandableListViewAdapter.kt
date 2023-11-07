@@ -11,8 +11,8 @@ import com.example.gymapp.R
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.layout.RoutineExpandableTitleLayout
-import com.example.gymapp.model.Exercise
-import com.example.gymapp.model.ExerciseDraft
+import com.example.gymapp.model.routine.Exercise
+import com.example.gymapp.model.routine.ExerciseDraft
 
 
 class RoutineExpandableListAdapter(
@@ -21,7 +21,7 @@ class RoutineExpandableListAdapter(
 
     ): BaseExpandableListAdapter(){
 
-    var exercise: ExerciseDraft? = null
+    //var exercise: ExerciseDraft? = null
 
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
         return exercises[listPosition]
@@ -58,7 +58,7 @@ class RoutineExpandableListAdapter(
     fun getRoutine() : ArrayList<Exercise>
     {
         val routine = ArrayList<Exercise>()
-        for (i: Int in 0..groupCount-1)
+        for (i: Int in 0 until groupCount)
         {
             val routineExpandableLayout = getChildView(i, 0, true, null, null) as RoutineExpandableLayout?
             try {
@@ -95,9 +95,24 @@ class RoutineExpandableListAdapter(
         }
         val exercise = getGroup(listPosition) as ExerciseDraft
         val routineExpandableTitleLayout = view as RoutineExpandableTitleLayout?
-        routineExpandableTitleLayout?.setExerciseText(exercise.name)
+        routineExpandableTitleLayout?.setExerciseNameText(exercise.name)
+       /* val routineExpandableLayout = getChildView(listPosition, 0, true, null, null) as RoutineExpandableLayout?
+        routineExpandableLayout?.exerciseEditText?.addTextChangedListener(object: TextWatcher
+        {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                routineExpandableTitleLayout?.setExerciseNameText(routineExpandableLayout.exerciseEditText.text.toString())
+            }
+        })
+        routineExpandableTitleLayout?.invalidate()*/
         return view
     }
+
 
     override fun hasStableIds(): Boolean {
         return false

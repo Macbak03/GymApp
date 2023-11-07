@@ -2,23 +2,22 @@ package com.example.gymapp.activity
 
 import android.os.Bundle
 import android.widget.ExpandableListView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.gymapp.persistence.DataBaseHelper
+import com.example.gymapp.persistence.RoutineDataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
 import com.example.gymapp.exception.ValidationException
-import com.example.gymapp.model.ExerciseDraft
-import com.example.gymapp.model.TimeUnit
-import com.example.gymapp.model.WeightUnit
+import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.TimeUnit
+import com.example.gymapp.model.routine.WeightUnit
 
 
 class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
     private lateinit var expandableListView: ExpandableListView
     private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
-    private val dataBase = DataBaseHelper(this, null)
+    private val dataBase = RoutineDataBaseHelper(this, null)
     private val exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 1
     override fun onCreate(savedInstanceState: Bundle?) {
