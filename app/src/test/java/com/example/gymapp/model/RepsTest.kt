@@ -1,6 +1,9 @@
 package com.example.gymapp.model
 
 import com.example.gymapp.exception.ValidationException
+import com.example.gymapp.model.routine.ExactReps
+import com.example.gymapp.model.routine.RangeReps
+import com.example.gymapp.model.routine.Reps
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.params.ParameterizedTest

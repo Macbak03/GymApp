@@ -1,17 +1,17 @@
-package com.example.gymapp.model
+package com.example.gymapp.model.routine
 
 import com.example.gymapp.exception.ValidationException
 
-sealed interface Rpe{
-    companion object{
-        fun fromString(rpe: String?): Rpe{
-            if (rpe == null) {
-                throw ValidationException("rpe cannot be empty")
+sealed interface Reps {
+    companion object {
+        fun fromString(reps: String?): Reps {
+            if (reps.isNullOrBlank()) {
+                throw ValidationException("reps cannot be empty")
             }
             val regex = Regex("""^(\d+)$|^(\d+)-(\d+)$""")
-            val match = regex.matchEntire(rpe)
+            val match = regex.matchEntire(reps)
             if (match == null) {
-                throw ValidationException("rpe must be a number (eg. 7) or range (eg. 7-8)")
+                throw ValidationException("reps must be a number (eg. 5) or range (eg. 3-5)")
             }
             val (exactValue, rangeFrom, rangeTo) = match.destructured
             return if (exactValue.isEmpty()) {
@@ -21,27 +21,31 @@ sealed interface Rpe{
                 {
                     throw ValidationException("first number of the range must be lower than the second number")
                 }
-                RangeRpe(intRangeFrom, intRangeTo)
+                RangeReps(intRangeFrom, intRangeTo)
             } else {
-                ExactRpe(exactValue.toInt())
+                ExactReps(exactValue.toInt())
             }
 
         }
     }
+
 }
-data class ExactRpe(
-    val value: Int,
-): Rpe {
+
+data class ExactReps(
+    val value: Int
+) : Reps {
     override fun toString(): String {
         return value.toString()
     }
 }
 
-data class RangeRpe(
+data class RangeReps(
     val from: Int,
     val to: Int
-): Rpe{
+) : Reps {
     override fun toString(): String {
         return "$from-$to"
     }
 }
+
+
