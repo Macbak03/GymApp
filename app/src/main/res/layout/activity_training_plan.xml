@@ -22,7 +22,8 @@
         android:layout_marginTop="1dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTrainingPlanName" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTrainingPlanName"
+        />
 
     <Button
         android:id="@+id/buttonAddRoutine"
@@ -40,6 +41,17 @@
         android:layout_marginStart="288dp"
         android:layout_marginTop="44dp"
         android:text="Save"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/buttonAddRoutine" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:text="Load db"
+        app:layout_constraintEnd_toStartOf="@+id/buttonSave"
+        app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/buttonAddRoutine" />
 

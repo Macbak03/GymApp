@@ -17,6 +17,7 @@ class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
     private lateinit var expandableListView: ExpandableListView
     private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
+
     private val dataBase = RoutineDataBaseHelper(this, null)
     private val exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 1
