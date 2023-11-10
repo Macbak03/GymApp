@@ -14,12 +14,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <Button
-            android:id="@+id/buttonCreateRoutine"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Create routine" />
 
         <Button
             android:id="@+id/buttonTrainingPlans"
@@ -33,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="History" />
+            android:text="Training History" />
 
     </LinearLayout>
 
