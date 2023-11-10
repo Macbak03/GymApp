@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.example.gymapp.databinding.ActivityMainBinding
-
-
+import android.view.View
+import android.support.v7.app.AppCompatActivity;
 class MainActivity : ComponentActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,6 +16,7 @@ class MainActivity : ComponentActivity() {
         binding.buttonCreateRoutine.setOnClickListener{
             val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
             startActivity(explicitIntent)
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
         }
     }
 }
