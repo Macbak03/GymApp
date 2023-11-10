@@ -5,14 +5,14 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.gymapp.model.ExactReps
-import com.example.gymapp.model.ExactRpe
-import com.example.gymapp.model.Exercise
-import com.example.gymapp.model.RangeReps
-import com.example.gymapp.model.RangeRpe
+import com.example.gymapp.model.routine.ExactReps
+import com.example.gymapp.model.routine.ExactRpe
+import com.example.gymapp.model.routine.Exercise
+import com.example.gymapp.model.routine.RangeReps
+import com.example.gymapp.model.routine.RangeRpe
 
-class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
-    SQLiteOpenHelper(context, DATABASE_NAME, factory, DATABASE_VERSION) {
+class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
+    Repository(context, factory) {
     // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
         // below is a sqlite query, where column names
@@ -103,15 +103,15 @@ class DataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
         // below code returns a cursor to
         // read data from the database
         return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
+        //toDo instead of select *, select passed routine name
 
     }
 
 
     companion object {
-        private const val DATABASE_NAME = "GymApp"
-        private val DATABASE_VERSION = 1
 
         const val TABLE_NAME = "routine"
+        const val PLAN_NAME_COLUMN = "PlanName" // plan name (foreign key) --> routine name --> exercise
         const val ROUTINE_NAME_COLUMN = "RoutineName"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"

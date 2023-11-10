@@ -11,16 +11,16 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.example.gymapp.R
-import com.example.gymapp.model.ExerciseDraft
-import com.example.gymapp.model.TimeUnit
-import com.example.gymapp.model.WeightUnit
+import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.TimeUnit
+import com.example.gymapp.model.routine.WeightUnit
 
 class RoutineExpandableLayout(
     private val context: Context,
-    private val attributes: AttributeSet
-) : LinearLayout(context, attributes), AdapterView.OnItemSelectedListener {
+    private val attributes: AttributeSet,
+) : LinearLayout(context, attributes) {
 
-    private val exerciseEditText: EditText
+    val exerciseEditText: EditText
     private val pauseEditText: EditText
     private val pauseSpinner: Spinner
     private val loadEditText: EditText
@@ -31,6 +31,7 @@ class RoutineExpandableLayout(
     private val paceEditText: EditText
 
     private var exercise: ExerciseDraft? = null
+
 
     init {
         inflate(context, R.layout.routine_expandable_layout, this)
@@ -58,7 +59,6 @@ class RoutineExpandableLayout(
                 exercise?.name = exerciseEditText.text.toString()
                 exercise?.wasModified = true
             }
-
         })
         pauseEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -71,7 +71,6 @@ class RoutineExpandableLayout(
                 exercise?.pause = pauseEditText.text.toString()
                 exercise?.wasModified = true
             }
-
         })
         loadEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -84,7 +83,6 @@ class RoutineExpandableLayout(
                 exercise?.load = loadEditText.text.toString()
                 exercise?.wasModified = true
             }
-
         })
         repsEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -97,7 +95,6 @@ class RoutineExpandableLayout(
                 exercise?.reps = repsEditText.text.toString()
                 exercise?.wasModified = true
             }
-
         })
         seriesEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -110,7 +107,6 @@ class RoutineExpandableLayout(
                 exercise?.series = seriesEditText.text.toString()
                 exercise?.wasModified = true
             }
-
         })
         rpeEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -123,7 +119,6 @@ class RoutineExpandableLayout(
                 exercise?.rpe = rpeEditText.text.toString()
                 exercise?.wasModified = true
             }
-
         })
         paceEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -136,7 +131,6 @@ class RoutineExpandableLayout(
                 exercise?.pace = paceEditText.text.toString()
                 exercise?.wasModified = true
             }
-
         })
 
         setTimeUnitSpinner()
@@ -180,8 +174,19 @@ class RoutineExpandableLayout(
         pauseSpinner.adapter = adapter
         with(pauseSpinner)
         {
-            setSelection(0,false)
-            onItemSelectedListener = this@RoutineExpandableLayout
+            setSelection(0, false)
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val item = parent?.getItemAtPosition(position) as TimeUnit?
+                    if (item != null)
+                    {
+                        exercise?.pauseUnit = item
+                    }
+                    //item?.let { exercise?.pauseUnit = it } - to to samo co 180-183 linijka
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+            }
         }
     }
 
@@ -193,15 +198,22 @@ class RoutineExpandableLayout(
         with(loadSpinner)
         {
             setSelection(0, false)
-            onItemSelectedListener = this@RoutineExpandableLayout
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val item = parent?.getItemAtPosition(position) as WeightUnit?
+                    if (item != null)
+                    {
+                        exercise?.loadUnit = item
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+            }
         }
     }
 
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-    }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-    }
 
 
 }

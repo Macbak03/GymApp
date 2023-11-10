@@ -24,7 +24,7 @@ class RoutineExpandableTitleLayout (
             customAttributesStyle.recycle()
         }
 
-        fun setExerciseText(text: String?) {
+        fun setExerciseNameText(text: String?) {
             val customAttributesStyle = context.obtainStyledAttributes(
                 attributes,
                 R.styleable.RoutineExpandableTitleLayout,

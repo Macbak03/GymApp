@@ -13,8 +13,8 @@ class MainActivity : ComponentActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.buttonCreateRoutine.setOnClickListener{
-            val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
+        binding.buttonTrainingPlans.setOnClickListener{
+            val explicitIntent = Intent(applicationContext, TrainingPlansActivity::class.java)
             startActivity(explicitIntent)
         }
     }

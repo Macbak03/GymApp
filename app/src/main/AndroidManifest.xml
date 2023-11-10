@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,6 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GymApp"
         tools:targetApi="31">
+        <activity
+            android:name=".activity.TrainingPlanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activity.TrainingPlansActivity"
+            android:exported="false" />
         <activity
             android:name=".activity.CreateRoutineActivity"
             android:exported="false" />
@@ -27,5 +35,5 @@
             </intent-filter>
         </activity>
     </application>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 </manifest>
