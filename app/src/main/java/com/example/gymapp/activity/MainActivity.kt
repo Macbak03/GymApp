@@ -4,8 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import com.example.gymapp.databinding.ActivityMainBinding
-import android.view.View
-import android.support.v7.app.AppCompatActivity;
+import com.example.gymapp.R
+
 class MainActivity : ComponentActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
