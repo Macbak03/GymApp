@@ -2,6 +2,8 @@ package com.example.gymapp.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -107,9 +109,10 @@ class RoutineExpandableListAdapter(
 
             override fun afterTextChanged(s: Editable?) {
                 routineExpandableTitleLayout?.setExerciseNameText(routineExpandableLayout.exerciseEditText.text.toString())
+                notifyDataSetChanged()
             }
-        })
-        routineExpandableTitleLayout?.invalidate()*/
+        })*/
+        routineExpandableTitleLayout?.invalidate()
         return view
     }
 

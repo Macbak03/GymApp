@@ -11,8 +11,8 @@ class PlanDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory
     ) {
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                + PLAN_NAME_COLUMN + " TEXT NOT NULL" +
-                PLAN_ID_COLUMN + " INTEGER PRIMARY KEY" + ")")
+                + PLAN_ID_COLUMN + " INTEGER PRIMARY KEY," +
+                PLAN_NAME_COLUMN + " TEXT NOT NULL" + ")")
         db.execSQL(query)
     }
 
@@ -20,21 +20,38 @@ class PlanDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory
         onCreate(db)
     }
 
-    fun addPLan(planName: String)
-    {
+    fun addPLan(planName: String) {
         val values = ContentValues()
         values.put(PLAN_NAME_COLUMN, planName)
 
         val db = this.writableDatabase
 
-        db.insert(TABLE_NAME, null, values)
-        db.close()
+        db.use {
+            db.insert(TABLE_NAME, null, values)
+        }
+
     }
 
-    fun getPlans() : Cursor?
+    fun InsertIDToRoutine(id: Int)
     {
+        val values = ContentValues()
+        values.put(RoutineDataBaseHelper.PLAN_ID_COLUMN, id)
+
+        val db = this.writableDatabase
+        db.use {
+            db.insert(RoutineDataBaseHelper.TABLE_NAME, null, values)
+        }
+    }
+
+    fun getPlans(): Cursor? {
         val db = this.readableDatabase
         return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
+    }
+
+    fun getPlanID(planName: String) : Cursor?
+    {
+        val db = this.readableDatabase
+        return  db.rawQuery("SELECT DISTINCT $PLAN_ID_COLUMN FROM $TABLE_NAME WHERE $PLAN_NAME_COLUMN LIKE $planName", null)
     }
 
     companion object {

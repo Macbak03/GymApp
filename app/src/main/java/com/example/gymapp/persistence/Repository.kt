@@ -12,6 +12,6 @@ abstract class Repository (context: Context, factory: SQLiteDatabase.CursorFacto
 
         companion object{
             private const val DATABASE_NAME = "GymApp"
-            private val DATABASE_VERSION = 1
+            private const val DATABASE_VERSION = 2
         }
 }

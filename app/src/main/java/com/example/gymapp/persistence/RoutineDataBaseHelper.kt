@@ -35,7 +35,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         db.execSQL(query)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onCreate(db)
     }
 
@@ -84,11 +84,11 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         val db = this.writableDatabase
 
         // all values are inserted into database
-        db.insert(TABLE_NAME, null, values)
-
+        db.use {
+            db.insert(TABLE_NAME, null, values)
+        }
         // at last we are
         // closing our database
-        db.close()
     }
 
     // below method is to get
@@ -102,7 +102,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
 
         // below code returns a cursor to
         // read data from the database
-        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
+        return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
         //toDo instead of select *, select passed routine name
 
     }
@@ -111,7 +111,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
     companion object {
 
         const val TABLE_NAME = "routine"
-        const val PLAN_NAME_COLUMN = "PlanName" // plan name (foreign key) --> routine name --> exercise
+        const val PLAN_ID_COLUMN = "PlanName" // plan id (foreign key) --> routine name --> exercise
         const val ROUTINE_NAME_COLUMN = "RoutineName"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"
