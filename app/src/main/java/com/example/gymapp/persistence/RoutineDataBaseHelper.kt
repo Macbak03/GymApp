@@ -18,7 +18,8 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         // below is a sqlite query, where column names
         // along with their data types is given
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                + ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
+                + PLAN_ID_COLUMN + " INTEGER NOT NULL," +
+                ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
                 EXERCISE_NAME_COLUMN + " TEXT NOT NULL," +
                 PAUSE_COLUMN + " INTEGER NOT NULL," +
                 LOAD_VALUE_COLUMN + " REAL NOT NULL," +
@@ -28,8 +29,9 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
                 SERIES_COLUMN + " INTEGER NOT NULL," +
                 RPE_RANGE_FROM_COLUMN + " INTEGER," +
                 RPE_RANGE_TO_COLUMN + " INTEGER," +
-                PACE_COLUMN + " TEXT" + ")")
-
+                PACE_COLUMN + " TEXT," +
+                "FOREIGN KEY " + "(" + PLAN_ID_COLUMN + ")" + " REFERENCES " + PlanDataBaseHelper.TABLE_NAME + "(" + PlanDataBaseHelper.PLAN_ID_COLUMN + ")"
+                + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
         // we are calling sqlite
         // method for executing our query
         db.execSQL(query)
@@ -40,7 +42,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
     }
 
     // This method is for adding data in our database
-    fun addExercise(exercise: Exercise, routineName: String) {
+    fun addExercise(exercise: Exercise, routineName: String, id: Int) {
 
         // below we are creating
         // a content values variable
@@ -48,6 +50,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
 
         // we are inserting our values
         // in the form of key-value pair
+        values.put(PLAN_ID_COLUMN, id)
         values.put(ROUTINE_NAME_COLUMN, routineName)
         values.put(EXERCISE_NAME_COLUMN, exercise.name)
         values.put(PAUSE_COLUMN, exercise.pause.inWholeSeconds)
@@ -58,6 +61,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
                 values.put(REPS_RANGE_FROM_COLUMN, exercise.reps.value)
                 values.put(REPS_RANGE_TO_COLUMN, exercise.reps.value)
             }
+
             is RangeReps -> {
                 values.put(REPS_RANGE_FROM_COLUMN, exercise.reps.from)
                 values.put(REPS_RANGE_TO_COLUMN, exercise.reps.to)
@@ -69,10 +73,12 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
                 values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.value)
                 values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.value)
             }
+
             is RangeRpe -> {
                 values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.from)
                 values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.to)
             }
+
             null -> {}
         }
         values.put(PACE_COLUMN, exercise.pace.toString())
@@ -111,7 +117,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
     companion object {
 
         const val TABLE_NAME = "routine"
-        const val PLAN_ID_COLUMN = "PlanName" // plan id (foreign key) --> routine name --> exercise
+        const val PLAN_ID_COLUMN = "PlanID" // plan id (foreign key) --> routine name --> exercise
         const val ROUTINE_NAME_COLUMN = "RoutineName"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"

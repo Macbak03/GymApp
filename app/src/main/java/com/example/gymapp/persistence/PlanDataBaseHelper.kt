@@ -32,27 +32,12 @@ class PlanDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory
 
     }
 
-    fun InsertIDToRoutine(id: Int)
-    {
-        val values = ContentValues()
-        values.put(RoutineDataBaseHelper.PLAN_ID_COLUMN, id)
-
-        val db = this.writableDatabase
-        db.use {
-            db.insert(RoutineDataBaseHelper.TABLE_NAME, null, values)
-        }
-    }
 
     fun getPlans(): Cursor? {
         val db = this.readableDatabase
         return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
     }
 
-    fun getPlanID(planName: String) : Cursor?
-    {
-        val db = this.readableDatabase
-        return  db.rawQuery("SELECT DISTINCT $PLAN_ID_COLUMN FROM $TABLE_NAME WHERE $PLAN_NAME_COLUMN LIKE $planName", null)
-    }
 
     companion object {
         const val TABLE_NAME = "trainingPlans"

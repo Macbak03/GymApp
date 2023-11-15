@@ -11,6 +11,7 @@ import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
+import com.example.gymapp.persistence.PlanDataBaseHelper
 
 
 class CreateRoutineActivity : AppCompatActivity() {
@@ -35,6 +36,10 @@ class CreateRoutineActivity : AppCompatActivity() {
         exercises.add(exercise2)
         routineExpandableListAdapter = RoutineExpandableListAdapter(this, exercises)
         expandableListView.setAdapter(routineExpandableListAdapter)
+        var planName: String? = null
+        if (intent.hasExtra(TrainingPlanActivity.NEXT_SCREEN)) {
+            planName = intent.getStringExtra(TrainingPlanActivity.NEXT_SCREEN)
+        }
 
         binding.buttonAddExercise.setOnClickListener {
             addExercise()
@@ -44,14 +49,17 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
         binding.buttonSaveRoutine.setOnClickListener()
         {
-            try {
-                saveRoutineIntoDB()
-            } catch (exception: ValidationException) {
-                Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
+            if(planName != null)
+            {
+                try {
+                    saveRoutineIntoDB(planName)
+                } catch (exception: ValidationException) {
+                    Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
+                }
             }
         }
 
-        binding.button.setOnClickListener(){
+        binding.button.setOnClickListener() {
             loadDb()
         }
     }
@@ -82,17 +90,27 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveRoutineIntoDB() {
+    private fun saveRoutineIntoDB(planName: String) {
         val routineName = binding.editTextRoutineName.text.toString()
         if (routineName.isBlank()) {
             throw ValidationException("routine name cannot be empty")
         }
-        for (exercise in routineExpandableListAdapter.getRoutine()) {
-            dataBase.addExercise(exercise, routineName)
+        val planDataBase = PlanDataBaseHelper(this, null)
+        val id = planDataBase.getFromDb(
+            PlanDataBaseHelper.TABLE_NAME,
+            PlanDataBaseHelper.PLAN_ID_COLUMN,
+            PlanDataBaseHelper.PLAN_NAME_COLUMN,
+            planName
+
+        )?.toInt()
+        if (id != null) {
+            for (exercise in routineExpandableListAdapter.getRoutine()) {
+                dataBase.addExercise(exercise, routineName, id)
+            }
         }
     }
 
-    private fun loadDb(){
+    private fun loadDb() {
         val cursor = dataBase.getRoutineFromDB()
         cursor!!.moveToFirst()
         cursor.close()

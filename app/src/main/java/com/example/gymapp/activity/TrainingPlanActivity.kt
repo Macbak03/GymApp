@@ -19,6 +19,11 @@ class TrainingPlanActivity : AppCompatActivity() {
     private lateinit var trainingPlanRecyclerViewAdapter: TrainingPlanRecyclerViewAdapter
 
     private val routines: MutableList<TrainingPlanElement> = ArrayList()
+
+    companion object {
+        const val NEXT_SCREEN = "createRoutineScreen"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTrainingPlanBinding.inflate(layoutInflater)
@@ -30,15 +35,16 @@ class TrainingPlanActivity : AppCompatActivity() {
         trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(routines)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = trainingPlanRecyclerViewAdapter
-
         if(intent.hasExtra(TrainingPlansActivity.NEXT_SCREEN))
         {
             binding.textViewTrainingPlanName.text = intent.getStringExtra(TrainingPlansActivity.NEXT_SCREEN)
-        }
 
+        }
+        val planName = binding.textViewTrainingPlanName.text.toString()
         binding.buttonAddRoutine.setOnClickListener()
         {
             val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
+            explicitIntent.putExtra(NEXT_SCREEN, planName)
             startActivity(explicitIntent)
         }
 
