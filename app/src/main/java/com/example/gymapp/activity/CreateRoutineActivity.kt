@@ -3,6 +3,7 @@ package com.example.gymapp.activity
 import android.os.Bundle
 import android.widget.ExpandableListView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import com.example.gymapp.persistence.RoutineDataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
@@ -22,6 +23,17 @@ class CreateRoutineActivity : AppCompatActivity() {
     private val dataBase = RoutineDataBaseHelper(this, null)
     private val exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 1
+
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+
+            goBackToTrainingPlanActivity()
+
+            isEnabled = false
+            onBackPressedDispatcher.onBackPressed()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCreateRoutineBinding.inflate(layoutInflater)
@@ -49,8 +61,7 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
         binding.buttonSaveRoutine.setOnClickListener()
         {
-            if(planName != null)
-            {
+            if (planName != null) {
                 try {
                     saveRoutineIntoDB(planName)
                 } catch (exception: ValidationException) {
@@ -59,9 +70,7 @@ class CreateRoutineActivity : AppCompatActivity() {
             }
         }
 
-        binding.button.setOnClickListener() {
-            loadDb()
-        }
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 
     private fun addExercise() {
@@ -90,13 +99,18 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
     }
 
+    private fun goBackToTrainingPlanActivity() {
+        setResult(RESULT_OK)
+        finish()
+    }
+
     private fun saveRoutineIntoDB(planName: String) {
         val routineName = binding.editTextRoutineName.text.toString()
         if (routineName.isBlank()) {
             throw ValidationException("routine name cannot be empty")
         }
         val planDataBase = PlanDataBaseHelper(this, null)
-        val id = planDataBase.getFromDb(
+        val id = planDataBase.getValue(
             PlanDataBaseHelper.TABLE_NAME,
             PlanDataBaseHelper.PLAN_ID_COLUMN,
             PlanDataBaseHelper.PLAN_NAME_COLUMN,
@@ -110,11 +124,6 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadDb() {
-        val cursor = dataBase.getRoutineFromDB()
-        cursor!!.moveToFirst()
-        cursor.close()
-    }
 
     //TODO add exercise order
 

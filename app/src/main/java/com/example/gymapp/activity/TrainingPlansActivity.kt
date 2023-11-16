@@ -24,7 +24,7 @@ class TrainingPlansActivity : AppCompatActivity() {
     private lateinit var trainingPlansRecyclerViewAdapter: TrainingPlansRecyclerViewAdapter
 
     private val dataBase = PlanDataBaseHelper(this, null)
-    private val trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
+    private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
 
     companion object {
         const val NEXT_SCREEN = "trainingPlanScreen"
@@ -36,6 +36,8 @@ class TrainingPlansActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         recyclerView = binding.recyclerViewTrainingPlans
+        val trainingPlanNamesString = dataBase.getRow(PlanDataBaseHelper.TABLE_NAME, PlanDataBaseHelper.PLAN_NAME_COLUMN)
+        trainingPlansNames = dataBase.convertList(trainingPlanNamesString){TrainingPlan(it)}
         trainingPlansRecyclerViewAdapter = TrainingPlansRecyclerViewAdapter(trainingPlansNames)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = trainingPlansRecyclerViewAdapter
@@ -43,11 +45,6 @@ class TrainingPlansActivity : AppCompatActivity() {
         binding.buttonCreateTrainingPlan.setOnClickListener()
         {
             showEditTextDialog()
-        }
-
-        binding.buttonLoadDb.setOnClickListener()
-        {
-            loadPlanFromDB()
         }
 
         trainingPlansRecyclerViewAdapter.setOnClickListener(object :
@@ -73,6 +70,13 @@ class TrainingPlansActivity : AppCompatActivity() {
                         if (editText.text.isBlank()) {
                             throw ValidationException("Training plan name cannot be empty")
                         }
+                        for (item in trainingPlansNames)
+                        {
+                            if(editText.text.toString() == item.toString())
+                            {
+                                throw ValidationException("There is already a plan with this name")
+                            }
+                        }
                         trainingPlansNames.add(TrainingPlan(editText.text.toString()))
                         trainingPlansRecyclerViewAdapter.notifyItemInserted(
                             trainingPlansRecyclerViewAdapter.itemCount
@@ -89,10 +93,4 @@ class TrainingPlansActivity : AppCompatActivity() {
         }
     }
 
-
-    private fun loadPlanFromDB() {
-        val cursor = dataBase.getPlans()
-        cursor!!.moveToFirst()
-        cursor.close()
-    }
 }

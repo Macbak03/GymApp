@@ -99,18 +99,26 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
 
     // below method is to get
     // all data from our database
-    fun getRoutineFromDB(): Cursor? {
 
-        // here we are creating a readable
-        // variable of our database
-        // as we want to read value from it
+    fun doesIdExist(idToCheck: Int): Boolean {
         val db = this.readableDatabase
+        val selectionArgs = arrayOf(idToCheck.toString())
 
-        // below code returns a cursor to
-        // read data from the database
-        return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
-        //toDo instead of select *, select passed routine name
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME WHERE $PLAN_ID_COLUMN = ?", selectionArgs)
 
+        var idExists = false
+
+        try {
+            if (cursor.moveToFirst()) {
+                val count = cursor.getInt(0)
+                idExists = count > 0
+            }
+        } finally {
+            cursor.close()
+            db.close()
+        }
+
+        return idExists
     }
 
 
