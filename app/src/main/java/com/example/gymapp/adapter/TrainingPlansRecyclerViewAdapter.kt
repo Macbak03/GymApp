@@ -1,7 +1,6 @@
 package com.example.gymapp.adapter
 
 import android.view.LayoutInflater
-import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -10,6 +9,7 @@ import com.example.gymapp.model.trainingPlans.TrainingPlan
 
 class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>) :
     RecyclerView.Adapter<TrainingPlansRecyclerViewAdapter.TrainingPlansViewHolder>() {
+
     private var onClickListener: OnClickListener? = null
 
     inner class TrainingPlansViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) :

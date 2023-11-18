@@ -10,10 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
-import com.example.gymapp.adapter.TrainingPlanRecyclerViewAdapter
 import com.example.gymapp.adapter.TrainingPlansRecyclerViewAdapter
 import com.example.gymapp.databinding.ActivityTrainingPlansBinding
-import com.example.gymapp.databinding.PlanNameEditTextBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.persistence.PlanDataBaseHelper
@@ -36,7 +34,7 @@ class TrainingPlansActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         recyclerView = binding.recyclerViewTrainingPlans
-        val trainingPlanNamesString = dataBase.getRow(PlanDataBaseHelper.TABLE_NAME, PlanDataBaseHelper.PLAN_NAME_COLUMN)
+        val trainingPlanNamesString = dataBase.getColumn(PlanDataBaseHelper.TABLE_NAME, PlanDataBaseHelper.PLAN_NAME_COLUMN)
         trainingPlansNames = dataBase.convertList(trainingPlanNamesString){TrainingPlan(it)}
         trainingPlansRecyclerViewAdapter = TrainingPlansRecyclerViewAdapter(trainingPlansNames)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)

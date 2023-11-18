@@ -100,6 +100,11 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
     // below method is to get
     // all data from our database
 
+    fun getRoutine(routineName: String) : Cursor
+    {
+        val db = this.readableDatabase
+        return db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $ROUTINE_NAME_COLUMN = '$routineName'", null)
+    }
     fun doesIdExist(idToCheck: Int): Boolean {
         val db = this.readableDatabase
         val selectionArgs = arrayOf(idToCheck.toString())
@@ -125,7 +130,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
     companion object {
 
         const val TABLE_NAME = "routine"
-        const val PLAN_ID_COLUMN = "PlanID" // plan id (foreign key) --> routine name --> exercise
+        const val PLAN_ID_COLUMN = "PlanID"
         const val ROUTINE_NAME_COLUMN = "RoutineName"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"

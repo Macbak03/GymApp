@@ -22,7 +22,8 @@ class TrainingPlanActivity : AppCompatActivity() {
     private val routineDataBase = RoutineDataBaseHelper(this, null)
 
     companion object {
-        const val NEXT_SCREEN = "createRoutineScreen"
+        const val PLAN_NAME = "com.example.gymapp.planname"
+        const val ROUTINE_NAME = "com.example.gymapp.routinename"
     }
 
     private val startCreateRoutineActivityForResult =
@@ -53,9 +54,18 @@ class TrainingPlanActivity : AppCompatActivity() {
         binding.buttonAddRoutine.setOnClickListener()
         {
             val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
-            explicitIntent.putExtra(NEXT_SCREEN, planName)
+            explicitIntent.putExtra(PLAN_NAME, planName)
             startCreateRoutineActivityForResult.launch(explicitIntent)
         }
+
+        trainingPlanRecyclerViewAdapter.setOnClickListener(object :
+            TrainingPlanRecyclerViewAdapter.OnClickListener {
+            override fun onClick(position: Int, model: TrainingPlanElement) {
+                val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
+                explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
+                startActivity(explicitIntent)
+            }
+        })
 
     }
 

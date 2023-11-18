@@ -42,7 +42,7 @@ abstract class Repository (context: Context, factory: SQLiteDatabase.CursorFacto
         return dataBaseRead.rawQuery("SELECT DISTINCT $columnName FROM $tableName WHERE $selectBy = '$selectName'", null)
     }
 
-    fun getRow(tableName: String?, columnName: String): MutableList<String>
+    fun getColumn(tableName: String?, columnName: String): MutableList<String>
     {
         val dataBaseRead = this.readableDatabase
         val selection = ArrayList<String>()

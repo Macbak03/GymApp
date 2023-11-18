@@ -9,7 +9,9 @@ import com.example.gymapp.persistence.RoutineDataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
 import com.example.gymapp.exception.ValidationException
+import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.persistence.PlanDataBaseHelper
@@ -40,17 +42,15 @@ class CreateRoutineActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         expandableListView = binding.ExpandableListViewRoutineItems
-        val exercise2 = ExerciseDraft(
-            "exercise$exerciseCount", "",
-            TimeUnit.min, "", WeightUnit.kg, "", "", "", "", true
-        )
-        exerciseCount++
-        exercises.add(exercise2)
         routineExpandableListAdapter = RoutineExpandableListAdapter(this, exercises)
         expandableListView.setAdapter(routineExpandableListAdapter)
         var planName: String? = null
-        if (intent.hasExtra(TrainingPlanActivity.NEXT_SCREEN)) {
-            planName = intent.getStringExtra(TrainingPlanActivity.NEXT_SCREEN)
+        if (intent.hasExtra(TrainingPlanActivity.PLAN_NAME)) {
+            planName = intent.getStringExtra(TrainingPlanActivity.PLAN_NAME)
+        }
+
+        if (intent.hasExtra(TrainingPlanActivity.ROUTINE_NAME)) {
+            loadRoutine()
         }
 
         binding.buttonAddExercise.setOnClickListener {
@@ -71,6 +71,152 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
 
         onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    private fun loadRoutine() {
+        val routineName = intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
+        if (routineName != null) {
+            binding.editTextRoutineName.setText(routineName)
+
+            val cursor = dataBase.getRoutine(routineName)
+            cursor.moveToFirst()
+
+            val exerciseName =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.EXERCISE_NAME_COLUMN))
+
+            var pauseInt =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PAUSE_COLUMN)).toInt()
+            val pauseUnit: TimeUnit
+            if((pauseInt % 60) == 0)
+            {
+                pauseInt /= 60
+                pauseUnit = TimeUnit.min
+            }
+            else
+            {
+                pauseUnit = TimeUnit.s
+            }
+            val pause = pauseInt.toString()
+
+            val loadValue =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.LOAD_VALUE_COLUMN))
+
+            val loadUnit =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.LOAD_UNIT_COLUMN))
+
+            val repsRangeFrom =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_FROM_COLUMN))
+                    .toInt()
+            val repsRangeTo =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_TO_COLUMN))
+                    .toInt()
+            val reps: String = if (repsRangeFrom == repsRangeTo) {
+                ExactReps(repsRangeFrom).toString()
+            } else {
+                RangeReps(repsRangeFrom, repsRangeTo).toString()
+            }
+
+            val series =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.SERIES_COLUMN))
+
+            val rpeRangeFrom =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_FROM_COLUMN))
+                    .toInt()
+            val rpeRangeTo =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_TO_COLUMN))
+                    .toInt()
+            val rpe: String = if (rpeRangeFrom == rpeRangeTo) {
+                ExactReps(rpeRangeFrom).toString()
+            } else {
+                RangeReps(rpeRangeFrom, rpeRangeTo).toString()
+            }
+
+            val pace =
+                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PACE_COLUMN))
+
+            val exercise = ExerciseDraft(
+                exerciseName,
+                pause,
+                pauseUnit,
+                loadValue,
+                WeightUnit.valueOf(loadUnit),
+                series,
+                reps,
+                rpe,
+                pace,
+                false
+            )
+            exercises.add(exercise)
+            exerciseCount++
+            routineExpandableListAdapter.notifyDataSetChanged()
+
+            while (cursor.moveToNext()) {
+                val nextExerciseName =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.EXERCISE_NAME_COLUMN))
+
+                var nextPauseInt =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PAUSE_COLUMN)).toInt()
+                val nextPauseUnit: TimeUnit
+                if((nextPauseInt % 60) == 0)
+                {
+                    nextPauseInt /= 60
+                    nextPauseUnit = TimeUnit.min
+                }
+                else
+                {
+                    nextPauseUnit = TimeUnit.s
+                }
+                val nextPause = nextPauseInt.toString()
+
+                val nextLoadValue =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.LOAD_VALUE_COLUMN))
+                val nextLoadUnit =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.LOAD_UNIT_COLUMN))
+                val nextRepsRangeFrom =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_FROM_COLUMN))
+                        .toInt()
+                val nextRepsRangeTo =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_TO_COLUMN))
+                        .toInt()
+                val nextReps: String = if (nextRepsRangeFrom == nextRepsRangeTo) {
+                    ExactReps(nextRepsRangeFrom).toString()
+                } else {
+                    RangeReps(nextRepsRangeFrom, nextRepsRangeTo).toString()
+                }
+                val nextSeries =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.SERIES_COLUMN))
+                val nextRpeRangeFrom =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_FROM_COLUMN))
+                        .toInt()
+                val nextRpeRangeTo =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_TO_COLUMN))
+                        .toInt()
+                val nextRpe: String = if (nextRpeRangeFrom == nextRpeRangeTo) {
+                    ExactReps(nextRpeRangeFrom).toString()
+                } else {
+                    RangeReps(nextRpeRangeFrom, nextRpeRangeTo).toString()
+                }
+                val nextPace =
+                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PACE_COLUMN))
+
+                val nextExercise = ExerciseDraft(
+                    nextExerciseName,
+                    nextPause,
+                    nextPauseUnit,
+                    nextLoadValue,
+                    WeightUnit.valueOf(nextLoadUnit),
+                    nextSeries,
+                    nextReps,
+                    nextRpe,
+                    nextPace,
+                    false
+                )
+                exercises.add(nextExercise)
+                exerciseCount++
+                routineExpandableListAdapter.notifyDataSetChanged()
+            }
+        }
+
     }
 
     private fun addExercise() {

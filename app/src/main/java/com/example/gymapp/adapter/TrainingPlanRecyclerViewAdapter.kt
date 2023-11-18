@@ -10,6 +10,8 @@ import com.example.gymapp.model.trainingPlans.TrainingPlanElement
 class TrainingPlanRecyclerViewAdapter(private val trainingPlanElements: MutableList<TrainingPlanElement>) :
     RecyclerView.Adapter<TrainingPlanRecyclerViewAdapter.TrainingPlanViewHolder>() {
 
+    private var onClickListener: OnClickListener? = null
+
     inner class TrainingPlanViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) :
         ViewHolder(binding.root) {
         val trainingPlanName = binding.textViewElement
@@ -28,5 +30,19 @@ class TrainingPlanRecyclerViewAdapter(private val trainingPlanElements: MutableL
 
     override fun onBindViewHolder(holder: TrainingPlanViewHolder, position: Int) {
         holder.trainingPlanName.text = trainingPlanElements[position].routineName
+
+        holder.itemView.setOnClickListener {
+            if (onClickListener != null) {
+                onClickListener!!.onClick(position, trainingPlanElements[position])
+            }
+        }
+    }
+
+    fun setOnClickListener(onClickListener: OnClickListener) {
+        this.onClickListener = onClickListener
+    }
+
+    interface OnClickListener {
+        fun onClick(position: Int, model: TrainingPlanElement)
     }
 }
