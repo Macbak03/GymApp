@@ -15,12 +15,14 @@ import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 
+
 class RoutineExpandableLayout(
     private val context: Context,
     private val attributes: AttributeSet,
+
 ) : LinearLayout(context, attributes) {
 
-    val exerciseEditText: EditText
+    private val exerciseEditText: EditText
     private val pauseEditText: EditText
     private val pauseSpinner: Spinner
     private val loadEditText: EditText
@@ -32,8 +34,11 @@ class RoutineExpandableLayout(
 
     private var exercise: ExerciseDraft? = null
 
+    private var exerciseTextChangedListener: ExerciseTextChangedListener? = null
+
     private val timeUnits = arrayOf(TimeUnit.min, TimeUnit.s)
     private val weightUnits = arrayOf(WeightUnit.kg, WeightUnit.lbs)
+
 
     init {
         inflate(context, R.layout.routine_expandable_layout, this)
@@ -60,6 +65,8 @@ class RoutineExpandableLayout(
             override fun afterTextChanged(s: Editable?) {
                 exercise?.name = exerciseEditText.text.toString()
                 exercise?.wasModified = true
+
+                exerciseTextChangedListener?.onExerciseNameChanged(exercise?.name ?: "")
             }
         })
         pauseEditText.addTextChangedListener(object : TextWatcher {
@@ -141,6 +148,14 @@ class RoutineExpandableLayout(
 
     }
 
+    fun requestFocusOnEditText() {
+        exerciseEditText.requestFocus()
+    }
+
+    fun setExerciseTextChangedListener(listener: ExerciseTextChangedListener) {
+        exerciseTextChangedListener = listener
+    }
+
     fun setExercise(exercise: ExerciseDraft?) {
         val customAttributesStyle =
             context.obtainStyledAttributes(attributes, R.styleable.RoutineExpandableLayout, 0, 0)
@@ -153,7 +168,6 @@ class RoutineExpandableLayout(
             customAttributesStyle.recycle()
         }
     }
-
 
     private fun setExerciseText(exercise: ExerciseDraft?) {
         exerciseEditText.setText(exercise?.name)
@@ -239,7 +253,8 @@ class RoutineExpandableLayout(
         loadSpinner.setSelection(selectionIndex)
     }
 
-
-
+    interface ExerciseTextChangedListener {
+        fun onExerciseNameChanged(name: String?)
+    }
 
 }

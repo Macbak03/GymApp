@@ -21,8 +21,6 @@ class RoutineExpandableListAdapter(
 
     ): BaseExpandableListAdapter(){
 
-    //var exercise: ExerciseDraft? = null
-
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
         return exercises[listPosition]
     }
@@ -47,7 +45,16 @@ class RoutineExpandableListAdapter(
         }
         val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
         val routineExpandableLayout = view as RoutineExpandableLayout?
+        routineExpandableLayout?.setExerciseTextChangedListener(object: RoutineExpandableLayout.ExerciseTextChangedListener {
+            override fun onExerciseNameChanged(name: String?) {
+                val routineExpandableTitleLayout = getGroupView(listPosition, false, null, parent) as RoutineExpandableTitleLayout
+                routineExpandableTitleLayout.setExerciseNameText(name)
+                notifyDataSetChanged()
+            }
+
+        })
         routineExpandableLayout?.setExercise(exercise)
+
         return view
     }
 
@@ -96,31 +103,17 @@ class RoutineExpandableListAdapter(
         val exercise = getGroup(listPosition) as ExerciseDraft
         val routineExpandableTitleLayout = view as RoutineExpandableTitleLayout?
         routineExpandableTitleLayout?.setExerciseNameText(exercise.name)
-       /* val routineExpandableLayout = getChildView(listPosition, 0, true, null, null) as RoutineExpandableLayout?
-        routineExpandableLayout?.exerciseEditText?.addTextChangedListener(object: TextWatcher
-        {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                routineExpandableTitleLayout?.setExerciseNameText(routineExpandableLayout.exerciseEditText.text.toString())
-                notifyDataSetChanged()
-            }
-        })*/
-        routineExpandableTitleLayout?.invalidate()
         return view
     }
 
 
     override fun hasStableIds(): Boolean {
-        return false
+        return true
     }
 
     override fun isChildSelectable(listPosition: Int, expandedListPosition: Int): Boolean {
         return true
     }
+
 }
 
