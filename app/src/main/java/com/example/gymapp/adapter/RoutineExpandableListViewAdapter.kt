@@ -47,9 +47,10 @@ class RoutineExpandableListAdapter(
         val routineExpandableLayout = view as RoutineExpandableLayout?
         routineExpandableLayout?.setExerciseTextChangedListener(object: RoutineExpandableLayout.ExerciseTextChangedListener {
             override fun onExerciseNameChanged(name: String?) {
-                val routineExpandableTitleLayout = getGroupView(listPosition, false, null, parent) as RoutineExpandableTitleLayout
+                /*val routineExpandableTitleLayout = getGroupView(listPosition, false, null, parent) as RoutineExpandableTitleLayout
                 routineExpandableTitleLayout.setExerciseNameText(name)
                 notifyDataSetChanged()
+                routineExpandableLayout.requestFocusOnEditText()*/ // text cursor goes to the beginning every change
             }
 
         })

@@ -63,7 +63,8 @@ class TrainingPlanActivity : AppCompatActivity() {
             override fun onClick(position: Int, model: TrainingPlanElement) {
                 val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
                 explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
-                startActivity(explicitIntent)
+                explicitIntent.putExtra(PLAN_NAME, planName)
+                startCreateRoutineActivityForResult.launch(explicitIntent)
             }
         })
 
@@ -91,7 +92,9 @@ class TrainingPlanActivity : AppCompatActivity() {
             {
                 routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.ROUTINE_NAME_COLUMN))))
             }
+            trainingPlanRecyclerViewAdapter.notifyItemChanged(trainingPlanRecyclerViewAdapter.itemCount-1) // toDO get clicked routine position and based on that notifyItemChanged
             trainingPlanRecyclerViewAdapter.notifyItemInserted(trainingPlanRecyclerViewAdapter.itemCount)
+
         }
 
 

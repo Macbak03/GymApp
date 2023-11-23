@@ -85,7 +85,7 @@ class CreateRoutineActivity : AppCompatActivity() {
                 cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.EXERCISE_NAME_COLUMN))
 
             var pauseInt =
-                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PAUSE_COLUMN)).toInt()
+                cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PAUSE_COLUMN))
             val pauseUnit: TimeUnit
             if((pauseInt % 60) == 0)
             {
@@ -105,11 +105,9 @@ class CreateRoutineActivity : AppCompatActivity() {
                 cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.LOAD_UNIT_COLUMN))
 
             val repsRangeFrom =
-                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_FROM_COLUMN))
-                    .toInt()
+                cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_FROM_COLUMN))
             val repsRangeTo =
-                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_TO_COLUMN))
-                    .toInt()
+                cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_TO_COLUMN))
             val reps: String = if (repsRangeFrom == repsRangeTo) {
                 ExactReps(repsRangeFrom).toString()
             } else {
@@ -120,11 +118,9 @@ class CreateRoutineActivity : AppCompatActivity() {
                 cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.SERIES_COLUMN))
 
             val rpeRangeFrom =
-                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_FROM_COLUMN))
-                    .toInt()
+                cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_FROM_COLUMN))
             val rpeRangeTo =
-                cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_TO_COLUMN))
-                    .toInt()
+                cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_TO_COLUMN))
             val rpe: String = if (rpeRangeFrom == rpeRangeTo) {
                 ExactReps(rpeRangeFrom).toString()
             } else {
@@ -155,7 +151,7 @@ class CreateRoutineActivity : AppCompatActivity() {
                     cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.EXERCISE_NAME_COLUMN))
 
                 var nextPauseInt =
-                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PAUSE_COLUMN)).toInt()
+                    cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.PAUSE_COLUMN))
                 val nextPauseUnit: TimeUnit
                 if((nextPauseInt % 60) == 0)
                 {
@@ -173,11 +169,9 @@ class CreateRoutineActivity : AppCompatActivity() {
                 val nextLoadUnit =
                     cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.LOAD_UNIT_COLUMN))
                 val nextRepsRangeFrom =
-                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_FROM_COLUMN))
-                        .toInt()
+                    cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_FROM_COLUMN))
                 val nextRepsRangeTo =
-                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_TO_COLUMN))
-                        .toInt()
+                    cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.REPS_RANGE_TO_COLUMN))
                 val nextReps: String = if (nextRepsRangeFrom == nextRepsRangeTo) {
                     ExactReps(nextRepsRangeFrom).toString()
                 } else {
@@ -186,11 +180,9 @@ class CreateRoutineActivity : AppCompatActivity() {
                 val nextSeries =
                     cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.SERIES_COLUMN))
                 val nextRpeRangeFrom =
-                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_FROM_COLUMN))
-                        .toInt()
+                    cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_FROM_COLUMN))
                 val nextRpeRangeTo =
-                    cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_TO_COLUMN))
-                        .toInt()
+                    cursor.getInt(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.RPE_RANGE_TO_COLUMN))
                 val nextRpe: String = if (nextRpeRangeFrom == nextRpeRangeTo) {
                     ExactReps(nextRpeRangeFrom).toString()
                 } else {
@@ -264,10 +256,23 @@ class CreateRoutineActivity : AppCompatActivity() {
 
         )?.toInt()
         if (id != null) {
-            for (exercise in routineExpandableListAdapter.getRoutine()) {
-                dataBase.addExercise(exercise, routineName, id)
+            val editRoutineName = intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
+            if(editRoutineName != null)
+            {
+                dataBase.deleteRoutine(id, editRoutineName)
+            }
+            var exerciseCount =1
+                for (exercise in routineExpandableListAdapter.getRoutine()) {
+                    dataBase.addExercise(exercise, routineName, id, exerciseCount)
+                    exerciseCount ++
             }
         }
+        if(routineExpandableListAdapter.groupCount == 0)
+        {
+            throw ValidationException("You must add at least one exercise to the routine")
+        }
+        Toast.makeText(this, "Routine $routineName saved", Toast.LENGTH_LONG).show()
+        goBackToTrainingPlanActivity()
     }
 
 

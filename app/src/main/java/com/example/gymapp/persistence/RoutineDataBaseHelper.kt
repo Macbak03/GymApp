@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExactRpe
 import com.example.gymapp.model.routine.Exercise
@@ -20,6 +19,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                 + PLAN_ID_COLUMN + " INTEGER NOT NULL," +
                 ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
+                EXERCISE_ORDER_COLUMN + " INTEGER NOT NULL," +
                 EXERCISE_NAME_COLUMN + " TEXT NOT NULL," +
                 PAUSE_COLUMN + " INTEGER NOT NULL," +
                 LOAD_VALUE_COLUMN + " REAL NOT NULL," +
@@ -42,8 +42,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
     }
 
     // This method is for adding data in our database
-    fun addExercise(exercise: Exercise, routineName: String, id: Int) {
-
+    fun addExercise(exercise: Exercise, routineName: String, id: Int, exerciseOrder: Int, ) {
         // below we are creating
         // a content values variable
         val values = ContentValues()
@@ -52,6 +51,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         // in the form of key-value pair
         values.put(PLAN_ID_COLUMN, id)
         values.put(ROUTINE_NAME_COLUMN, routineName)
+        values.put(EXERCISE_ORDER_COLUMN, exerciseOrder)
         values.put(EXERCISE_NAME_COLUMN, exercise.name)
         values.put(PAUSE_COLUMN, exercise.pause.inWholeSeconds)
         values.put(LOAD_VALUE_COLUMN, exercise.load.weight)
@@ -88,11 +88,11 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         // our database as we want to
         // insert value in our database
         val db = this.writableDatabase
-
-        // all values are inserted into database
         db.use {
             db.insert(TABLE_NAME, null, values)
         }
+
+        // all values are inserted into database
         // at last we are
         // closing our database
     }
@@ -100,16 +100,20 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
     // below method is to get
     // all data from our database
 
-    fun getRoutine(routineName: String) : Cursor
-    {
+    fun getRoutine(routineName: String): Cursor {
         val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM $TABLE_NAME WHERE $ROUTINE_NAME_COLUMN = '$routineName'", null)
+        return db.rawQuery(
+            "SELECT * FROM $TABLE_NAME WHERE $ROUTINE_NAME_COLUMN = '$routineName' ORDER BY $EXERCISE_ORDER_COLUMN",
+            null
+        )
     }
+
     fun doesIdExist(idToCheck: Int): Boolean {
         val db = this.readableDatabase
         val selectionArgs = arrayOf(idToCheck.toString())
 
-        val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME WHERE $PLAN_ID_COLUMN = ?", selectionArgs)
+        val cursor =
+            db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME WHERE $PLAN_ID_COLUMN = ?", selectionArgs)
 
         var idExists = false
 
@@ -126,12 +130,25 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         return idExists
     }
 
+    fun deleteRoutine(id: Int, editRoutineName: String?) {
+        val db = this.writableDatabase
+        val deleteSelection = "$PLAN_ID_COLUMN = ? AND $ROUTINE_NAME_COLUMN = ?"
+        val deleteSelectionArgs = arrayOf(id.toString(), editRoutineName)
+
+        val cursor =
+            db.query(TABLE_NAME, null, deleteSelection, deleteSelectionArgs, null, null, null)
+        if (cursor.moveToFirst()) {
+            db.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
+        }
+        cursor.close()
+    }
 
     companion object {
 
         const val TABLE_NAME = "routine"
         const val PLAN_ID_COLUMN = "PlanID"
         const val ROUTINE_NAME_COLUMN = "RoutineName"
+        const val EXERCISE_ORDER_COLUMN = "ExerciseOrder"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"
         const val LOAD_VALUE_COLUMN = "LoadValue"

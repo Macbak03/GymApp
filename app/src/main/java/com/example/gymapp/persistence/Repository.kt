@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
 
-
-abstract class Repository (context: Context, factory: SQLiteDatabase.CursorFactory?) :
-    SQLiteOpenHelper(context,
+abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactory?) :
+    SQLiteOpenHelper(
+        context,
         DATABASE_NAME, factory,
         DATABASE_VERSION
     ) {
@@ -36,41 +36,47 @@ abstract class Repository (context: Context, factory: SQLiteDatabase.CursorFacto
         return selection
     }
 
-    fun getFromTable(tableName: String?, columnName: String, selectBy: String?, selectName: String): Cursor
-    {
+    fun getFromTable(
+        tableName: String?,
+        columnName: String,
+        selectBy: String?,
+        selectName: String
+    ): Cursor {
         val dataBaseRead = this.readableDatabase
-        return dataBaseRead.rawQuery("SELECT DISTINCT $columnName FROM $tableName WHERE $selectBy = '$selectName'", null)
+        return dataBaseRead.rawQuery(
+            "SELECT DISTINCT $columnName FROM $tableName WHERE $selectBy = '$selectName'",
+            null
+        )
     }
 
-    fun getColumn(tableName: String?, columnName: String): MutableList<String>
-    {
+    fun getColumn(tableName: String?, columnName: String): MutableList<String> {
         val dataBaseRead = this.readableDatabase
         val selection = ArrayList<String>()
         val cursor: Cursor = dataBaseRead.rawQuery("SELECT $columnName FROM $tableName", null)
-        cursor.moveToFirst()
-        selection.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)))
-        while (cursor.moveToNext())
+        if(cursor.moveToFirst())
         {
             selection.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)))
+            while (cursor.moveToNext()) {
+                selection.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)))
+            }
         }
         cursor.close()
         return selection
     }
 
 
-    fun <T, R> convertList(originalList: MutableList<T>, converter: (T) -> R): MutableList<R>
-    {
-        return originalList.mapTo(mutableListOf()){converter(it)}
+    fun <T, R> convertList(originalList: MutableList<T>, converter: (T) -> R): MutableList<R> {
+        return originalList.mapTo(mutableListOf()) { converter(it) }
     }
 
-    fun setForeignKeys(switch: String){
+    fun setForeignKeys(switch: String) {
         val dataBaseRead = this.readableDatabase
         val query = ("PRAGMA foreign_keys = $switch")
         dataBaseRead.execSQL(query)
     }
 
-        companion object{
-            private const val DATABASE_NAME = "GymApp"
-            private const val DATABASE_VERSION = 11
-        }
+    companion object {
+        private const val DATABASE_NAME = "GymApp"
+        private const val DATABASE_VERSION = 12
+    }
 }
