@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
-import android.database.sqlite.SQLiteOpenHelper
 import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExactRpe
 import com.example.gymapp.model.routine.Exercise
@@ -18,7 +17,9 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         // below is a sqlite query, where column names
         // along with their data types is given
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                + ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
+                + PLAN_ID_COLUMN + " INTEGER NOT NULL," +
+                ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
+                EXERCISE_ORDER_COLUMN + " INTEGER NOT NULL," +
                 EXERCISE_NAME_COLUMN + " TEXT NOT NULL," +
                 PAUSE_COLUMN + " INTEGER NOT NULL," +
                 LOAD_VALUE_COLUMN + " REAL NOT NULL," +
@@ -28,27 +29,29 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
                 SERIES_COLUMN + " INTEGER NOT NULL," +
                 RPE_RANGE_FROM_COLUMN + " INTEGER," +
                 RPE_RANGE_TO_COLUMN + " INTEGER," +
-                PACE_COLUMN + " TEXT" + ")")
-
+                PACE_COLUMN + " TEXT," +
+                "FOREIGN KEY " + "(" + PLAN_ID_COLUMN + ")" + " REFERENCES " + PlanDataBaseHelper.TABLE_NAME + "(" + PlanDataBaseHelper.PLAN_ID_COLUMN + ")"
+                + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
         // we are calling sqlite
         // method for executing our query
         db.execSQL(query)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, p1: Int, p2: Int) {
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onCreate(db)
     }
 
     // This method is for adding data in our database
-    fun addExercise(exercise: Exercise, routineName: String) {
-
+    fun addExercise(exercise: Exercise, routineName: String, id: Int, exerciseOrder: Int, ) {
         // below we are creating
         // a content values variable
         val values = ContentValues()
 
         // we are inserting our values
         // in the form of key-value pair
+        values.put(PLAN_ID_COLUMN, id)
         values.put(ROUTINE_NAME_COLUMN, routineName)
+        values.put(EXERCISE_ORDER_COLUMN, exerciseOrder)
         values.put(EXERCISE_NAME_COLUMN, exercise.name)
         values.put(PAUSE_COLUMN, exercise.pause.inWholeSeconds)
         values.put(LOAD_VALUE_COLUMN, exercise.load.weight)
@@ -58,6 +61,7 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
                 values.put(REPS_RANGE_FROM_COLUMN, exercise.reps.value)
                 values.put(REPS_RANGE_TO_COLUMN, exercise.reps.value)
             }
+
             is RangeReps -> {
                 values.put(REPS_RANGE_FROM_COLUMN, exercise.reps.from)
                 values.put(REPS_RANGE_TO_COLUMN, exercise.reps.to)
@@ -69,10 +73,12 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
                 values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.value)
                 values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.value)
             }
+
             is RangeRpe -> {
                 values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.from)
                 values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.to)
             }
+
             null -> {}
         }
         values.put(PACE_COLUMN, exercise.pace.toString())
@@ -82,37 +88,67 @@ class RoutineDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFact
         // our database as we want to
         // insert value in our database
         val db = this.writableDatabase
+        db.use {
+            db.insert(TABLE_NAME, null, values)
+        }
 
         // all values are inserted into database
-        db.insert(TABLE_NAME, null, values)
-
         // at last we are
         // closing our database
-        db.close()
     }
 
     // below method is to get
     // all data from our database
-    fun getRoutineFromDB(): Cursor? {
 
-        // here we are creating a readable
-        // variable of our database
-        // as we want to read value from it
+    fun getRoutine(routineName: String): Cursor {
         val db = this.readableDatabase
-
-        // below code returns a cursor to
-        // read data from the database
-        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null)
-        //toDo instead of select *, select passed routine name
-
+        return db.rawQuery(
+            "SELECT * FROM $TABLE_NAME WHERE $ROUTINE_NAME_COLUMN = '$routineName' ORDER BY $EXERCISE_ORDER_COLUMN",
+            null
+        )
     }
 
+    fun doesIdExist(idToCheck: Int): Boolean {
+        val db = this.readableDatabase
+        val selectionArgs = arrayOf(idToCheck.toString())
+
+        val cursor =
+            db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME WHERE $PLAN_ID_COLUMN = ?", selectionArgs)
+
+        var idExists = false
+
+        try {
+            if (cursor.moveToFirst()) {
+                val count = cursor.getInt(0)
+                idExists = count > 0
+            }
+        } finally {
+            cursor.close()
+            db.close()
+        }
+
+        return idExists
+    }
+
+    fun deleteRoutine(id: Int, editRoutineName: String?) {
+        val db = this.writableDatabase
+        val deleteSelection = "$PLAN_ID_COLUMN = ? AND $ROUTINE_NAME_COLUMN = ?"
+        val deleteSelectionArgs = arrayOf(id.toString(), editRoutineName)
+
+        val cursor =
+            db.query(TABLE_NAME, null, deleteSelection, deleteSelectionArgs, null, null, null)
+        if (cursor.moveToFirst()) {
+            db.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
+        }
+        cursor.close()
+    }
 
     companion object {
 
         const val TABLE_NAME = "routine"
-        const val PLAN_NAME_COLUMN = "PlanName" // plan name (foreign key) --> routine name --> exercise
+        const val PLAN_ID_COLUMN = "PlanID"
         const val ROUTINE_NAME_COLUMN = "RoutineName"
+        const val EXERCISE_ORDER_COLUMN = "ExerciseOrder"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
         const val PAUSE_COLUMN = "Pause"
         const val LOAD_VALUE_COLUMN = "LoadValue"

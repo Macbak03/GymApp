@@ -12,6 +12,7 @@ class RoutineExpandableTitleLayout (
     ) : LinearLayout(context, attributes)
     {
 
+
         init {
             inflate(context, R.layout.routine_expandable_title_layout, this)
             val customAttributesStyle = context.obtainStyledAttributes(
@@ -20,7 +21,6 @@ class RoutineExpandableTitleLayout (
                 0,
                 0
             )
-
             customAttributesStyle.recycle()
         }
 
@@ -40,4 +40,5 @@ class RoutineExpandableTitleLayout (
                 customAttributesStyle.recycle()
             }
         }
+
     }

@@ -7,15 +7,20 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.gymapp.databinding.TrainingPlansRecyclerViewItemLayoutBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 
-class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>): RecyclerView.Adapter<TrainingPlansRecyclerViewAdapter.TrainingPlansViewHolder>(){
+class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>) :
+    RecyclerView.Adapter<TrainingPlansRecyclerViewAdapter.TrainingPlansViewHolder>() {
 
-    inner class TrainingPlansViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) : ViewHolder(binding.root){
+    private var onClickListener: OnClickListener? = null
+
+    inner class TrainingPlansViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) :
+        ViewHolder(binding.root) {
         val trainingPlanName = binding.textViewElement
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingPlansViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val trainingPlansItemBinding = TrainingPlansRecyclerViewItemLayoutBinding.inflate(inflater, parent, false)
+        val trainingPlansItemBinding =
+            TrainingPlansRecyclerViewItemLayoutBinding.inflate(inflater, parent, false)
         return TrainingPlansViewHolder(trainingPlansItemBinding)
     }
 
@@ -25,5 +30,19 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
 
     override fun onBindViewHolder(holder: TrainingPlansViewHolder, position: Int) {
         holder.trainingPlanName.text = trainingPlans[position].name
+
+        holder.itemView.setOnClickListener {
+            if (onClickListener != null) {
+                onClickListener!!.onClick(position, trainingPlans[position])
+            }
+        }
+    }
+
+    fun setOnClickListener(onClickListener: OnClickListener) {
+        this.onClickListener = onClickListener
+    }
+
+    interface OnClickListener {
+        fun onClick(position: Int, model: TrainingPlan)
     }
 }

@@ -23,10 +23,10 @@
         android:id="@+id/buttonSaveRoutine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="156dp"
-        android:layout_marginEnd="200dp"
-        android:text="Add to workout plan"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Save Routine"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
 
     <Button
@@ -44,6 +44,7 @@
         android:layout_height="wrap_content"
         android:inputType="text"
         android:hint="Enter routine name"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
