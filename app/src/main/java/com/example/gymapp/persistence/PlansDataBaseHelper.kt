@@ -2,10 +2,9 @@ package com.example.gymapp.persistence
 
 import android.content.ContentValues
 import android.content.Context
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 
-class PlanDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
+class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     Repository(
         context, factory,
     ) {
@@ -30,12 +29,6 @@ class PlanDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory
             db.insert(TABLE_NAME, null, values)
         }
 
-    }
-
-
-    fun getPlans(): Cursor? {
-        val db = this.readableDatabase
-        return db.rawQuery("SELECT * FROM $TABLE_NAME", null)
     }
 
 

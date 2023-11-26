@@ -36,7 +36,7 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
         return selection
     }
 
-    fun getFromTable(
+    fun getDistinctValues(
         tableName: String?,
         columnName: String,
         selectBy: String?,
@@ -49,10 +49,10 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
         )
     }
 
-    fun getColumn(tableName: String?, columnName: String): MutableList<String> {
+    fun getColumn(tableName: String?, columnName: String, orderBy: String): MutableList<String> {
         val dataBaseRead = this.readableDatabase
         val selection = ArrayList<String>()
-        val cursor: Cursor = dataBaseRead.rawQuery("SELECT $columnName FROM $tableName", null)
+        val cursor: Cursor = dataBaseRead.rawQuery("SELECT $columnName FROM $tableName ORDER BY $orderBy", null)
         if(cursor.moveToFirst())
         {
             selection.add(cursor.getString(cursor.getColumnIndexOrThrow(columnName)))
@@ -77,6 +77,6 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
 
     companion object {
         private const val DATABASE_NAME = "GymApp"
-        private const val DATABASE_VERSION = 12
+        private const val DATABASE_VERSION = 18
     }
 }
