@@ -1,6 +1,5 @@
 package com.example.gymapp.persistence
 
-import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -23,18 +22,6 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
         onCreate(db)
     }
 
-    fun addRoutine(routineName: String, planId: Int) {
-        val values = ContentValues()
-        values.put(PLAN_ID_COLUMN, planId)
-        values.put(ROUTINE_NAME_COLUMN, routineName)
-
-        val db = this.writableDatabase
-
-        db.use {
-            db.insert(TABLE_NAME, null, values)
-        }
-
-    }
 
     fun getRoutinesInPlan(planId: Int): Cursor {
         val dataBaseRead = this.readableDatabase
@@ -44,6 +31,7 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
         )
 
     }
+
 
     companion object {
         const val TABLE_NAME = "routines"

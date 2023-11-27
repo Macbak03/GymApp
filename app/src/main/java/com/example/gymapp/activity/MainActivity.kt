@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
         setContentView(binding.root)
 
         planDataBase.onCreate(planDataBase.readableDatabase)
-        routinesDataBase.onCreate(routinesDataBase.writableDatabase)
+        routinesDataBase.onCreate(routinesDataBase.readableDatabase)
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
         routinesDataBase.setForeignKeys("ON")
 

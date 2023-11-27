@@ -15,7 +15,6 @@ import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.persistence.PlansDataBaseHelper
-import com.example.gymapp.persistence.RoutinesDataBaseHelper
 
 
 class CreateRoutineActivity : AppCompatActivity() {
@@ -24,7 +23,6 @@ class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
 
     private val exercisesDataBase = ExercisesDataBaseHelper(this, null)
-    private val routinesDataBase = RoutinesDataBaseHelper(this, null)
     private val exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 1
 
@@ -246,51 +244,19 @@ class CreateRoutineActivity : AppCompatActivity() {
         if (routineName.isBlank()) {
             throw ValidationException("routine name cannot be empty")
         }
-        val planId = getPlanId(planName)
+        val plansDataBase = PlansDataBaseHelper(this, null)
+        val planId = plansDataBase.getPlanId(planName)
         if (planId != null) {
             try {
-                saveToRoutines(routineName, planId)
-                val routineId = getRoutineId(routineName)
-                if (routineId != null) {
-                    val originalRoutineName =
-                        intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
-                    if (originalRoutineName != null) {
-                        exercisesDataBase.deleteRoutine(planId, routineId, originalRoutineName)
-                    }
-                    var exerciseCount = 1
-                    for (exercise in routineExpandableListAdapter.getRoutine()) {
-                        exercisesDataBase.addExercise(exercise, routineName, planId, routineId, exerciseCount)
-                        exerciseCount++
-                    }
-                    Toast.makeText(this, "Routine $routineName saved", Toast.LENGTH_LONG).show()
-                    goBackToTrainingPlanActivity()
-                }
+                val routine = routineExpandableListAdapter.getRoutine()
+                val originalRoutineName = intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
+                exercisesDataBase.addRoutine(routine, routineName, planId, originalRoutineName)
+                Toast.makeText(this, "Routine $routineName saved", Toast.LENGTH_LONG).show()
+                goBackToTrainingPlanActivity()
             } catch (exception: ValidationException) {
                 Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
             }
         }
     }
 
-    private fun getRoutineId(routineName: String): Int? {
-        return routinesDataBase.getValue(
-            RoutinesDataBaseHelper.TABLE_NAME,
-            RoutinesDataBaseHelper.ROUTINE_ID_COLUMN,
-            RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN,
-            routineName
-        )?.toInt()
-    }
-
-    private fun getPlanId(planName: String): Int? {
-        val plansDataBase = PlansDataBaseHelper(this, null)
-        return plansDataBase.getValue(
-            PlansDataBaseHelper.TABLE_NAME,
-            PlansDataBaseHelper.PLAN_ID_COLUMN,
-            PlansDataBaseHelper.PLAN_NAME_COLUMN,
-            planName
-        )?.toInt()
-    }
-
-    private fun saveToRoutines(routineName: String, planId: Int) {
-        routinesDataBase.addRoutine(routineName, planId)
-    }
 }

@@ -32,7 +32,6 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
             selection = cursor.getString(cursor.getColumnIndexOrThrow(select))
         }
         cursor.close()
-        dataBaseRead.close()
         return selection
     }
 
@@ -70,10 +69,11 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
     }
 
     fun setForeignKeys(switch: String) {
-        val dataBaseRead = this.readableDatabase
+        val dataBaseRead = this.writableDatabase
         val query = ("PRAGMA foreign_keys = $switch")
         dataBaseRead.execSQL(query)
     }
+
 
     companion object {
         private const val DATABASE_NAME = "GymApp"

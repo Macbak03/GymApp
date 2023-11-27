@@ -12,10 +12,7 @@ import com.example.gymapp.model.routine.RangeRpe
 
 class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     Repository(context, factory) {
-    // below is the method for creating a database by a sqlite query
     override fun onCreate(db: SQLiteDatabase) {
-        // below is a sqlite query, where column names
-        // along with their data types is given
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                 + PLAN_ID_COLUMN + " INTEGER NOT NULL," +
                 ROUTINE_ID_COLUMN + " INTEGER NOT NULL," +
@@ -35,8 +32,6 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 + "ON UPDATE CASCADE ON DELETE CASCADE," +
                 "FOREIGN KEY " + "(" + PLAN_ID_COLUMN + ")" + " REFERENCES " + PlansDataBaseHelper.TABLE_NAME + "(" + PlansDataBaseHelper.PLAN_ID_COLUMN + ")"
                 + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
-        // we are calling sqlite
-        // method for executing our query
         db.execSQL(query)
     }
 
@@ -44,18 +39,20 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         onCreate(db)
     }
 
-    // This method is for adding data in our database
-    fun addExercise(exercise: Exercise, routineName: String, planId: Int, routineId: Int, exerciseOrder: Int, ) {
-        // below we are creating
-        // a content values variable
-        val values = ContentValues()
 
-        // we are inserting our values
-        // in the form of key-value pair
+    private fun addExercise(
+        exercise: Exercise,
+        routineName: String,
+        planId: Int,
+        routineId: Int,
+        exerciseCount: Int
+    ) {
+        val db = this.writableDatabase
+        val values = ContentValues()
         values.put(PLAN_ID_COLUMN, planId)
         values.put(ROUTINE_ID_COLUMN, routineId)
         values.put(ROUTINE_NAME_COLUMN, routineName)
-        values.put(EXERCISE_ORDER_COLUMN, exerciseOrder)
+        values.put(EXERCISE_ORDER_COLUMN, exerciseCount)
         values.put(EXERCISE_NAME_COLUMN, exercise.name)
         values.put(PAUSE_COLUMN, exercise.pause.inWholeSeconds)
         values.put(LOAD_VALUE_COLUMN, exercise.load.weight)
@@ -86,23 +83,62 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
             null -> {}
         }
         values.put(PACE_COLUMN, exercise.pace.toString())
-
-        // here we are creating a
-        // writable variable of
-        // our database as we want to
-        // insert value in our database
-        val db = this.writableDatabase
-        db.use {
-            db.insert(TABLE_NAME, null, values)
-        }
-
-        // all values are inserted into database
-        // at last we are
-        // closing our database
+        db.insert(TABLE_NAME, null, values)
     }
 
-    // below method is to get
-    // all data from our database
+    fun addRoutine(
+        routine: ArrayList<Exercise>,
+        routineName: String,
+        planId: Int,
+        originalRoutineName: String?
+    ) {
+        val db = this.writableDatabase
+        db.transaction {
+            addToRoutines(routineName, planId)
+            val routineId = getRoutineId(routineName)
+            if (routineId != null) {
+                if (originalRoutineName != null) {
+                    deleteRoutine(planId, routineId, originalRoutineName)
+                }
+                var exerciseCount = 1
+                for (exercise in routine) {
+                    addExercise(exercise, routineName, planId, routineId, exerciseCount)
+                    exerciseCount++
+                }
+            }
+        }
+        db.close()
+    }
+
+    private fun addToRoutines(routineName: String, planId: Int) {
+        val values = ContentValues()
+        values.put(RoutinesDataBaseHelper.PLAN_ID_COLUMN, planId)
+        values.put(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN, routineName)
+
+        val db = this.writableDatabase
+
+        db.insert(RoutinesDataBaseHelper.TABLE_NAME, null, values)
+
+    }
+
+    private fun getRoutineId(routineName: String): Int? {
+        return this.getValue(
+            RoutinesDataBaseHelper.TABLE_NAME,
+            RoutinesDataBaseHelper.ROUTINE_ID_COLUMN,
+            RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN,
+            routineName
+        )?.toInt()
+    }
+
+    private inline fun SQLiteDatabase.transaction(func: SQLiteDatabase.() -> Unit) {
+        beginTransaction()
+        try {
+            func()
+            setTransactionSuccessful()
+        } finally {
+            endTransaction()
+        }
+    }
 
     fun getRoutine(routineName: String): Cursor {
         val db = this.readableDatabase
@@ -117,7 +153,10 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         val selectionArgs = arrayOf(idToCheck.toString())
 
         val cursor =
-            db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME WHERE $ROUTINE_ID_COLUMN = ?", selectionArgs)
+            db.rawQuery(
+                "SELECT COUNT(*) FROM $TABLE_NAME WHERE $ROUTINE_ID_COLUMN = ?",
+                selectionArgs
+            )
 
         var idExists = false
 
@@ -134,20 +173,19 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         return idExists
     }
 
-    fun deleteRoutine(planId: Int, routineId: Int, originalRoutineName: String?) {
+    private fun deleteRoutine(planId: Int, routineId: Int, originalRoutineName: String?) {
         val db = this.writableDatabase
-        val deleteSelection = "$PLAN_ID_COLUMN = ? $ROUTINE_ID_COLUMN = ? AND $ROUTINE_NAME_COLUMN = ?"
-        val deleteSelectionArgs = arrayOf(planId.toString(), routineId.toString(), originalRoutineName)
+        val deleteSelection =
+            "$PLAN_ID_COLUMN = ? AND $ROUTINE_ID_COLUMN = ? AND $ROUTINE_NAME_COLUMN = ?"
+        val deleteSelectionArgs =
+            arrayOf(planId.toString(), routineId.toString(), originalRoutineName)
 
         val cursor =
             db.query(TABLE_NAME, null, deleteSelection, deleteSelectionArgs, null, null, null)
-        try {
-            if (cursor.moveToFirst()) {
+        cursor.use { cur ->
+            if (cur.moveToFirst()) {
                 db.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
             }
-        } finally {
-            cursor.close()
-            db.close()
         }
     }
 
