@@ -19,7 +19,7 @@ class RoutineExpandableListAdapter(
     private val context: Context,
     private val exercises: List<ExerciseDraft>,
 
-    ): BaseExpandableListAdapter(){
+    ) : BaseExpandableListAdapter() {
 
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
         return exercises[listPosition]
@@ -38,14 +38,15 @@ class RoutineExpandableListAdapter(
         parent: ViewGroup?
     ): View? {
         var view = convertView
-        if(view == null) {
+        if (view == null) {
             val inflater =
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.routine_expandable_layout_helper, null)
         }
         val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
         val routineExpandableLayout = view as RoutineExpandableLayout?
-        routineExpandableLayout?.setExerciseTextChangedListener(object: RoutineExpandableLayout.ExerciseTextChangedListener {
+        routineExpandableLayout?.setExerciseTextChangedListener(object :
+            RoutineExpandableLayout.ExerciseTextChangedListener {
             override fun onExerciseNameChanged(name: String?) {
                 /*val routineExpandableTitleLayout = getGroupView(listPosition, false, null, parent) as RoutineExpandableTitleLayout
                 routineExpandableTitleLayout.setExerciseNameText(name)
@@ -63,19 +64,14 @@ class RoutineExpandableListAdapter(
         return 1
     }
 
-    fun getRoutine() : ArrayList<Exercise>
-    {
+    fun getRoutine(): ArrayList<Exercise> {
         val routine = ArrayList<Exercise>()
-        for (i: Int in 0 until groupCount)
-        {
-            val routineExpandableLayout = getChildView(i, 0, true, null, null) as RoutineExpandableLayout?
-            try {
-                val exercise = routineExpandableLayout?.getExerciseDraft()?.toExercise()
-                if (exercise != null) {
-                    routine.add(exercise)
-                }
-            } catch (exception: ValidationException) {
-                Toast.makeText(context, exception.message, Toast.LENGTH_LONG).show()
+        for (i: Int in 0 until groupCount) {
+            val routineExpandableLayout =
+                getChildView(i, 0, true, null, null) as RoutineExpandableLayout?
+            val exercise = routineExpandableLayout?.getExerciseDraft()?.toExercise()
+            if (exercise != null) {
+                routine.add(exercise)
             }
         }
         return routine
@@ -94,9 +90,14 @@ class RoutineExpandableListAdapter(
     }
 
     @SuppressLint("InflateParams")
-    override fun getGroupView(listPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View? {
+    override fun getGroupView(
+        listPosition: Int,
+        isExpanded: Boolean,
+        convertView: View?,
+        parent: ViewGroup?
+    ): View? {
         var view = convertView
-        if(convertView == null) {
+        if (convertView == null) {
             val inflater =
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.routine_expandable_title_layout_helper, null)

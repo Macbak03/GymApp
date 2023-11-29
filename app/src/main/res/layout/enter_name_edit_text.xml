@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 <EditText
-    android:id="@+id/editTextTrainingPlanName"
+    android:id="@+id/editTextName"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="40dp"
-    android:hint="Enter training plan name" />
+    android:hint="hint" />
 </LinearLayout>

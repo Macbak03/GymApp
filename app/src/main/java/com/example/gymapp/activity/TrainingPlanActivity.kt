@@ -1,5 +1,6 @@
 package com.example.gymapp.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.adapter.TrainingPlanRecyclerViewAdapter
 import com.example.gymapp.databinding.ActivityTrainingPlanBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlanElement
-import com.example.gymapp.persistence.PlanDataBaseHelper
-import com.example.gymapp.persistence.RoutineDataBaseHelper
+import com.example.gymapp.persistence.PlansDataBaseHelper
+import com.example.gymapp.persistence.RoutinesDataBaseHelper
 
 class TrainingPlanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrainingPlanBinding
@@ -19,7 +20,7 @@ class TrainingPlanActivity : AppCompatActivity() {
     private lateinit var planName: String
 
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
-    private val routineDataBase = RoutineDataBaseHelper(this, null)
+    private val routinesDataBase = RoutinesDataBaseHelper(this, null)
 
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
@@ -45,11 +46,13 @@ class TrainingPlanActivity : AppCompatActivity() {
 
         }
         planName = binding.textViewTrainingPlanName.text.toString()
-        trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(routines)
+
         recyclerView = binding.RecyclerViewTrainingPlan
-        setRecyclerViewContent()
+        trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(routines)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = trainingPlanRecyclerViewAdapter
+
+        setRecyclerViewContent()
 
         binding.buttonAddRoutine.setOnClickListener()
         {
@@ -71,32 +74,26 @@ class TrainingPlanActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent() {
-        val planDataBase = PlanDataBaseHelper(this, null)
-        val id = planDataBase.getValue(
-            PlanDataBaseHelper.TABLE_NAME,
-            PlanDataBaseHelper.PLAN_ID_COLUMN,
-            PlanDataBaseHelper.PLAN_NAME_COLUMN,
+        val plansDataBase = PlansDataBaseHelper(this, null)
+        val planId = plansDataBase.getValue(
+            PlansDataBaseHelper.TABLE_NAME,
+            PlansDataBaseHelper.PLAN_ID_COLUMN,
+            PlansDataBaseHelper.PLAN_NAME_COLUMN,
             planName
-
         )?.toInt()
-        if (id != null && routineDataBase.doesIdExist(id)) {
-            val cursor = routineDataBase.getFromTable(
-                RoutineDataBaseHelper.TABLE_NAME, RoutineDataBaseHelper.ROUTINE_NAME_COLUMN,
-                RoutineDataBaseHelper.PLAN_ID_COLUMN,
-                id.toString()
-            )
-            cursor.moveToFirst()
-            routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.ROUTINE_NAME_COLUMN))))
-            while (cursor.moveToNext())
-            {
-                routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutineDataBaseHelper.ROUTINE_NAME_COLUMN))))
+        if (planId != null) {
+            val cursor = routinesDataBase.getRoutinesInPlan(planId)
+            if (cursor.moveToFirst()) {
+                routines.add(
+                    TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
+                while (cursor.moveToNext()) {
+                    routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
+
+                }
             }
-            trainingPlanRecyclerViewAdapter.notifyItemChanged(trainingPlanRecyclerViewAdapter.itemCount-1) // toDO get clicked routine position and based on that notifyItemChanged
-            trainingPlanRecyclerViewAdapter.notifyItemInserted(trainingPlanRecyclerViewAdapter.itemCount)
-
+            trainingPlanRecyclerViewAdapter.notifyDataSetChanged()
         }
-
-
     }
 }
