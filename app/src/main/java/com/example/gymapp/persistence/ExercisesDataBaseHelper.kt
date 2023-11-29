@@ -94,20 +94,31 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
     ) {
         val db = this.writableDatabase
         db.transaction {
-            addToRoutines(routineName, planId)
-            val routineId = getRoutineId(routineName)
-            if (routineId != null) {
-                if (originalRoutineName != null) {
-                    deleteRoutine(planId, routineId, originalRoutineName)
+            if (originalRoutineName == null) {
+                addToRoutines(routineName, planId)
+                val routineId = getRoutineId(routineName)
+                if (routineId != null) {
+                    var exerciseCount = 1
+                    for (exercise in routine) {
+                        addExercise(exercise, routineName, planId, routineId, exerciseCount)
+                        exerciseCount++
+                    }
                 }
-                var exerciseCount = 1
-                for (exercise in routine) {
-                    addExercise(exercise, routineName, planId, routineId, exerciseCount)
-                    exerciseCount++
+            } else {
+                val routineId = getRoutineId(originalRoutineName)
+                if (routineId != null) {
+                    updateRoutine(planId, routineId, originalRoutineName, routineName)
+                    deleteRoutine(planId, routineId, originalRoutineName)
+                    var exerciseCount = 1
+                    for (exercise in routine) {
+                        addExercise(exercise, routineName, planId, routineId, exerciseCount)
+                        exerciseCount++
+                    }
                 }
             }
         }
         db.close()
+        //TODO implement routines update by updating based on exercise id and delete unnecessary exercises(for example if after edit there will be 2, not 4 exercises in routine)
     }
 
     private fun addToRoutines(routineName: String, planId: Int) {
@@ -130,6 +141,22 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         )?.toInt()
     }
 
+    private fun updateRoutine(
+        planId: Int,
+        routineId: Int,
+        originalRoutineName: String,
+        routineName: String
+    ) {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN, routineName)
+
+        val whereClause =
+            "${RoutinesDataBaseHelper.PLAN_ID_COLUMN} = ? AND ${RoutinesDataBaseHelper.ROUTINE_ID_COLUMN} = ? AND ${RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN} = ?"
+        val whereArguments = arrayOf(planId.toString(), routineId.toString(), originalRoutineName)
+        db.update(RoutinesDataBaseHelper.TABLE_NAME, contentValues, whereClause, whereArguments)
+    }
+
     private inline fun SQLiteDatabase.transaction(func: SQLiteDatabase.() -> Unit) {
         beginTransaction()
         try {
@@ -146,31 +173,6 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
             "SELECT * FROM $TABLE_NAME WHERE $ROUTINE_NAME_COLUMN = '$routineName' ORDER BY $EXERCISE_ORDER_COLUMN",
             null
         )
-    }
-
-    fun doesIdExist(idToCheck: Int): Boolean {
-        val db = this.readableDatabase
-        val selectionArgs = arrayOf(idToCheck.toString())
-
-        val cursor =
-            db.rawQuery(
-                "SELECT COUNT(*) FROM $TABLE_NAME WHERE $ROUTINE_ID_COLUMN = ?",
-                selectionArgs
-            )
-
-        var idExists = false
-
-        try {
-            if (cursor.moveToFirst()) {
-                val count = cursor.getInt(0)
-                idExists = count > 0
-            }
-        } finally {
-            cursor.close()
-            db.close()
-        }
-
-        return idExists
     }
 
     private fun deleteRoutine(planId: Int, routineId: Int, originalRoutineName: String?) {
