@@ -36,6 +36,10 @@ class TrainingPlansActivity : AppCompatActivity() {
         recyclerView = binding.recyclerViewTrainingPlans
         val trainingPlanNamesString = dataBase.getColumn(PlansDataBaseHelper.TABLE_NAME, PlansDataBaseHelper.PLAN_NAME_COLUMN, PlansDataBaseHelper.PLAN_ID_COLUMN)
         trainingPlansNames = dataBase.convertList(trainingPlanNamesString){TrainingPlan(it)}
+        if(!dataBase.isTableNotEmpty())
+        {
+            trainingPlansNames.add((TrainingPlan("You don't have any training plans yet.")))
+        }
         trainingPlansRecyclerViewAdapter = TrainingPlansRecyclerViewAdapter(trainingPlansNames)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = trainingPlansRecyclerViewAdapter

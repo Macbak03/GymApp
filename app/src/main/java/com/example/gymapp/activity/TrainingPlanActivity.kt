@@ -84,6 +84,10 @@ class TrainingPlanActivity : AppCompatActivity() {
             planName
         )?.toInt()
         if (planId != null) {
+            if(!routinesDataBase.isPlanEmpty(planId.toString()))
+            {
+                routines.add(TrainingPlanElement("You don't have any routines yet"))
+            }
             val cursor = routinesDataBase.getRoutinesInPlan(planId)
             if (cursor.moveToFirst()) {
                 routines.add(

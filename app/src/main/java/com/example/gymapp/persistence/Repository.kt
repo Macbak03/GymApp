@@ -35,18 +35,6 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
         return selection
     }
 
-    fun getDistinctValues(
-        tableName: String?,
-        columnName: String,
-        selectBy: String?,
-        selectName: String
-    ): Cursor {
-        val dataBaseRead = this.readableDatabase
-        return dataBaseRead.rawQuery(
-            "SELECT DISTINCT $columnName FROM $tableName WHERE $selectBy = '$selectName'",
-            null
-        )
-    }
 
     fun getColumn(tableName: String?, columnName: String, orderBy: String): MutableList<String> {
         val dataBaseRead = this.readableDatabase
@@ -69,9 +57,9 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
     }
 
     fun setForeignKeys(switch: String) {
-        val dataBaseRead = this.writableDatabase
+        val dataBaseWrite = this.writableDatabase
         val query = ("PRAGMA foreign_keys = $switch")
-        dataBaseRead.execSQL(query)
+        dataBaseWrite.execSQL(query)
     }
 
 

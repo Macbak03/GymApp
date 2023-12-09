@@ -36,6 +36,21 @@ class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactor
     }
 
 
+    fun isTableNotEmpty(): Boolean
+    {
+        val dataBaseRead = this.readableDatabase
+        val cursor = dataBaseRead.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
+        var isEmpty = true
+        if(cursor.moveToFirst())
+        {
+            val count = cursor.getInt(0)
+            isEmpty = count >0
+        }
+        cursor.close()
+        dataBaseRead.close()
+        return isEmpty
+    }
+
     companion object {
         const val TABLE_NAME = "trainingPlans"
         const val PLAN_ID_COLUMN = "planID"
