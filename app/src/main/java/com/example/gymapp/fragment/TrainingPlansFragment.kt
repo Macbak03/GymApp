@@ -39,6 +39,13 @@ class TrainingPlansFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTrainingPlansBinding.inflate(layoutInflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         plansDataBase = PlansDataBaseHelper(requireContext(), null)
         recyclerView = binding.recyclerViewTrainingPlans
         val trainingPlanNamesString = plansDataBase.getColumn(
@@ -68,8 +75,6 @@ class TrainingPlansFragment : Fragment() {
                 startActivity(explicitIntent)
             }
         })
-
-        return binding.root
     }
 
     override fun onDestroyView() {

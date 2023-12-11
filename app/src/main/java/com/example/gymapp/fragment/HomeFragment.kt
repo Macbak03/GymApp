@@ -9,6 +9,8 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Spinner
+import android.widget.Toast
+import androidx.fragment.app.FragmentTransaction
 import com.example.gymapp.R
 import com.example.gymapp.databinding.FragmentHomeBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
@@ -23,12 +25,17 @@ class HomeFragment : Fragment() {
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
     private lateinit var spinner: Spinner
     private val SPINNER_PREF_KEY = "selectedSpinnerItem"
-    private var selectedItem: String? = null
+    //private var selectedItem: String? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         spinner = binding.spinnerTrainingPlans
         dataBase = PlansDataBaseHelper(requireContext(), null)
         val trainingPlanNamesString = dataBase.getColumn(
@@ -40,16 +47,37 @@ class HomeFragment : Fragment() {
         if (!dataBase.isTableNotEmpty()) {
             val noneTrainingPlanFound = "Go to training plans section to create your first plan"
             binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFound
-            spinner.isEnabled = false
             spinner.visibility = View.GONE
         }
+        else{
+            spinner.visibility = View.VISIBLE
+        }
         initSpinner()
-        return binding.root
+        binding.buttonStartWorkout.setOnClickListener {
+            openStartWorkoutMenuFragment()
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun openStartWorkoutMenuFragment()
+    {
+        val selectedSpinnerItem = spinner.selectedItem as TrainingPlan?
+        if (selectedSpinnerItem != null) {
+            val bundle = Bundle()
+            bundle.putString("SELECTED_ITEM_KEY", selectedSpinnerItem.name)
+
+            val startWorkoutMenuFragment = StartWorkoutMenuFragment()
+            startWorkoutMenuFragment.arguments = bundle
+
+            val transaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.add(R.id.startWorkoutMenu, startWorkoutMenuFragment, "WorkoutMenu")
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
     }
 
     private fun initSpinner() {

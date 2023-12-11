@@ -35,15 +35,15 @@ class MainActivity : AppCompatActivity() {
         fragmentManager = supportFragmentManager
         binding.bottomNavigationBar.setOnItemSelectedListener { item ->
             when(item.itemId){
-                R.id.buttonHome -> openFragment(HomeFragment())
-                R.id.buttonTrainingPlans -> openFragment(TrainingPlansFragment())
-                R.id.buttonTrainingHistory -> openFragment(TrainingHistoryFragment())
-                R.id.buttonSettings -> openFragment(SettingsFragment())
+                R.id.buttonHome -> openFragment(HomeFragment(), "HomeFragment")
+                R.id.buttonTrainingPlans -> openFragment(TrainingPlansFragment(), "TrainingPlansFragment")
+                R.id.buttonTrainingHistory -> openFragment(TrainingHistoryFragment(), "TrainingHistoryFragment")
+                R.id.buttonSettings -> openFragment(SettingsFragment(), "SettingsFragment")
             }
             true
         }
 
-        openFragment(HomeFragment())
+        openFragment(HomeFragment(), "HomeFragment")
         planDataBase.onCreate(planDataBase.readableDatabase)
         routinesDataBase.onCreate(routinesDataBase.readableDatabase)
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
@@ -52,10 +52,10 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun openFragment(fragment: Fragment)
+    private fun openFragment(fragment: Fragment, tag: String?)
     {
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragmentContainer, fragment)
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag)
         fragmentTransaction.commit()
     }
 }
