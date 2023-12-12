@@ -18,7 +18,7 @@ import com.example.gymapp.model.routine.WeightUnit
 
 class RoutineExpandableLayout(
     private val context: Context,
-    private val attributes: AttributeSet,
+    private val attributes: AttributeSet
 
 ) : LinearLayout(context, attributes) {
 

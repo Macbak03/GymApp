@@ -1,6 +1,7 @@
 package com.example.gymapp.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,6 +13,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
+import com.example.gymapp.activity.CreateRoutineActivity
+import com.example.gymapp.activity.TrainingPlanActivity
+import com.example.gymapp.activity.WorkoutActivity
 import com.example.gymapp.adapter.StartWorkoutMenuRecycleViewAdapter
 import com.example.gymapp.adapter.TrainingPlanRecyclerViewAdapter
 import com.example.gymapp.databinding.FragmentStartWorkoutMenuBinding
@@ -26,6 +30,10 @@ class StartWorkoutMenuFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var startWorkoutMenuRecyclerViewAdapter: StartWorkoutMenuRecycleViewAdapter
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
+
+    companion object {
+        const val ROUTINE_NAME = "com.example.gymapp.routinename"
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,6 +59,15 @@ class StartWorkoutMenuFragment : Fragment() {
         startWorkoutMenuRecyclerViewAdapter =  StartWorkoutMenuRecycleViewAdapter(routines)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = startWorkoutMenuRecyclerViewAdapter
+
+        startWorkoutMenuRecyclerViewAdapter.setOnClickListener(object :
+            StartWorkoutMenuRecycleViewAdapter.OnClickListener {
+            override fun onClick(position: Int, model: TrainingPlanElement) {
+                val explicitIntent = Intent(context, WorkoutActivity::class.java)
+                explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
+                startActivity(explicitIntent)
+            }
+        })
     }
 
     override fun onDestroyView() {

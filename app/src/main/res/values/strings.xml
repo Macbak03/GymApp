@@ -17,5 +17,6 @@
     <string name="exercise_name">Exercise name</string>
     <string name="enter_pause">Enter pause</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="val">Val</string>
 
 </resources>
