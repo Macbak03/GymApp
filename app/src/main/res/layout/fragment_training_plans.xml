@@ -3,36 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activity.TrainingPlanActivity">
+    android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/textViewTrainingPlanName"
+        android:id="@+id/textViewTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Plan"
-        android:textSize="25sp"
+        android:layout_marginTop="6dp"
+        android:text="Training plans"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RecyclerViewTrainingPlan"
-        android:layout_width="410dp"
-        android:layout_height="383dp"
-        android:layout_marginTop="1dp"
+        android:id="@+id/recyclerViewTrainingPlans"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewTrainingPlanName"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/textViewTitle" />
 
     <Button
-        android:id="@+id/buttonAddRoutine"
+        android:id="@+id/buttonCreateTrainingPlan"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Routine"
+        android:layout_marginTop="12dp"
+        android:text="Create Training Plan"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RecyclerViewTrainingPlan" />
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewTrainingPlans" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

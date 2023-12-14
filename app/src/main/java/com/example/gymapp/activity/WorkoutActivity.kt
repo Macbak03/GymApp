@@ -1,85 +1,52 @@
 package com.example.gymapp.activity
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ExpandableListView
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
-import com.example.gymapp.persistence.ExercisesDataBaseHelper
-import com.example.gymapp.adapter.RoutineExpandableListAdapter
-import com.example.gymapp.databinding.ActivityCreateRoutineBinding
-import com.example.gymapp.exception.ValidationException
+import com.example.gymapp.adapter.WorkoutExpandableListAdapter
+import com.example.gymapp.databinding.ActivityWorkoutBinding
+import com.example.gymapp.fragment.StartWorkoutMenuFragment
 import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
+import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
 
+class WorkoutActivity : AppCompatActivity() {
 
-class CreateRoutineActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityCreateRoutineBinding
+    private lateinit var binding: ActivityWorkoutBinding
+
     private lateinit var expandableListView: ExpandableListView
-    private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
+    private lateinit var workoutExpandableListAdapter: WorkoutExpandableListAdapter
 
-    private val exercisesDataBase = ExercisesDataBaseHelper(this, null)
-    private val plansDataBase = PlansDataBaseHelper(this, null)
     private val exercises: MutableList<ExerciseDraft> = ArrayList()
-    private var exerciseCount: Int = 1
-
-    private val callback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-
-            goBackToTrainingPlanActivity()
-
-            isEnabled = false
-            onBackPressedDispatcher.onBackPressed()
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityCreateRoutineBinding.inflate(layoutInflater)
+        binding = ActivityWorkoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        expandableListView = binding.ExpandableListViewRoutineItems
-        routineExpandableListAdapter = RoutineExpandableListAdapter(this, exercises)
-        expandableListView.setAdapter(routineExpandableListAdapter)
-        var planName: String? = null
-        if (intent.hasExtra(TrainingPlanActivity.PLAN_NAME)) {
-            planName = intent.getStringExtra(TrainingPlanActivity.PLAN_NAME)
-        }
-        if(planName != null)
+        expandableListView = binding.expandableListViewWorkout
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, exercises)
+        expandableListView.setAdapter(workoutExpandableListAdapter)
+        if (intent.hasExtra(StartWorkoutMenuFragment.ROUTINE_NAME) && intent.hasExtra(StartWorkoutMenuFragment.PLAN_NAME))
         {
-            val planId = plansDataBase.getPlanId(planName)
-            if (intent.hasExtra(TrainingPlanActivity.ROUTINE_NAME)) {
+            binding.textViewCurrentWorkout.text = intent.getStringExtra(StartWorkoutMenuFragment.ROUTINE_NAME)
+            val planName = intent.getStringExtra(StartWorkoutMenuFragment.PLAN_NAME)
+            val plansDataBase = PlansDataBaseHelper(this, null)
+            if(planName != null)
+            {
+                val planId = plansDataBase.getPlanId(planName)
                 loadRoutine(planId)
             }
         }
-        binding.buttonAddExercise.setOnClickListener {
-            addExercise()
-        }
-        binding.buttonDeleteExercise.setOnClickListener {
-            removeExercise()
-        }
-        binding.buttonSaveRoutine.setOnClickListener()
-        {
-            if (planName != null) {
-                try {
-                    saveRoutineIntoDB(planName)
-                } catch (exception: ValidationException) {
-                    Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
-
-        onBackPressedDispatcher.addCallback(this, callback)
+        //exercises.add(ExerciseDraft("bench press", "4", TimeUnit.min, "100", WeightUnit.kg, "3", "6", "9", "21x1", false))
     }
 
     private fun loadRoutine(planId: Int?) {
+        val exercisesDataBase = ExercisesDataBaseHelper(this, null)
         val routineName = intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
         if (routineName != null && planId != null) {
-            binding.editTextRoutineName.setText(routineName)
 
             val cursor = exercisesDataBase.getRoutine(routineName, planId.toString())
             cursor.moveToFirst()
@@ -143,8 +110,7 @@ class CreateRoutineActivity : AppCompatActivity() {
                 false
             )
             exercises.add(exercise)
-            exerciseCount++
-            routineExpandableListAdapter.notifyDataSetChanged()
+            workoutExpandableListAdapter.notifyDataSetChanged()
 
             while (cursor.moveToNext()) {
                 val nextExerciseName =
@@ -201,64 +167,9 @@ class CreateRoutineActivity : AppCompatActivity() {
                     false
                 )
                 exercises.add(nextExercise)
-                exerciseCount++
-                routineExpandableListAdapter.notifyDataSetChanged()
+                workoutExpandableListAdapter.notifyDataSetChanged()
             }
         }
 
     }
-
-    private fun addExercise() {
-        val exercise = ExerciseDraft(
-            "exercise$exerciseCount",
-            "",
-            TimeUnit.min,
-            "",
-            WeightUnit.kg,
-            "",
-            "",
-            "",
-            "",
-            true
-        )
-        exercises.add(exercise)
-        exerciseCount++
-        routineExpandableListAdapter.notifyDataSetChanged()
-    }
-
-    private fun removeExercise() {
-        if (exercises.isNotEmpty()) {
-            exercises.removeAt(exercises.lastIndex)
-            exerciseCount--
-            routineExpandableListAdapter.notifyDataSetChanged()
-        }
-    }
-
-    private fun goBackToTrainingPlanActivity() {
-        setResult(RESULT_OK)
-        finish()
-    }
-
-    private fun saveRoutineIntoDB(planName: String) {
-        if (routineExpandableListAdapter.groupCount == 0) {
-            throw ValidationException("You must add at least one exercise to the routine")
-        }
-        val routineName = binding.editTextRoutineName.text.toString()
-        if (routineName.isBlank()) {
-            throw ValidationException("routine name cannot be empty")
-        }
-        val planId = plansDataBase.getPlanId(planName)
-        if (planId != null) {
-            try {
-                val routine = routineExpandableListAdapter.getRoutine()
-                val originalRoutineName = intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
-                exercisesDataBase.addRoutine(routine, routineName, planId, originalRoutineName)
-                Toast.makeText(this, "Routine $routineName saved", Toast.LENGTH_LONG).show()
-                goBackToTrainingPlanActivity()
-            } catch (exception: ValidationException) {
-                Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
 }

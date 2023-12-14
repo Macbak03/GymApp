@@ -11,4 +11,12 @@
 
     <declare-styleable name="RoutineExpandableTitleLayout">
     </declare-styleable>
+
+    <declare-styleable name="WorkoutExpandableLayout">
+        <attr name="editTextReps" format="string"/>
+        <attr name="editTextWeight" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="WorkoutExpandableTitleLayout">
+    </declare-styleable>
 </resources>

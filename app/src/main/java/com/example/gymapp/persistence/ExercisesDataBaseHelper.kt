@@ -96,7 +96,7 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         db.transaction {
             if (originalRoutineName == null) {
                 addToRoutines(routineName, planId)
-                val routineId = getRoutineId(routineName)
+                val routineId = getRoutineId(routineName, planId)
                 if (routineId != null) {
                     var exerciseCount = 1
                     for (exercise in routine) {
@@ -105,7 +105,7 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                     }
                 }
             } else {
-                val routineId = getRoutineId(originalRoutineName)
+                val routineId = getRoutineId(originalRoutineName, planId)
                 if (routineId != null) {
                     updateRoutine(planId, routineId, originalRoutineName, routineName)
                     deleteRoutine(planId, routineId, originalRoutineName)
@@ -132,13 +132,21 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
 
     }
 
-    private fun getRoutineId(routineName: String): Int? {
-        return this.getValue(
-            RoutinesDataBaseHelper.TABLE_NAME,
-            RoutinesDataBaseHelper.ROUTINE_ID_COLUMN,
-            RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN,
-            routineName
-        )?.toInt()
+    private fun getRoutineId(routineName: String, planId: Int): Int? {
+        val db = this.writableDatabase
+        val cursor =
+            db.rawQuery(
+                "SELECT DISTINCT ${RoutinesDataBaseHelper.ROUTINE_ID_COLUMN} FROM ${RoutinesDataBaseHelper.TABLE_NAME} WHERE ${RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN} = '$routineName' AND ${RoutinesDataBaseHelper.PLAN_ID_COLUMN} = '$planId'",
+                null
+            )
+        return cursor.use {
+            if(it.moveToFirst())
+            {
+                it.getInt(it.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_ID_COLUMN))
+            }else{
+                null
+            }
+        }
     }
 
     private fun updateRoutine(
@@ -167,10 +175,10 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         }
     }
 
-    fun getRoutine(routineName: String): Cursor {
+    fun getRoutine(routineName: String, planId: String): Cursor {
         val db = this.readableDatabase
         return db.rawQuery(
-            "SELECT * FROM $TABLE_NAME WHERE $ROUTINE_NAME_COLUMN = '$routineName' ORDER BY $EXERCISE_ORDER_COLUMN",
+            "SELECT * FROM $TABLE_NAME WHERE $ROUTINE_NAME_COLUMN = '$routineName' AND $PLAN_ID_COLUMN = '$planId' ORDER BY $EXERCISE_ORDER_COLUMN",
             null
         )
     }

@@ -32,6 +32,25 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
 
     }
 
+    fun isPlanEmpty(planId: String): Boolean{
+        val dataBaseRead = this.readableDatabase
+        val selection = "$PLAN_ID_COLUMN = ?"
+        val selectionArgs = arrayOf(planId)
+
+        val cursor = dataBaseRead.query(TABLE_NAME, null, selection, selectionArgs, null, null, null)
+
+        val idFound: Boolean
+
+        try {
+            idFound = cursor.moveToFirst()
+        } finally {
+            cursor.close()
+            dataBaseRead.close()
+        }
+
+        return idFound
+    }
+
 
     companion object {
         const val TABLE_NAME = "routines"

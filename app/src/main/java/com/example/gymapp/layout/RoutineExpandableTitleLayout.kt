@@ -11,8 +11,6 @@ class RoutineExpandableTitleLayout (
     private val attributes: AttributeSet
     ) : LinearLayout(context, attributes)
     {
-
-
         init {
             inflate(context, R.layout.routine_expandable_title_layout, this)
             val customAttributesStyle = context.obtainStyledAttributes(
