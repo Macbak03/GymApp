@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import com.example.gymapp.R
+import com.example.gymapp.layout.WorkoutExpandableLayout
+import com.example.gymapp.layout.WorkoutExpandableTitleLayout
 import com.example.gymapp.model.routine.ExerciseDraft
 
 class WorkoutExpandableListAdapter(
@@ -37,11 +39,14 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_layout_helper, null)
         }
+        val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
+        val workoutExpandableLayout = view as WorkoutExpandableLayout?
+        workoutExpandableLayout?.setWeightUnitText(exercise.loadUnit.toString(), expandedListPosition + 1)
         return view
     }
 
     override fun getChildrenCount(listPosition: Int): Int {
-        return 1
+        return exercises[listPosition].series?.toInt() ?: 0
     }
 
     override fun getGroup(listPosition: Int): Any {
@@ -69,6 +74,9 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_title_layout_helper, null)
         }
+        val exercise = getGroup(listPosition) as ExerciseDraft
+        val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
+        workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
         return view
     }
 

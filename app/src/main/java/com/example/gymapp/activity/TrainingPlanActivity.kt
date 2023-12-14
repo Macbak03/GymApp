@@ -77,12 +77,7 @@ class TrainingPlanActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent() {
         val plansDataBase = PlansDataBaseHelper(this, null)
-        val planId = plansDataBase.getValue(
-            PlansDataBaseHelper.TABLE_NAME,
-            PlansDataBaseHelper.PLAN_ID_COLUMN,
-            PlansDataBaseHelper.PLAN_NAME_COLUMN,
-            planName
-        )?.toInt()
+        val planId = plansDataBase.getPlanId(planName)
         if (planId != null) {
             if(!routinesDataBase.isPlanEmpty(planId.toString()))
             {

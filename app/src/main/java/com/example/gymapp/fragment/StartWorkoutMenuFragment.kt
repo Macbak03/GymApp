@@ -33,6 +33,7 @@ class StartWorkoutMenuFragment : Fragment() {
 
     companion object {
         const val ROUTINE_NAME = "com.example.gymapp.routinename"
+        const val PLAN_NAME = "com.example.gymapp.planname"
     }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,6 +66,7 @@ class StartWorkoutMenuFragment : Fragment() {
             override fun onClick(position: Int, model: TrainingPlanElement) {
                 val explicitIntent = Intent(context, WorkoutActivity::class.java)
                 explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
+                explicitIntent.putExtra(PLAN_NAME, chosenTrainingPlan)
                 startActivity(explicitIntent)
             }
         })
@@ -88,12 +90,7 @@ class StartWorkoutMenuFragment : Fragment() {
         val plansDataBase = PlansDataBaseHelper(requireContext(), null)
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         if(planName != null) {
-            val planId = plansDataBase.getValue(
-                PlansDataBaseHelper.TABLE_NAME,
-                PlansDataBaseHelper.PLAN_ID_COLUMN,
-                PlansDataBaseHelper.PLAN_NAME_COLUMN,
-                planName
-            )?.toInt()
+            val planId = plansDataBase.getPlanId(planName)
             if (planId != null) {
                 val cursor = routinesDataBase.getRoutinesInPlan(planId)
                 if (cursor.moveToFirst()) {

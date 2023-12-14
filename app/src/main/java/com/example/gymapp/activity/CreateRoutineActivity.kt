@@ -23,6 +23,7 @@ class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
 
     private val exercisesDataBase = ExercisesDataBaseHelper(this, null)
+    private val plansDataBase = PlansDataBaseHelper(this, null)
     private val exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 1
 
@@ -48,11 +49,13 @@ class CreateRoutineActivity : AppCompatActivity() {
         if (intent.hasExtra(TrainingPlanActivity.PLAN_NAME)) {
             planName = intent.getStringExtra(TrainingPlanActivity.PLAN_NAME)
         }
-
-        if (intent.hasExtra(TrainingPlanActivity.ROUTINE_NAME)) {
-            loadRoutine()
+        if(planName != null)
+        {
+            val planId = plansDataBase.getPlanId(planName)
+            if (intent.hasExtra(TrainingPlanActivity.ROUTINE_NAME)) {
+                loadRoutine(planId)
+            }
         }
-
         binding.buttonAddExercise.setOnClickListener {
             addExercise()
         }
@@ -73,12 +76,12 @@ class CreateRoutineActivity : AppCompatActivity() {
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    private fun loadRoutine() {
+    private fun loadRoutine(planId: Int?) {
         val routineName = intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
-        if (routineName != null) {
+        if (routineName != null && planId != null) {
             binding.editTextRoutineName.setText(routineName)
 
-            val cursor = exercisesDataBase.getRoutine(routineName)
+            val cursor = exercisesDataBase.getRoutine(routineName, planId.toString())
             cursor.moveToFirst()
 
             val exerciseName =
@@ -244,7 +247,6 @@ class CreateRoutineActivity : AppCompatActivity() {
         if (routineName.isBlank()) {
             throw ValidationException("routine name cannot be empty")
         }
-        val plansDataBase = PlansDataBaseHelper(this, null)
         val planId = plansDataBase.getPlanId(planName)
         if (planId != null) {
             try {

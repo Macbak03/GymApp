@@ -22,7 +22,7 @@
     </style>
 
     <style name="workout_text_view_title_item" parent="@android:style/TextAppearance.Small">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">15sp</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:textAlignment">center</item>

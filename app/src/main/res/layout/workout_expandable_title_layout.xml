@@ -5,6 +5,7 @@
     android:orientation="vertical">
 
     <TextView
+        android:id="@+id/textViewExerciseName"
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:text="@string/exercise"
@@ -25,10 +26,22 @@
             <TextView
                 android:text="Pause:"
                 style="@style/workout_text_view_title_item"/>
-            <TextView
-                android:id="@+id/textViewPauseValue"
-                android:text="@string/val"
-                style="@style/workout_text_view_title_item"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/textViewPauseValue"
+                    android:text="@string/val"
+                    style="@style/workout_text_view_title_item"/>
+                <TextView
+                    android:id="@+id/textViewPauseUnitValue"
+                    android:layout_marginStart="2dp"
+                    style="@style/workout_text_view_title_item"
+                    android:text="@string/val"/>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
