@@ -19,6 +19,7 @@ import com.example.gymapp.fragment.TrainingPlansFragment
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
+import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val exercisesDataBase = ExercisesDataBaseHelper(this, null)
     private val routinesDataBase = RoutinesDataBaseHelper(this, null)
     private val planDataBase = PlansDataBaseHelper(this, null)
+    private val workoutHistoryDataBase = WorkoutHistoryDatabaseHelper(this, null)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
         planDataBase.onCreate(planDataBase.readableDatabase)
         routinesDataBase.onCreate(routinesDataBase.readableDatabase)
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
+        workoutHistoryDataBase.onCreate(exercisesDataBase.readableDatabase)
         routinesDataBase.setForeignKeys("ON")
         
     }

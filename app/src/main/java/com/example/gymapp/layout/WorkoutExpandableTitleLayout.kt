@@ -6,11 +6,14 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.gymapp.R
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.workout.GroupElement
 
 class WorkoutExpandableTitleLayout(
     private val context: Context,
     private val attributes: AttributeSet
 ) : LinearLayout(context, attributes) {
+    private var workoutGroupElement: GroupElement? = null
+
     init {
         inflate(context, R.layout.workout_expandable_title_layout, this)
         val customAttributesStyle = context.obtainStyledAttributes(
@@ -22,7 +25,7 @@ class WorkoutExpandableTitleLayout(
         customAttributesStyle.recycle()
     }
 
-    fun setExerciseAttributes(exerciseAttributes: ExerciseDraft?) {
+    fun setExerciseAttributes(exerciseAttributes: GroupElement?) {
         val customAttributesStyle = context.obtainStyledAttributes(
             attributes,
             R.styleable.WorkoutExpandableTitleLayout,
@@ -36,18 +39,32 @@ class WorkoutExpandableTitleLayout(
         val series = findViewById<TextView>(R.id.textViewSeriesValue)
         val rpe = findViewById<TextView>(R.id.textViewRpeValue)
         val pace = findViewById<TextView>(R.id.textViewPaceValue)
-
         try {
-            exerciseName.text = exerciseAttributes?.name
+            exerciseName.text = exerciseAttributes?.exerciseName
             pause.text = exerciseAttributes?.pause
             pauseUnit.text = exerciseAttributes?.pauseUnit.toString()
             reps.text = exerciseAttributes?.reps
             series.text = exerciseAttributes?.series
             rpe.text = exerciseAttributes?.rpe
             pace.text = exerciseAttributes?.pace
+            if (exerciseAttributes != null) {
+                workoutGroupElement =
+                    GroupElement(
+                        exerciseAttributes.exerciseName,
+                        exerciseAttributes.pause,
+                        exerciseAttributes.pauseUnit,
+                        exerciseAttributes.reps,
+                        exerciseAttributes.series,
+                        exerciseAttributes.rpe,
+                        exerciseAttributes.pace
+                    )
+            }
         } finally {
             customAttributesStyle.recycle()
         }
     }
 
+    fun getGroupElement(): GroupElement? {
+        return this.workoutGroupElement
+    }
 }

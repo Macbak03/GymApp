@@ -118,7 +118,6 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
             }
         }
         db.close()
-        //TODO implement routines update by updating based on exercise id and delete unnecessary exercises(for example if after edit there will be 2, not 4 exercises in routine)
     }
 
     private fun addToRoutines(routineName: String, planId: Int) {

@@ -10,15 +10,19 @@ import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.workout.ChildElement
+import com.example.gymapp.model.workout.GroupElement
+import com.example.gymapp.model.workout.WorkoutExercise
 
 class WorkoutExpandableListAdapter(
     private val context: Context,
-    private val exercises: List<ExerciseDraft>
+    private val exercises: List<GroupElement>,
+    private val series: List<ChildElement>
 
 ) : BaseExpandableListAdapter() {
 
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
-        return exercises[listPosition]
+        return series[listPosition]
     }
 
     override fun getChildId(listPosition: Int, expandedListPosition: Int): Long {
@@ -39,9 +43,18 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_layout_helper, null)
         }
-        val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
+        val series = getChild(listPosition, expandedListPosition) as ChildElement
         val workoutExpandableLayout = view as WorkoutExpandableLayout?
-        workoutExpandableLayout?.setWeightUnitText(exercise.loadUnit.toString(), expandedListPosition + 1)
+        workoutExpandableLayout?.setSeries(series, expandedListPosition + 1)
+        val noteEditText =workoutExpandableLayout?.getNoteEditText()
+        if(!isLastChild)
+        {
+            noteEditText?.visibility = View.GONE
+        }
+        else
+        {
+            noteEditText?.visibility = View.VISIBLE
+        }
         return view
     }
 
@@ -74,10 +87,45 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_title_layout_helper, null)
         }
-        val exercise = getGroup(listPosition) as ExerciseDraft
+        val exercise = getGroup(listPosition) as GroupElement
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
         return view
+    }
+
+    fun getWorkout(): ArrayList<WorkoutExercise> {
+        val workout = ArrayList<WorkoutExercise>()
+        for (i: Int in 0 until groupCount) {
+            val workoutExpandableTitleLayout =
+                getGroupView(i, true, null, null) as WorkoutExpandableTitleLayout?
+            val groupElement = workoutExpandableTitleLayout?.getGroupElement()
+            for (j: Int in 0 until getChildrenCount(i)) {
+                val workoutExpandableLayout =
+                    getChildView(i, j, false, null, null) as WorkoutExpandableLayout?
+                val childElement = workoutExpandableLayout?.getChildElement()
+                val exerciseDraft = groupElement?.pauseUnit?.let {
+                    childElement?.loadUnit?.let { it1 ->
+                        ExerciseDraft(
+                            groupElement.exerciseName,
+                            groupElement.pause,
+                            it,
+                            childElement.load,
+                            it1,
+                            groupElement.series,
+                            childElement.reps,
+                            groupElement.rpe,
+                            groupElement.pace,
+                            true
+                        )
+                    }
+                }
+                val exercise = exerciseDraft?.toExercise()
+                if (exercise != null) {
+                    workout.add(WorkoutExercise(exercise, i + 1, j + 1, childElement?.note))
+                }
+            }
+        }
+        return workout
     }
 
 

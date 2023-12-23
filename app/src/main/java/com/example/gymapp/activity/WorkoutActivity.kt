@@ -3,16 +3,21 @@ package com.example.gymapp.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ExpandableListView
+import android.widget.Toast
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
 import com.example.gymapp.databinding.ActivityWorkoutBinding
+import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.fragment.StartWorkoutMenuFragment
 import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
+import com.example.gymapp.model.workout.ChildElement
+import com.example.gymapp.model.workout.GroupElement
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
+import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 
 class WorkoutActivity : AppCompatActivity() {
 
@@ -20,27 +25,37 @@ class WorkoutActivity : AppCompatActivity() {
 
     private lateinit var expandableListView: ExpandableListView
     private lateinit var workoutExpandableListAdapter: WorkoutExpandableListAdapter
-
-    private val exercises: MutableList<ExerciseDraft> = ArrayList()
+    private val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
+    private val exercises: MutableList<GroupElement> = ArrayList()
+    private val series: MutableList<ChildElement> = ArrayList()
+    private var routineName: String? = null
+    private var planName: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityWorkoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         expandableListView = binding.expandableListViewWorkout
-        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, exercises)
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, exercises, series)
         expandableListView.setAdapter(workoutExpandableListAdapter)
         if (intent.hasExtra(StartWorkoutMenuFragment.ROUTINE_NAME) && intent.hasExtra(StartWorkoutMenuFragment.PLAN_NAME))
         {
+            routineName = intent.getStringExtra(StartWorkoutMenuFragment.ROUTINE_NAME)
             binding.textViewCurrentWorkout.text = intent.getStringExtra(StartWorkoutMenuFragment.ROUTINE_NAME)
-            val planName = intent.getStringExtra(StartWorkoutMenuFragment.PLAN_NAME)
+            planName = intent.getStringExtra(StartWorkoutMenuFragment.PLAN_NAME)
             val plansDataBase = PlansDataBaseHelper(this, null)
             if(planName != null)
             {
-                val planId = plansDataBase.getPlanId(planName)
-                loadRoutine(planId)
+                val name = planName
+                if(name != null)
+                {
+                    val planId = plansDataBase.getPlanId(name)
+                    loadRoutine(planId)
+                }
             }
         }
-        //exercises.add(ExerciseDraft("bench press", "4", TimeUnit.min, "100", WeightUnit.kg, "3", "6", "9", "21x1", false))
+        binding.buttonSaveWorkout.setOnClickListener{
+            saveWorkoutToHistory()
+        }
     }
 
     private fun loadRoutine(planId: Int?) {
@@ -81,7 +96,7 @@ class WorkoutActivity : AppCompatActivity() {
                 RangeReps(repsRangeFrom, repsRangeTo).toString()
             }
 
-            val series =
+            val seriesAmount =
                 cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.SERIES_COLUMN))
 
             val rpeRangeFrom =
@@ -97,19 +112,24 @@ class WorkoutActivity : AppCompatActivity() {
             val pace =
                 cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PACE_COLUMN))
 
-            val exercise = ExerciseDraft(
+            val exercise = GroupElement(
                 exerciseName,
                 pause,
                 pauseUnit,
-                loadValue,
-                WeightUnit.valueOf(loadUnit),
-                series,
+                seriesAmount,
                 reps,
                 rpe,
                 pace,
+            )
+            val ser = ChildElement(
+                "",
+                "",
+                WeightUnit.valueOf(loadUnit),
+                "",
                 false
             )
             exercises.add(exercise)
+            series.add(ser)
             workoutExpandableListAdapter.notifyDataSetChanged()
 
             while (cursor.moveToNext()) {
@@ -154,22 +174,44 @@ class WorkoutActivity : AppCompatActivity() {
                 val nextPace =
                     cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PACE_COLUMN))
 
-                val nextExercise = ExerciseDraft(
+                val nextExercise = GroupElement(
                     nextExerciseName,
                     nextPause,
                     nextPauseUnit,
-                    nextLoadValue,
-                    WeightUnit.valueOf(nextLoadUnit),
-                    nextSeries,
                     nextReps,
+                    nextSeries,
                     nextRpe,
                     nextPace,
+                )
+                val nextSer = ChildElement(
+                    "",
+                    "",
+                    WeightUnit.valueOf(nextLoadUnit),
+                    "",
                     false
                 )
                 exercises.add(nextExercise)
+                series.add(nextSer)
                 workoutExpandableListAdapter.notifyDataSetChanged()
             }
         }
 
+    }
+
+    private fun saveWorkoutToHistory(){
+        if(routineName != null && planName != null)
+        {
+            val planName = this.planName
+            val routineName = this.routineName
+            if (planName != null && routineName != null)
+            {
+                try {
+                    workoutHistoryDatabase.addWorkout(workoutExpandableListAdapter.getWorkout(), planName, routineName)
+                } catch (exception: ValidationException)
+                {
+                    Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
     }
 }

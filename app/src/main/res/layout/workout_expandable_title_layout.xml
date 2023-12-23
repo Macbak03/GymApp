@@ -9,8 +9,9 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:text="@string/exercise"
-        android:textSize="20sp"
-        android:textAlignment="center"
+        android:textSize="24sp"
+        android:layout_marginStart="30dp"
+        android:textAlignment="viewStart"
         android:textStyle="bold"/>
 
     <LinearLayout

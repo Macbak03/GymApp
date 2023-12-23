@@ -97,12 +97,9 @@ class StartWorkoutMenuFragment : Fragment() {
                     routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
                     while (cursor.moveToNext()) {
                         routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
-
                     }
                 }
             }
         }
-
     }
-
 }
