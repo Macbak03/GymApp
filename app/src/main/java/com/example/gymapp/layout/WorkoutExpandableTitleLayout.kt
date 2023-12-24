@@ -5,14 +5,13 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.gymapp.R
-import com.example.gymapp.model.routine.ExerciseDraft
-import com.example.gymapp.model.workout.GroupElement
+import com.example.gymapp.model.workout.WorkoutAttributes
 
 class WorkoutExpandableTitleLayout(
     private val context: Context,
     private val attributes: AttributeSet
 ) : LinearLayout(context, attributes) {
-    private var workoutGroupElement: GroupElement? = null
+    private var workoutWorkoutAttributes: WorkoutAttributes? = null
 
     init {
         inflate(context, R.layout.workout_expandable_title_layout, this)
@@ -25,7 +24,7 @@ class WorkoutExpandableTitleLayout(
         customAttributesStyle.recycle()
     }
 
-    fun setExerciseAttributes(exerciseAttributes: GroupElement?) {
+    fun setExerciseAttributes(exerciseAttributes: WorkoutAttributes?) {
         val customAttributesStyle = context.obtainStyledAttributes(
             attributes,
             R.styleable.WorkoutExpandableTitleLayout,
@@ -48,8 +47,8 @@ class WorkoutExpandableTitleLayout(
             rpe.text = exerciseAttributes?.rpe
             pace.text = exerciseAttributes?.pace
             if (exerciseAttributes != null) {
-                workoutGroupElement =
-                    GroupElement(
+                workoutWorkoutAttributes =
+                    WorkoutAttributes(
                         exerciseAttributes.exerciseName,
                         exerciseAttributes.pause,
                         exerciseAttributes.pauseUnit,
@@ -64,7 +63,7 @@ class WorkoutExpandableTitleLayout(
         }
     }
 
-    fun getGroupElement(): GroupElement? {
-        return this.workoutGroupElement
+    fun getGroupElement(): WorkoutAttributes? {
+        return this.workoutWorkoutAttributes
     }
 }

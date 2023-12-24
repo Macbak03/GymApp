@@ -67,7 +67,10 @@ class StartWorkoutMenuFragment : Fragment() {
                 val explicitIntent = Intent(context, WorkoutActivity::class.java)
                 explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
                 explicitIntent.putExtra(PLAN_NAME, chosenTrainingPlan)
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
                 startActivity(explicitIntent)
+
             }
         })
     }

@@ -2,7 +2,7 @@ package com.example.gymapp.model.workout
 
 import com.example.gymapp.model.routine.WeightUnit
 
-class ChildElement (
+class WorkoutSeries (
     var reps: String?,
     var load: String?,
     var loadUnit: WeightUnit,

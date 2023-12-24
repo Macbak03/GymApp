@@ -10,8 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.adapter.WorkoutHistoryRecyclerViewAdapter
 import com.example.gymapp.databinding.FragmentTrainingHistoryBinding
 import com.example.gymapp.model.workoutHistory.WorkoutHistoryElement
+import com.example.gymapp.persistence.RoutinesDataBaseHelper
+import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import java.sql.Date
+import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.util.Locale
 
 class TrainingHistoryFragment : Fragment() {
     private var _binding: FragmentTrainingHistoryBinding? = null
@@ -29,11 +33,11 @@ class TrainingHistoryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        workoutHistory.add(WorkoutHistoryElement("abcd", "abc", Date.valueOf(LocalDate.now().toString())))
         recyclerView = binding.recyclerViewWorkoutHistory
         workoutHistoryRecyclerViewAdapter = WorkoutHistoryRecyclerViewAdapter(workoutHistory)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = workoutHistoryRecyclerViewAdapter
+        setRecyclerViewContent()
 
         workoutHistoryRecyclerViewAdapter.setOnClickListener(object :
             WorkoutHistoryRecyclerViewAdapter.OnClickListener {
@@ -48,4 +52,26 @@ class TrainingHistoryFragment : Fragment() {
         _binding = null
     }
 
+    private fun setRecyclerViewContent(){
+        val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(requireContext(), null)
+        val cursor = workoutHistoryDatabase.getHistory()
+        if (cursor.moveToFirst())
+        {
+            workoutHistory.add(WorkoutHistoryElement(cursor.getString(cursor.getColumnIndexOrThrow(
+                WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
+                WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
+                WorkoutHistoryDatabaseHelper.DATE_COLUMN))
+            ))
+            workoutHistoryRecyclerViewAdapter.notifyItemInserted(workoutHistoryRecyclerViewAdapter.itemCount)
+            while (cursor.moveToNext())
+            {
+                workoutHistory.add(WorkoutHistoryElement(cursor.getString(cursor.getColumnIndexOrThrow(
+                    WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
+                    WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
+                    WorkoutHistoryDatabaseHelper.DATE_COLUMN))
+                ))
+                workoutHistoryRecyclerViewAdapter.notifyItemInserted(workoutHistoryRecyclerViewAdapter.itemCount)
+            }
+        }
+    }
 }

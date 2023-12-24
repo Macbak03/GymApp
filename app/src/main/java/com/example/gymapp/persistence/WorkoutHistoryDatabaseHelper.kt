@@ -2,7 +2,9 @@ package com.example.gymapp.persistence
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.widget.Toast
 import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExactRpe
 import com.example.gymapp.model.routine.Exercise
@@ -11,6 +13,10 @@ import com.example.gymapp.model.routine.RangeRpe
 import com.example.gymapp.model.workout.WorkoutExercise
 import java.time.LocalDate
 import java.sql.Date
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     Repository(
@@ -43,6 +49,7 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
     }
 
     private fun addExerciseToHistory(
+        date: String,
         exercise: Exercise,
         planName: String,
         routineName: String,
@@ -52,7 +59,8 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
     ) {
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(DATE_COLUMN, Date.valueOf(LocalDate.now().toString()).toString())
+
+        values.put(DATE_COLUMN, date)
         values.put(PLAN_NAME_COLUMN, planName)
         values.put(ROUTINE_NAME_COLUMN, routineName)
         values.put(EXERCISE_ORDER_COLUMN, exerciseCount)
@@ -93,15 +101,36 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
 
     fun addWorkout(
         workout: ArrayList<WorkoutExercise>,
+        date: String,
         planName: String,
         routineName: String
     ) {
-        for (workoutExercise in workout)
-        {
-            addExerciseToHistory(workoutExercise.exercise, planName, routineName, workoutExercise.exerciseCount, workoutExercise.seriesCount, workoutExercise.note)
+        for (workoutExercise in workout) {
+            addExerciseToHistory(
+                date,
+                workoutExercise.exercise,
+                planName,
+                routineName,
+                workoutExercise.exerciseCount,
+                workoutExercise.seriesCount,
+                workoutExercise.note
+            )
         }
 
     }
+
+    fun getHistory(): Cursor {
+        val db = this.readableDatabase
+        return db.rawQuery(
+            "SELECT DISTINCT $PLAN_NAME_COLUMN, $DATE_COLUMN, $ROUTINE_NAME_COLUMN FROM $TABLE_NAME ORDER BY $DATE_COLUMN DESC",
+            null
+        )
+    }
+
+    fun getWorkout() {
+
+    }
+
 
     companion object {
         const val TABLE_NAME = "workoutHistory"

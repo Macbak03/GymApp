@@ -10,14 +10,14 @@ import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
 import com.example.gymapp.model.routine.ExerciseDraft
-import com.example.gymapp.model.workout.ChildElement
-import com.example.gymapp.model.workout.GroupElement
+import com.example.gymapp.model.workout.WorkoutSeries
+import com.example.gymapp.model.workout.WorkoutAttributes
 import com.example.gymapp.model.workout.WorkoutExercise
 
 class WorkoutExpandableListAdapter(
     private val context: Context,
-    private val exercises: List<GroupElement>,
-    private val series: List<ChildElement>
+    private val exercises: List<WorkoutAttributes>,
+    private val series: List<WorkoutSeries>
 
 ) : BaseExpandableListAdapter() {
 
@@ -43,7 +43,7 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_layout_helper, null)
         }
-        val series = getChild(listPosition, expandedListPosition) as ChildElement
+        val series = getChild(listPosition, expandedListPosition) as WorkoutSeries
         val workoutExpandableLayout = view as WorkoutExpandableLayout?
         workoutExpandableLayout?.setSeries(series, expandedListPosition + 1)
         val noteEditText =workoutExpandableLayout?.getNoteEditText()
@@ -87,7 +87,7 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_title_layout_helper, null)
         }
-        val exercise = getGroup(listPosition) as GroupElement
+        val exercise = getGroup(listPosition) as WorkoutAttributes
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
         return view
