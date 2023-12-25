@@ -2,7 +2,7 @@ package com.example.gymapp.model.workout
 
 import com.example.gymapp.model.routine.TimeUnit
 
-class WorkoutAttributes(
+class WorkoutExerciseAttributes(
     var exerciseName: String?,
     var pause: String?,
     var pauseUnit: TimeUnit,

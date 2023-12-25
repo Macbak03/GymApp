@@ -36,7 +36,7 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                workoutSeries?.reps = s.toString()
+                workoutSeries?.actualReps = s.toString()
                 workoutSeries?.wasModified = true
             }
 
@@ -79,7 +79,7 @@ class WorkoutExpandableLayout(
         try {
             seriesCount.text = count.toString()
             weightUnitText.text = exercise?.loadUnit.toString()
-            repsEditText.setText(exercise?.reps)
+            repsEditText.setText(exercise?.actualReps)
             weightEditText.setText(exercise?.load)
             noteEditText.setText(exercise?.note)
         }finally {

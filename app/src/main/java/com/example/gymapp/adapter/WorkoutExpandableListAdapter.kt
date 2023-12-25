@@ -11,12 +11,12 @@ import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeries
-import com.example.gymapp.model.workout.WorkoutAttributes
+import com.example.gymapp.model.workout.WorkoutExerciseAttributes
 import com.example.gymapp.model.workout.WorkoutExercise
 
 class WorkoutExpandableListAdapter(
     private val context: Context,
-    private val exercises: List<WorkoutAttributes>,
+    private val exercises: List<WorkoutExerciseAttributes>,
     private val series: List<WorkoutSeries>
 
 ) : BaseExpandableListAdapter() {
@@ -87,7 +87,7 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_title_layout_helper, null)
         }
-        val exercise = getGroup(listPosition) as WorkoutAttributes
+        val exercise = getGroup(listPosition) as WorkoutExerciseAttributes
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
         return view
@@ -103,25 +103,26 @@ class WorkoutExpandableListAdapter(
                 val workoutExpandableLayout =
                     getChildView(i, j, false, null, null) as WorkoutExpandableLayout?
                 val childElement = workoutExpandableLayout?.getChildElement()
-                val exerciseDraft = groupElement?.pauseUnit?.let {
-                    childElement?.loadUnit?.let { it1 ->
-                        ExerciseDraft(
-                            groupElement.exerciseName,
-                            groupElement.pause,
-                            it,
-                            childElement.load,
-                            it1,
-                            groupElement.series,
-                            childElement.reps,
-                            groupElement.rpe,
-                            groupElement.pace,
-                            true
-                        )
+                if(groupElement != null && childElement != null)
+                {
+                    val exerciseDraft = ExerciseDraft(
+                        groupElement.exerciseName,
+                        groupElement.pause,
+                        groupElement.pauseUnit,
+                        childElement.load,
+                        childElement.loadUnit,
+                        groupElement.series,
+                        groupElement.reps,
+                        groupElement.rpe,
+                        groupElement.pace,
+                        true
+                    )
+                    val actualReps = childElement.actualReps?.toFloat()
+                    val exercise = exerciseDraft.toExercise()
+                    if(actualReps != null)
+                    {
+                        workout.add(WorkoutExercise(exercise, actualReps,i + 1, j + 1, childElement.note))
                     }
-                }
-                val exercise = exerciseDraft?.toExercise()
-                if (exercise != null) {
-                    workout.add(WorkoutExercise(exercise, i + 1, j + 1, childElement?.note))
                 }
             }
         }

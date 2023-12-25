@@ -13,13 +13,11 @@ import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.model.workout.WorkoutSeries
-import com.example.gymapp.model.workout.WorkoutAttributes
+import com.example.gymapp.model.workout.WorkoutExerciseAttributes
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
-import java.sql.Date
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
@@ -31,7 +29,7 @@ class WorkoutActivity : AppCompatActivity() {
     private lateinit var expandableListView: ExpandableListView
     private lateinit var workoutExpandableListAdapter: WorkoutExpandableListAdapter
     private val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
-    private val exercises: MutableList<WorkoutAttributes> = ArrayList()
+    private val exercises: MutableList<WorkoutExerciseAttributes> = ArrayList()
     private val series: MutableList<WorkoutSeries> = ArrayList()
     private var routineName: String? = null
     private var planName: String? = null
@@ -86,9 +84,6 @@ class WorkoutActivity : AppCompatActivity() {
             }
             val pause = pauseInt.toString()
 
-            val loadValue =
-                cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.LOAD_VALUE_COLUMN))
-
             val loadUnit =
                 cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.LOAD_UNIT_COLUMN))
 
@@ -118,7 +113,7 @@ class WorkoutActivity : AppCompatActivity() {
             val pace =
                 cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PACE_COLUMN))
 
-            val exercise = WorkoutAttributes(
+            val exercise = WorkoutExerciseAttributes(
                 exerciseName,
                 pause,
                 pauseUnit,
@@ -152,9 +147,6 @@ class WorkoutActivity : AppCompatActivity() {
                     nextPauseUnit = TimeUnit.s
                 }
                 val nextPause = nextPauseInt.toString()
-
-                val nextLoadValue =
-                    cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.LOAD_VALUE_COLUMN))
                 val nextLoadUnit =
                     cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.LOAD_UNIT_COLUMN))
                 val nextRepsRangeFrom =
@@ -180,7 +172,7 @@ class WorkoutActivity : AppCompatActivity() {
                 val nextPace =
                     cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PACE_COLUMN))
 
-                val nextExercise = WorkoutAttributes(
+                val nextExercise = WorkoutExerciseAttributes(
                     nextExerciseName,
                     nextPause,
                     nextPauseUnit,
