@@ -18,7 +18,6 @@ import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
-import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 
 class WorkoutActivity : AppCompatActivity() {
 
@@ -27,9 +26,8 @@ class WorkoutActivity : AppCompatActivity() {
     private lateinit var expandableListView: ExpandableListView
     private lateinit var workoutExpandableListAdapter: WorkoutExpandableListAdapter
     private val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
-    private val workoutSeriesDatabaseHelper = WorkoutSeriesDataBaseHelper(this, null)
-    private val exercises: MutableList<WorkoutExerciseDraft> = ArrayList()
-    private val series: MutableList<WorkoutSeriesDraft> = ArrayList()
+    private val workout: MutableList<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>> =
+        ArrayList()
     private var routineName: String? = null
     private var planName: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +35,7 @@ class WorkoutActivity : AppCompatActivity() {
         binding = ActivityWorkoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         expandableListView = binding.expandableListViewWorkout
-        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, exercises, series)
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout)
         expandableListView.setAdapter(workoutExpandableListAdapter)
         if (intent.hasExtra(StartWorkoutMenuFragment.ROUTINE_NAME) && intent.hasExtra(
                 StartWorkoutMenuFragment.PLAN_NAME
@@ -118,20 +116,21 @@ class WorkoutActivity : AppCompatActivity() {
                 exerciseName,
                 pause,
                 pauseUnit,
-                seriesAmount,
                 reps,
+                seriesAmount,
                 rpe,
                 pace,
                 ""
             )
-            val ser = WorkoutSeriesDraft(
-                "",
-                "",
-                WeightUnit.valueOf(loadUnit),
-                false
-            )
-            exercises.add(exercise)
-            series.add(ser)
+            val seriesList = List(seriesAmount.toInt()) {
+                WorkoutSeriesDraft(
+                    "",
+                    "",
+                    WeightUnit.valueOf(loadUnit),
+                    false
+                )
+            }
+            workout.add(workoutExpandableListAdapter.groupCount, Pair(exercise, seriesList))
             workoutExpandableListAdapter.notifyDataSetChanged()
 
             while (cursor.moveToNext()) {
@@ -159,7 +158,7 @@ class WorkoutActivity : AppCompatActivity() {
                 } else {
                     RangeReps(nextRepsRangeFrom, nextRepsRangeTo).toString()
                 }
-                val nextSeries =
+                val nextSeriesAmount =
                     cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.SERIES_COLUMN))
                 val nextRpeRangeFrom =
                     cursor.getInt(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.RPE_RANGE_FROM_COLUMN))
@@ -178,19 +177,20 @@ class WorkoutActivity : AppCompatActivity() {
                     nextPause,
                     nextPauseUnit,
                     nextReps,
-                    nextSeries,
+                    nextSeriesAmount,
                     nextRpe,
                     nextPace,
                     ""
                 )
-                val nextSer = WorkoutSeriesDraft(
-                    "",
-                    "",
-                    WeightUnit.valueOf(nextLoadUnit),
-                    false
-                )
-                exercises.add(nextExercise)
-                series.add(nextSer)
+                val nextSeriesList = List(nextSeriesAmount.toInt()) {
+                    WorkoutSeriesDraft(
+                        "",
+                        "",
+                        WeightUnit.valueOf(nextLoadUnit),
+                        false
+                    )
+                }
+                workout.add(workoutExpandableListAdapter.groupCount, Pair(nextExercise, nextSeriesList))
                 workoutExpandableListAdapter.notifyDataSetChanged()
             }
         }

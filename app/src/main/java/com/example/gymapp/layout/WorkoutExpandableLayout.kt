@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.gymapp.R
+import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 
@@ -72,19 +73,20 @@ class WorkoutExpandableLayout(
         customAttributesStyle.recycle()
     }
 
-    fun setSeries(seriesDraft: WorkoutSeriesDraft?, count: Int)
+    fun setSeries(seriesDraft: WorkoutSeriesDraft?, exerciseDraft: WorkoutExerciseDraft?, count: Int)
     {
         val customAttributesStyle =
             context.obtainStyledAttributes(attributes, R.styleable.WorkoutExpandableLayout, 0, 0)
         val weightUnitText = findViewById<TextView>(R.id.textViewWeightUnitValue)
         val seriesCount = findViewById<TextView>(R.id.textViewSeriesCount)
         workoutSeriesDraft = seriesDraft
+        workoutExerciseDraft = exerciseDraft
         try {
             seriesCount.text = count.toString()
             weightUnitText.text = seriesDraft?.loadUnit.toString()
             repsEditText.setText(seriesDraft?.actualReps)
             weightEditText.setText(seriesDraft?.load)
-            //noteEditText.setText(workoutExerciseDraft?.note)
+            noteEditText.setText(exerciseDraft?.note)
         }finally {
             customAttributesStyle.recycle()
         }
@@ -99,8 +101,8 @@ class WorkoutExpandableLayout(
         return this.noteEditText
     }
 
-    fun setWorkoutExerciseDraft(workoutExerciseDraft: WorkoutExerciseDraft)
-    {
-        this.workoutExerciseDraft = workoutExerciseDraft
+    fun getNote():String?{
+        return this.workoutExerciseDraft?.note
     }
+
 }

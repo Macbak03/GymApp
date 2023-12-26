@@ -63,7 +63,7 @@ class TrainingHistoryFragment : Fragment() {
             val date = getFormatDate(savedDate)
             workoutHistory.add(WorkoutHistoryElement(cursor.getString(cursor.getColumnIndexOrThrow(
                 WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
-                WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), savedDate
+                WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), date
             ))
             workoutHistoryRecyclerViewAdapter.notifyItemInserted(workoutHistoryRecyclerViewAdapter.itemCount)
             while (cursor.moveToNext())
