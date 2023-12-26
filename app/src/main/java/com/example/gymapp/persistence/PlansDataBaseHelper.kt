@@ -32,7 +32,9 @@ class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactor
     }
 
     fun getPlanId(planName: String): Int? {
-        return this.getValue(TABLE_NAME, PLAN_ID_COLUMN, PLAN_NAME_COLUMN, planName)?.toInt()
+        val selectionArgs = arrayOf(planName)
+        val selectBy = arrayOf(PLAN_NAME_COLUMN)
+        return this.getValue(TABLE_NAME, PLAN_ID_COLUMN, selectBy, selectionArgs)?.toInt()
     }
 
 

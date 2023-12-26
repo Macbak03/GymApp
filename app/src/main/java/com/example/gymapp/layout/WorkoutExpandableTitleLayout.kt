@@ -5,13 +5,13 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.gymapp.R
-import com.example.gymapp.model.workout.WorkoutExerciseAttributes
+import com.example.gymapp.model.workout.WorkoutExerciseDraft
 
 class WorkoutExpandableTitleLayout(
     private val context: Context,
     private val attributes: AttributeSet
 ) : LinearLayout(context, attributes) {
-    private var workoutWorkoutExerciseAttributes: WorkoutExerciseAttributes? = null
+    private var workoutExerciseDraft: WorkoutExerciseDraft? = null
 
     init {
         inflate(context, R.layout.workout_expandable_title_layout, this)
@@ -24,7 +24,7 @@ class WorkoutExpandableTitleLayout(
         customAttributesStyle.recycle()
     }
 
-    fun setExerciseAttributes(exerciseAttributes: WorkoutExerciseAttributes?) {
+    fun setExerciseAttributes(exerciseAttributes: WorkoutExerciseDraft?) {
         val customAttributesStyle = context.obtainStyledAttributes(
             attributes,
             R.styleable.WorkoutExpandableTitleLayout,
@@ -47,15 +47,16 @@ class WorkoutExpandableTitleLayout(
             rpe.text = exerciseAttributes?.rpe
             pace.text = exerciseAttributes?.pace
             if (exerciseAttributes != null) {
-                workoutWorkoutExerciseAttributes =
-                    WorkoutExerciseAttributes(
+                workoutExerciseDraft =
+                    WorkoutExerciseDraft(
                         exerciseAttributes.exerciseName,
                         exerciseAttributes.pause,
                         exerciseAttributes.pauseUnit,
                         exerciseAttributes.reps,
                         exerciseAttributes.series,
                         exerciseAttributes.rpe,
-                        exerciseAttributes.pace
+                        exerciseAttributes.pace,
+                        null
                     )
             }
         } finally {
@@ -63,7 +64,7 @@ class WorkoutExpandableTitleLayout(
         }
     }
 
-    fun getGroupElement(): WorkoutExerciseAttributes? {
-        return this.workoutWorkoutExerciseAttributes
+    fun getWorkoutExerciseDraft(): WorkoutExerciseDraft? {
+        return this.workoutExerciseDraft
     }
 }
