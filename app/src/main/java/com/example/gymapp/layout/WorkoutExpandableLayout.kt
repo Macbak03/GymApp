@@ -1,5 +1,6 @@
 package com.example.gymapp.layout
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,22 +9,25 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.gymapp.R
-import com.example.gymapp.model.workout.WorkoutSeries
+import com.example.gymapp.model.workout.WorkoutExerciseDraft
+import com.example.gymapp.model.workout.WorkoutSeriesDraft
 
 class WorkoutExpandableLayout(
     private val context: Context,
-    private val attributes: AttributeSet
+    private val attributes: AttributeSet,
 ): LinearLayout(context, attributes) {
 
     private val repsEditText: EditText
     private val weightEditText: EditText
     private val noteEditText: EditText
-    private var workoutSeries: WorkoutSeries? = null
+    private var workoutSeriesDraft: WorkoutSeriesDraft? = null
+    private var workoutExerciseDraft: WorkoutExerciseDraft? = null
 
     init {
         inflate(context, R.layout.workout_expandable_layout, this)
         val customAttributesStyle =
             context.obtainStyledAttributes(attributes, R.styleable.WorkoutExpandableLayout, 0, 0)
+
 
         repsEditText = findViewById(R.id.editTextWorkoutReps)
         weightEditText = findViewById(R.id.editTextWorkoutWeight)
@@ -36,8 +40,8 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                workoutSeries?.actualReps = s.toString()
-                workoutSeries?.wasModified = true
+                workoutSeriesDraft?.actualReps = s.toString()
+                workoutSeriesDraft?.wasModified = true
             }
 
         })
@@ -49,8 +53,8 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                workoutSeries?.load = s.toString()
-                workoutSeries?.wasModified = true
+                workoutSeriesDraft?.load = s.toString()
+                workoutSeriesDraft?.wasModified = true
             }
         })
         noteEditText.addTextChangedListener(object : TextWatcher{
@@ -61,39 +65,42 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
-                workoutSeries?.note = s.toString()
-                workoutSeries?.wasModified = true
+                workoutExerciseDraft?.note = s.toString()
             }
 
         })
         customAttributesStyle.recycle()
     }
 
-    fun setSeries(exercise: WorkoutSeries?, count: Int)
+    fun setSeries(seriesDraft: WorkoutSeriesDraft?, count: Int)
     {
         val customAttributesStyle =
             context.obtainStyledAttributes(attributes, R.styleable.WorkoutExpandableLayout, 0, 0)
         val weightUnitText = findViewById<TextView>(R.id.textViewWeightUnitValue)
         val seriesCount = findViewById<TextView>(R.id.textViewSeriesCount)
-        workoutSeries = exercise
+        workoutSeriesDraft = seriesDraft
         try {
             seriesCount.text = count.toString()
-            weightUnitText.text = exercise?.loadUnit.toString()
-            repsEditText.setText(exercise?.actualReps)
-            weightEditText.setText(exercise?.load)
-            noteEditText.setText(exercise?.note)
+            weightUnitText.text = seriesDraft?.loadUnit.toString()
+            repsEditText.setText(seriesDraft?.actualReps)
+            weightEditText.setText(seriesDraft?.load)
+            //noteEditText.setText(workoutExerciseDraft?.note)
         }finally {
             customAttributesStyle.recycle()
         }
     }
 
 
-    fun getChildElement(): WorkoutSeries?{
-        return this.workoutSeries
+    fun getWorkoutSeriesDraft(): WorkoutSeriesDraft?{
+        return this.workoutSeriesDraft
     }
 
     fun getNoteEditText(): EditText{
         return this.noteEditText
     }
 
+    fun setWorkoutExerciseDraft(workoutExerciseDraft: WorkoutExerciseDraft)
+    {
+        this.workoutExerciseDraft = workoutExerciseDraft
+    }
 }

@@ -12,15 +12,13 @@ import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
-import com.example.gymapp.model.workout.WorkoutSeries
-import com.example.gymapp.model.workout.WorkoutExerciseAttributes
+import com.example.gymapp.model.workout.CustomDate
+import com.example.gymapp.model.workout.WorkoutSeriesDraft
+import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
+import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 
 class WorkoutActivity : AppCompatActivity() {
 
@@ -29,8 +27,9 @@ class WorkoutActivity : AppCompatActivity() {
     private lateinit var expandableListView: ExpandableListView
     private lateinit var workoutExpandableListAdapter: WorkoutExpandableListAdapter
     private val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
-    private val exercises: MutableList<WorkoutExerciseAttributes> = ArrayList()
-    private val series: MutableList<WorkoutSeries> = ArrayList()
+    private val workoutSeriesDatabaseHelper = WorkoutSeriesDataBaseHelper(this, null)
+    private val exercises: MutableList<WorkoutExerciseDraft> = ArrayList()
+    private val series: MutableList<WorkoutSeriesDraft> = ArrayList()
     private var routineName: String? = null
     private var planName: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,24 +39,26 @@ class WorkoutActivity : AppCompatActivity() {
         expandableListView = binding.expandableListViewWorkout
         workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, exercises, series)
         expandableListView.setAdapter(workoutExpandableListAdapter)
-        if (intent.hasExtra(StartWorkoutMenuFragment.ROUTINE_NAME) && intent.hasExtra(StartWorkoutMenuFragment.PLAN_NAME))
-        {
+        if (intent.hasExtra(StartWorkoutMenuFragment.ROUTINE_NAME) && intent.hasExtra(
+                StartWorkoutMenuFragment.PLAN_NAME
+            )
+        ) {
             routineName = intent.getStringExtra(StartWorkoutMenuFragment.ROUTINE_NAME)
-            binding.textViewCurrentWorkout.text = intent.getStringExtra(StartWorkoutMenuFragment.ROUTINE_NAME)
+            binding.textViewCurrentWorkout.text =
+                intent.getStringExtra(StartWorkoutMenuFragment.ROUTINE_NAME)
             planName = intent.getStringExtra(StartWorkoutMenuFragment.PLAN_NAME)
             val plansDataBase = PlansDataBaseHelper(this, null)
-            if(planName != null)
-            {
+            if (planName != null) {
                 val name = planName
-                if(name != null)
-                {
+                if (name != null) {
                     val planId = plansDataBase.getPlanId(name)
                     loadRoutine(planId)
                 }
             }
         }
-        binding.buttonSaveWorkout.setOnClickListener{
-            val date = getDate()
+        binding.buttonSaveWorkout.setOnClickListener {
+            val customDate = CustomDate()
+            val date = customDate.getDate()
             saveWorkoutToHistory(date)
         }
     }
@@ -113,7 +114,7 @@ class WorkoutActivity : AppCompatActivity() {
             val pace =
                 cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PACE_COLUMN))
 
-            val exercise = WorkoutExerciseAttributes(
+            val exercise = WorkoutExerciseDraft(
                 exerciseName,
                 pause,
                 pauseUnit,
@@ -121,12 +122,12 @@ class WorkoutActivity : AppCompatActivity() {
                 reps,
                 rpe,
                 pace,
+                ""
             )
-            val ser = WorkoutSeries(
+            val ser = WorkoutSeriesDraft(
                 "",
                 "",
                 WeightUnit.valueOf(loadUnit),
-                "",
                 false
             )
             exercises.add(exercise)
@@ -172,7 +173,7 @@ class WorkoutActivity : AppCompatActivity() {
                 val nextPace =
                     cursor.getString(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PACE_COLUMN))
 
-                val nextExercise = WorkoutExerciseAttributes(
+                val nextExercise = WorkoutExerciseDraft(
                     nextExerciseName,
                     nextPause,
                     nextPauseUnit,
@@ -180,12 +181,12 @@ class WorkoutActivity : AppCompatActivity() {
                     nextSeries,
                     nextRpe,
                     nextPace,
+                    ""
                 )
-                val nextSer = WorkoutSeries(
+                val nextSer = WorkoutSeriesDraft(
                     "",
                     "",
                     WeightUnit.valueOf(nextLoadUnit),
-                    "",
                     false
                 )
                 exercises.add(nextExercise)
@@ -196,31 +197,25 @@ class WorkoutActivity : AppCompatActivity() {
 
     }
 
-    private fun saveWorkoutToHistory(date: String){
-        if(routineName != null && planName != null)
-        {
+    private fun saveWorkoutToHistory(date: String) {
+        if (routineName != null && planName != null) {
             val planName = this.planName
             val routineName = this.routineName
-            if (planName != null && routineName != null)
-            {
+            if (planName != null && routineName != null) {
                 try {
-                    workoutHistoryDatabase.addWorkout(workoutExpandableListAdapter.getWorkout(), date, planName, routineName)
+                    workoutHistoryDatabase.addExercises(
+                        workoutExpandableListAdapter,
+                        date,
+                        planName,
+                        routineName
+                    )
                     Toast.makeText(this, "Workout Saved!", Toast.LENGTH_SHORT).show()
                     finish()
-                } catch (exception: ValidationException)
-                {
+                } catch (exception: ValidationException) {
                     Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
 
-    private fun getDate() : String
-    {
-        val date = Calendar.getInstance().time
-        val timeZone = TimeZone.getDefault()
-        val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-        formatter.timeZone = timeZone
-        return formatter.format(date)
-    }
 }

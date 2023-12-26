@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.adapter.WorkoutHistoryRecyclerViewAdapter
 import com.example.gymapp.databinding.FragmentTrainingHistoryBinding
+import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workoutHistory.WorkoutHistoryElement
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
@@ -57,21 +58,37 @@ class TrainingHistoryFragment : Fragment() {
         val cursor = workoutHistoryDatabase.getHistory()
         if (cursor.moveToFirst())
         {
+            val savedDate = cursor.getString(cursor.getColumnIndexOrThrow(
+                WorkoutHistoryDatabaseHelper.DATE_COLUMN))
+            val date = getFormatDate(savedDate)
             workoutHistory.add(WorkoutHistoryElement(cursor.getString(cursor.getColumnIndexOrThrow(
                 WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
-                WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
-                WorkoutHistoryDatabaseHelper.DATE_COLUMN))
+                WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), savedDate
             ))
             workoutHistoryRecyclerViewAdapter.notifyItemInserted(workoutHistoryRecyclerViewAdapter.itemCount)
             while (cursor.moveToNext())
             {
+                val nextSavedDate = cursor.getString(cursor.getColumnIndexOrThrow(
+                    WorkoutHistoryDatabaseHelper.DATE_COLUMN))
+                val nextDate = getFormatDate(nextSavedDate)
                 workoutHistory.add(WorkoutHistoryElement(cursor.getString(cursor.getColumnIndexOrThrow(
                     WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
-                    WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
-                    WorkoutHistoryDatabaseHelper.DATE_COLUMN))
+                    WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), nextDate
                 ))
                 workoutHistoryRecyclerViewAdapter.notifyItemInserted(workoutHistoryRecyclerViewAdapter.itemCount)
             }
+        }
+    }
+
+    private fun getFormatDate(savedDate: String): String {
+        val inputFormat = SimpleDateFormat(CustomDate.pattern, Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+
+        val date = inputFormat.parse(savedDate)
+        return if (date != null) {
+            outputFormat.format(date)
+        } else {
+            "dateError"
         }
     }
 }
