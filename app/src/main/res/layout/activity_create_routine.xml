@@ -12,7 +12,7 @@
     <ExpandableListView
         android:id="@+id/ExpandableListViewRoutineItems"
         android:layout_width="match_parent"
-        android:layout_height="460dp"
+        android:layout_height="580dp"
         android:descendantFocusability="beforeDescendants"
         android:nestedScrollingEnabled="true"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,9 +23,10 @@
         android:id="@+id/buttonSaveRoutine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="144dp"
-        android:layout_marginTop="160dp"
+        android:layout_marginTop="8dp"
         android:text="Save Routine"
+        app:layout_constraintEnd_toStartOf="@+id/buttonAddExercise"
+        app:layout_constraintHorizontal_bias="0.895"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
 
@@ -33,13 +34,12 @@
         android:id="@+id/buttonAddExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:contentDescription="AddExercise"
         android:src="@android:drawable/ic_input_add"
         android:tint="@color/white"
         app:backgroundTint="@color/material_dynamic_neutral20"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.743"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDeleteExercise"
         app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems"
         app:maxImageSize="50dp" />
 
@@ -50,6 +50,7 @@
         android:inputType="text"
         android:hint="Enter routine name"
         android:textAlignment="center"
+        android:textSize="25sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -58,7 +59,7 @@
         android:id="@+id/buttonDeleteExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="10dp"
         android:contentDescription="DeleteExercise"
         android:src="@android:drawable/ic_delete"
         android:tint="@color/white"
