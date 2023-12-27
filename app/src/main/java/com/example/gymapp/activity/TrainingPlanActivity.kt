@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.adapter.TrainingPlanRecyclerViewAdapter
 import com.example.gymapp.databinding.ActivityTrainingPlanBinding
+import com.example.gymapp.fragment.TrainingPlansFragment
 import com.example.gymapp.model.trainingPlans.TrainingPlanElement
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
@@ -17,8 +18,8 @@ class TrainingPlanActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTrainingPlanBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var trainingPlanRecyclerViewAdapter: TrainingPlanRecyclerViewAdapter
-    private lateinit var planName: String
 
+    private var planName: String? = null
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
     private val routinesDataBase = RoutinesDataBaseHelper(this, null)
 
@@ -27,6 +28,7 @@ class TrainingPlanActivity : AppCompatActivity() {
         const val ROUTINE_NAME = "com.example.gymapp.routinename"
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private val startCreateRoutineActivityForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -40,12 +42,13 @@ class TrainingPlanActivity : AppCompatActivity() {
         binding = ActivityTrainingPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        if (intent.hasExtra(TrainingPlansActivity.NEXT_SCREEN)) {
+        if (intent.hasExtra(TrainingPlansFragment.NEXT_SCREEN)) {
             binding.textViewTrainingPlanName.text =
-                intent.getStringExtra(TrainingPlansActivity.NEXT_SCREEN)
+                intent.getStringExtra(TrainingPlansFragment.NEXT_SCREEN)
 
         }
         planName = binding.textViewTrainingPlanName.text.toString()
+
 
         recyclerView = binding.RecyclerViewTrainingPlan
         trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(routines)
@@ -77,22 +80,22 @@ class TrainingPlanActivity : AppCompatActivity() {
     @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent() {
         val plansDataBase = PlansDataBaseHelper(this, null)
-        val planId = plansDataBase.getPlanId(planName)
-        if (planId != null) {
-            if(!routinesDataBase.isPlanEmpty(planId.toString()))
-            {
-                routines.add(TrainingPlanElement("You don't have any routines yet"))
-            }
-            val cursor = routinesDataBase.getRoutinesInPlan(planId)
-            if (cursor.moveToFirst()) {
-                routines.add(
-                    TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
-                while (cursor.moveToNext()) {
-                    routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
-
+        val planName = this.planName
+        if(planName != null)
+        {
+            val planId = plansDataBase.getPlanId(planName)
+            if (planId != null) {
+                if(!routinesDataBase.isPlanEmpty(planId.toString()))
+                {
+                    routines.add(TrainingPlanElement("You don't have any routines yet"))
                 }
+                val routinesInPlan = routinesDataBase.getRoutinesInPlan(planId)
+                for (routine in routinesInPlan)
+                {
+                    routines.add(routine)
+                }
+                trainingPlanRecyclerViewAdapter.notifyDataSetChanged()
             }
-            trainingPlanRecyclerViewAdapter.notifyDataSetChanged()
         }
     }
 }

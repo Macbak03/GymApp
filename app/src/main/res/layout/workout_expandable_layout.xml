@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginTop="5dp">
 
     <TextView
         android:id="@+id/textViewSeriesCount"
@@ -13,8 +18,9 @@
         android:layout_marginStart="10dp"/>
 
     <EditText
+        android:id="@+id/editTextWorkoutReps"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50sp"
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:hint="Reps"
@@ -27,11 +33,13 @@
         android:textSize="18sp"
         android:textAlignment="center"/>
     <EditText
+        android:id="@+id/editTextWorkoutWeight"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50sp"
         android:layout_weight="1"
         android:hint="Weight"
-        android:autofillHints="" />
+        android:autofillHints=""
+        android:singleLine="true"/>
     <TextView
         android:id="@+id/textViewWeightUnitValue"
         android:layout_width="wrap_content"
@@ -39,4 +47,16 @@
         android:textSize="18sp"
         android:text="@string/val"
         android:layout_marginEnd="10dp"/>
+</LinearLayout>
+
+    <EditText
+        android:id="@+id/editTextNote"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:hint="Note"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"/>
+
 </LinearLayout>

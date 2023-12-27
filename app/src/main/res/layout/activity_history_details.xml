@@ -4,39 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.WorkoutActivity">
+    tools:context=".activity.HistoryDetailsActivity">
 
     <TextView
-        android:id="@+id/textViewCurrentWorkout"
+        android:id="@+id/textViewHistoryDetailRoutineName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="CurrentWorkout"
+        android:text="Routine"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="6dp"
         android:textSize="30sp"
         android:textStyle="bold"/>
 
+    <TextView
+        android:id="@+id/textViewHistoryDetailDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewHistoryDetailRoutineName"
+        android:textSize="20sp"/>
+
     <ExpandableListView
-        android:id="@+id/expandableListViewWorkout"
+        android:id="@+id/expandableListViewHistoryDetails"
         android:layout_width="match_parent"
-        android:layout_height="520dp"
-        android:layout_marginTop="48dp"
-        android:descendantFocusability="beforeDescendants"
-        android:nestedScrollingEnabled="true"
+        android:layout_height="455dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/buttonSaveWorkout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Save Workout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expandableListViewWorkout" />
-
+        app:layout_constraintTop_toBottomOf="@+id/textViewHistoryDetailDate" />
 </androidx.constraintlayout.widget.ConstraintLayout>

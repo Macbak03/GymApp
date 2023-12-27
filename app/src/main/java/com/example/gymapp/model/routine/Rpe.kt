@@ -10,9 +10,7 @@ sealed interface Rpe{
             }
             val regex = Regex("""^(\d+)$|^(\d+)-(\d+)$""")
             val match = regex.matchEntire(rpe)
-            if (match == null) {
-                throw ValidationException("rpe must be a number (eg. 7) or range (eg. 7-8)")
-            }
+                ?: throw ValidationException("rpe must be a number (eg. 7) or range (eg. 7-8)")
             val (exactValue, rangeFrom, rangeTo) = match.destructured
             return if (exactValue.isEmpty()) {
                 val intRangeFrom = rangeFrom.toInt()

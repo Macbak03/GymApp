@@ -13,11 +13,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
-import com.example.gymapp.activity.CreateRoutineActivity
-import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.activity.WorkoutActivity
 import com.example.gymapp.adapter.StartWorkoutMenuRecycleViewAdapter
-import com.example.gymapp.adapter.TrainingPlanRecyclerViewAdapter
 import com.example.gymapp.databinding.FragmentStartWorkoutMenuBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlanElement
 import com.example.gymapp.persistence.PlansDataBaseHelper
@@ -35,6 +32,7 @@ class StartWorkoutMenuFragment : Fragment() {
         const val ROUTINE_NAME = "com.example.gymapp.routinename"
         const val PLAN_NAME = "com.example.gymapp.planname"
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,8 +44,8 @@ class StartWorkoutMenuFragment : Fragment() {
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
             button?.visibility = View.GONE
-            spinner?.isEnabled= false
-            textView?.isEnabled= false
+            spinner?.isEnabled = false
+            textView?.isEnabled = false
         }
         return binding.root
     }
@@ -57,7 +55,7 @@ class StartWorkoutMenuFragment : Fragment() {
         recyclerView = binding.RecyclerViewStartWorkoutMenu
         val chosenTrainingPlan = arguments?.getString("SELECTED_ITEM_KEY")
         setRecyclerViewContent(chosenTrainingPlan)
-        startWorkoutMenuRecyclerViewAdapter =  StartWorkoutMenuRecycleViewAdapter(routines)
+        startWorkoutMenuRecyclerViewAdapter = StartWorkoutMenuRecycleViewAdapter(routines)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = startWorkoutMenuRecyclerViewAdapter
 
@@ -67,7 +65,10 @@ class StartWorkoutMenuFragment : Fragment() {
                 val explicitIntent = Intent(context, WorkoutActivity::class.java)
                 explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
                 explicitIntent.putExtra(PLAN_NAME, chosenTrainingPlan)
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
                 startActivity(explicitIntent)
+
             }
         })
     }
@@ -79,8 +80,8 @@ class StartWorkoutMenuFragment : Fragment() {
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
             button?.visibility = View.VISIBLE
-            spinner?.isEnabled= true
-            textView?.isEnabled= true
+            spinner?.isEnabled = true
+            textView?.isEnabled = true
         }
         _binding = null
     }
@@ -89,20 +90,11 @@ class StartWorkoutMenuFragment : Fragment() {
     private fun setRecyclerViewContent(planName: String?) {
         val plansDataBase = PlansDataBaseHelper(requireContext(), null)
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
-        if(planName != null) {
+        if (planName != null) {
             val planId = plansDataBase.getPlanId(planName)
             if (planId != null) {
-                val cursor = routinesDataBase.getRoutinesInPlan(planId)
-                if (cursor.moveToFirst()) {
-                    routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
-                    while (cursor.moveToNext()) {
-                        routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_NAME_COLUMN))))
-
-                    }
-                }
+                routines = routinesDataBase.getRoutinesInPlan(planId)
             }
         }
-
     }
-
 }

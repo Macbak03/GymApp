@@ -48,9 +48,7 @@ data class ExercisePace(
             }
             val regex = Regex("""^[x\d]{4}$""")
             val match = regex.matchEntire(pace)
-            if (match == null) {
-                throw ValidationException("pace must be in correct form, eg. 21x1")
-            }
+                ?: throw ValidationException("pace must be in correct form, eg. 21x1")
             val exercisePace = match.value
             return ExercisePace(
                 Pace.fromChar(exercisePace[0]),

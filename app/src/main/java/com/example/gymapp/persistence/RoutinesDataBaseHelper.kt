@@ -3,6 +3,7 @@ package com.example.gymapp.persistence
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.example.gymapp.model.trainingPlans.TrainingPlanElement
 
 class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     Repository(
@@ -23,13 +24,26 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
     }
 
 
-    fun getRoutinesInPlan(planId: Int): Cursor {
+    private fun getRoutinesInPlanCursor(planId: Int): Cursor {
         val dataBaseRead = this.readableDatabase
         return dataBaseRead.rawQuery(
             "SELECT $ROUTINE_NAME_COLUMN FROM $TABLE_NAME WHERE $PLAN_ID_COLUMN = '$planId' ORDER BY $ROUTINE_ID_COLUMN",
             null
         )
+    }
 
+    fun getRoutinesInPlan(planId: Int): MutableList<TrainingPlanElement>
+    {
+        val routines: MutableList<TrainingPlanElement> = ArrayList()
+        val cursor = getRoutinesInPlanCursor(planId)
+        if(cursor.moveToFirst())
+        {
+            routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(ROUTINE_NAME_COLUMN))))
+            while (cursor.moveToNext()) {
+                routines.add(TrainingPlanElement(cursor.getString(cursor.getColumnIndexOrThrow(ROUTINE_NAME_COLUMN))))
+            }
+        }
+        return routines
     }
 
     fun isPlanEmpty(planId: String): Boolean{

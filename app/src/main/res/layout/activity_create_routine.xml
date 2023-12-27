@@ -23,20 +23,25 @@
         android:id="@+id/buttonSaveRoutine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="156dp"
+        android:layout_marginStart="144dp"
+        android:layout_marginTop="160dp"
         android:text="Save Routine"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/buttonAddExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add exercise"
+        android:contentDescription="AddExercise"
+        android:src="@android:drawable/ic_input_add"
+        android:tint="@color/white"
+        app:backgroundTint="@color/material_dynamic_neutral20"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.743"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
+        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems"
+        app:maxImageSize="50dp" />
 
     <EditText
         android:id="@+id/editTextRoutineName"
@@ -49,25 +54,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/buttonDeleteExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="156dp"
-        android:layout_marginEnd="28dp"
-        android:text="Delete Exercise"
+        android:layout_marginEnd="16dp"
+        android:contentDescription="DeleteExercise"
+        android:src="@android:drawable/ic_delete"
+        android:tint="@color/white"
+        app:backgroundTint="@color/material_dynamic_neutral20"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="91dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="64dp"
-        android:text="Load DB"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
+        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems"
+        app:maxImageSize="40dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

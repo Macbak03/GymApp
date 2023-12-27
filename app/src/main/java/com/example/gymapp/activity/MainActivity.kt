@@ -1,13 +1,8 @@
 package com.example.gymapp.activity
 
-import android.app.ActivityOptions
-import android.content.Intent
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.gymapp.databinding.ActivityMainBinding
@@ -19,7 +14,8 @@ import com.example.gymapp.fragment.TrainingPlansFragment
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
-import com.google.android.material.navigation.NavigationView
+import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
+import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -28,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     private val exercisesDataBase = ExercisesDataBaseHelper(this, null)
     private val routinesDataBase = RoutinesDataBaseHelper(this, null)
     private val planDataBase = PlansDataBaseHelper(this, null)
+    private val workoutHistoryDataBase = WorkoutHistoryDatabaseHelper(this, null)
+    private val workoutSeriesDataBase = WorkoutSeriesDataBaseHelper(this, null)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -47,7 +45,9 @@ class MainActivity : AppCompatActivity() {
         planDataBase.onCreate(planDataBase.readableDatabase)
         routinesDataBase.onCreate(routinesDataBase.readableDatabase)
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
-        routinesDataBase.setForeignKeys("ON")
+        workoutHistoryDataBase.onCreate(workoutHistoryDataBase.readableDatabase)
+        workoutSeriesDataBase.onCreate(workoutSeriesDataBase.readableDatabase)
+        planDataBase.setForeignKeys("ON")
         
     }
 

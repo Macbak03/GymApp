@@ -10,15 +10,20 @@ import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.Weight
+import com.example.gymapp.model.workout.WorkoutSeriesDraft
+import com.example.gymapp.model.workout.WorkoutExerciseDraft
+import com.example.gymapp.model.workout.WorkoutExercise
+import com.example.gymapp.model.workout.WorkoutSeries
 
 class WorkoutExpandableListAdapter(
     private val context: Context,
-    private val exercises: List<ExerciseDraft>
+    private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>
 
 ) : BaseExpandableListAdapter() {
 
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
-        return exercises[listPosition]
+        return workout[listPosition].second[expandedListPosition]
     }
 
     override fun getChildId(listPosition: Int, expandedListPosition: Int): Long {
@@ -39,22 +44,29 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_layout_helper, null)
         }
-        val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
+        val series = getChild(listPosition, expandedListPosition) as WorkoutSeriesDraft
+        val workoutExerciseDraft = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableLayout = view as WorkoutExpandableLayout?
-        workoutExpandableLayout?.setWeightUnitText(exercise.loadUnit.toString(), expandedListPosition + 1)
+        workoutExpandableLayout?.setSeries(series, workoutExerciseDraft, expandedListPosition + 1)
+        val noteEditText = workoutExpandableLayout?.getNoteEditText()
+        if (!isLastChild) {
+            noteEditText?.visibility = View.GONE
+        } else {
+            noteEditText?.visibility = View.VISIBLE
+        }
         return view
     }
 
     override fun getChildrenCount(listPosition: Int): Int {
-        return exercises[listPosition].series?.toInt() ?: 0
+        return workout[listPosition].first.series?.toInt() ?: 0
     }
 
     override fun getGroup(listPosition: Int): Any {
-        return exercises[listPosition]
+        return workout[listPosition].first
     }
 
     override fun getGroupCount(): Int {
-        return exercises.size
+        return workout.size
     }
 
     override fun getGroupId(listPosition: Int): Long {
@@ -74,10 +86,61 @@ class WorkoutExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_title_layout_helper, null)
         }
-        val exercise = getGroup(listPosition) as ExerciseDraft
+        val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
         return view
+    }
+
+    fun getWorkoutGroup(): ArrayList<WorkoutExercise> {
+        val workout = ArrayList<WorkoutExercise>()
+        for (i: Int in 0 until groupCount) {
+            val workoutExpandableTitleLayout =
+                getGroupView(i, true, null, null) as WorkoutExpandableTitleLayout?
+            val workoutExerciseDraft = workoutExpandableTitleLayout?.getWorkoutExerciseDraft()
+            val workoutExpandableLayout =
+                getChildView(i, getChildrenCount(i)-1, true, null, null) as WorkoutExpandableLayout?
+            val workoutSeriesDraft = workoutExpandableLayout?.getWorkoutSeriesDraft()
+            val note = workoutExpandableLayout?.getNote()
+            if (workoutExerciseDraft != null && workoutSeriesDraft != null) {
+                val exerciseDraft = ExerciseDraft(
+                    workoutExerciseDraft.exerciseName,
+                    workoutExerciseDraft.pause,
+                    workoutExerciseDraft.pauseUnit,
+                    workoutSeriesDraft.load,
+                    workoutSeriesDraft.loadUnit,
+                    workoutExerciseDraft.series,
+                    workoutExerciseDraft.reps,
+                    workoutExerciseDraft.rpe,
+                    workoutExerciseDraft.pace,
+                    true
+                )
+                val exercise = exerciseDraft.toExercise()
+                workout.add(WorkoutExercise(exercise, i + 1, note))
+            }
+        }
+        return workout
+    }
+
+    fun getWorkoutSeries(exerciseIndex: Int): ArrayList<WorkoutSeries> {
+        val series = ArrayList<WorkoutSeries>()
+        series.clear()
+        for (i: Int in 0 until getChildrenCount(exerciseIndex)) {
+            val workoutExpandableLayout =
+                getChildView(exerciseIndex, i, false, null, null) as WorkoutExpandableLayout?
+            val workoutSeriesDraft = workoutExpandableLayout?.getWorkoutSeriesDraft()
+            if (workoutSeriesDraft != null) {
+                val actualReps = workoutSeriesDraft.actualReps?.toFloat()
+                val load = workoutSeriesDraft.load?.toFloat()
+                if (actualReps != null && load != null) {
+                    val weight = Weight(load, workoutSeriesDraft.loadUnit)
+                    if (weight != null) {
+                        series.add(WorkoutSeries(actualReps, i + 1, weight))
+                    }
+                }
+            }
+        }
+        return series
     }
 
 

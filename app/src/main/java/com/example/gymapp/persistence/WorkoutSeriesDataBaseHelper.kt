@@ -1,0 +1,120 @@
+package com.example.gymapp.persistence
+
+import android.content.ContentValues
+import android.content.Context
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
+import com.example.gymapp.model.routine.WeightUnit
+import com.example.gymapp.model.workout.WorkoutSeries
+import com.example.gymapp.model.workout.WorkoutSeriesDraft
+
+class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
+    Repository(
+        context, factory,
+    ) {
+    override fun onCreate(db: SQLiteDatabase) {
+        val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
+                + EXERCISE_ID_COLUMN + " INTEGER NOT NULL," +
+                SERIES_ORDER_COLUMN + " INTEGER NOT NULL," +
+                ACTUAL_REPS_COLUMN + " REAL NOT NULL," +
+                LOAD_VALUE_COLUMN + " REAL NOT NULL," +
+                " FOREIGN KEY " + "(" + EXERCISE_ID_COLUMN + ")" + " REFERENCES " + WorkoutHistoryDatabaseHelper.TABLE_NAME + "(" + WorkoutHistoryDatabaseHelper.EXERCISE_ID_COLUMN + ")"
+                + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
+        db.execSQL(query)
+    }
+
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+        onCreate(db)
+    }
+
+    private fun addSeriesToHistory(
+        workoutSeries: WorkoutSeries,
+        exerciseId: Int
+    ) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+
+        values.put(EXERCISE_ID_COLUMN, exerciseId)
+        values.put(SERIES_ORDER_COLUMN, workoutSeries.seriesCount)
+        values.put(ACTUAL_REPS_COLUMN, workoutSeries.actualReps)
+        values.put(LOAD_VALUE_COLUMN, workoutSeries.load.weight)
+
+        db.insert(TABLE_NAME, null, values)
+    }
+
+    fun addSeries(
+        series: ArrayList<WorkoutSeries>,
+        exerciseId: Int
+    ) {
+        for (ser in series) {
+            addSeriesToHistory(ser, exerciseId)
+        }
+    }
+
+    private fun getSeriesCursor(exerciseId: Int): Cursor {
+        val databaseRead = this.readableDatabase
+        val select = arrayOf(ACTUAL_REPS_COLUMN, LOAD_VALUE_COLUMN)
+        val selection = "$EXERCISE_ID_COLUMN = ?"
+        val selectionArgs = arrayOf(exerciseId.toString())
+        val sortOrder = "$SERIES_ORDER_COLUMN ASC"
+        return databaseRead.query(
+            TABLE_NAME,
+            select,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            sortOrder
+        )
+    }
+
+    private fun getLoadUnit(exerciseId: Int): WeightUnit? {
+        val databaseRead = this.readableDatabase
+        var loadUnit: WeightUnit? =  null
+        val cursor =
+            databaseRead.rawQuery(
+                "SELECT ${WorkoutHistoryDatabaseHelper.LOAD_UNIT_COLUMN} FROM ${WorkoutHistoryDatabaseHelper.TABLE_NAME} WHERE ${WorkoutHistoryDatabaseHelper.EXERCISE_ID_COLUMN} = '$exerciseId'",
+                null
+            )
+        if(cursor.moveToFirst())
+        {
+            loadUnit = WeightUnit.valueOf(cursor.getString(cursor.getColumnIndexOrThrow(WorkoutHistoryDatabaseHelper.LOAD_UNIT_COLUMN)))
+        }
+        cursor.close()
+        return loadUnit
+    }
+
+    fun getSeries(exerciseId: Int): List<WorkoutSeriesDraft> {
+        val workoutSeries: MutableList<WorkoutSeriesDraft> = ArrayList()
+        val cursor = getSeriesCursor(exerciseId)
+        if (cursor.moveToFirst()) {
+            val actualReps = cursor.getString(cursor.getColumnIndexOrThrow(ACTUAL_REPS_COLUMN))
+            val loadValue = cursor.getString(cursor.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
+            val loadUnit = getLoadUnit(exerciseId)
+            if(loadUnit != null)
+            {
+                workoutSeries.add(WorkoutSeriesDraft(actualReps, loadValue, loadUnit, false))
+            }
+            while (cursor.moveToNext())
+            {
+                val nextActualReps = cursor.getString(cursor.getColumnIndexOrThrow(ACTUAL_REPS_COLUMN))
+                val nextLoadValue = cursor.getString(cursor.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
+                val nextLoadUnit = getLoadUnit(exerciseId)
+                if(nextLoadUnit != null)
+                {
+                    workoutSeries.add(WorkoutSeriesDraft(nextActualReps, nextLoadValue, nextLoadUnit, false))
+                }
+            }
+        }
+        return workoutSeries
+    }
+
+
+    companion object {
+        const val TABLE_NAME = "workoutSeries"
+        const val EXERCISE_ID_COLUMN = "ExerciseID"
+        const val SERIES_ORDER_COLUMN = "SeriesOrder"
+        const val ACTUAL_REPS_COLUMN = "ActualReps"
+        const val LOAD_VALUE_COLUMN = "LoadValue"
+    }
+}
