@@ -23,7 +23,7 @@
             android:layout_height="50sp"
             android:layout_marginStart="10dp"
             android:layout_weight="1"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:text="Reps" />
         <TextView
             android:layout_width="20dp"
@@ -36,7 +36,7 @@
             android:layout_width="0dp"
             android:layout_height="50sp"
             android:layout_weight="1"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:text="Weight" />
         <TextView
             android:id="@+id/textViewHistoryDetailWeightUnitValue"
@@ -50,9 +50,9 @@
     <TextView
         android:id="@+id/textViewHistoryDetailNote"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:text="Note"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:layout_marginTop="5dp"
