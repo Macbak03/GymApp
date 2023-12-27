@@ -11,5 +11,4 @@ data class WorkoutExerciseDraft(
     var rpe: String?,
     var pace: String?,
     var note: String?
-) {
-}
+)

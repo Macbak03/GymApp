@@ -9,7 +9,9 @@ import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExactRpe
 import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.RangeRpe
+import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.workout.WorkoutExercise
+import com.example.gymapp.model.workout.WorkoutExerciseDraft
 
 class WorkoutHistoryDatabaseHelper(
     val context: Context,
@@ -156,10 +158,149 @@ class WorkoutHistoryDatabaseHelper(
         return id
     }
 
-    fun getExerciseName(planName: String, routineName: String): String? {
-        val selectionArgs = arrayOf(planName, routineName)
-        val selectBy = arrayOf(PLAN_NAME_COLUMN, ROUTINE_NAME_COLUMN)
-        return this.getValue(TABLE_NAME, EXERCISE_NAME_COLUMN, selectBy, selectionArgs)
+    private fun getWorkoutExercisesCursor(
+        rawDate: String,
+        routineName: String,
+        planName: String
+    ): Cursor {
+        val dataBaseRead = this.readableDatabase
+        val select = arrayOf(
+            EXERCISE_NAME_COLUMN,
+            PAUSE_COLUMN,
+            LOAD_UNIT_COLUMN,
+            REPS_RANGE_FROM_COLUMN,
+            REPS_RANGE_TO_COLUMN,
+            SERIES_COLUMN,
+            RPE_RANGE_FROM_COLUMN,
+            RPE_RANGE_TO_COLUMN,
+            PACE_COLUMN,
+            NOTES_COLUMN
+        )
+        val selection = "$DATE_COLUMN = ? AND $PLAN_NAME_COLUMN = ? AND $ROUTINE_NAME_COLUMN = ?"
+
+        val selectionArgs = arrayOf(rawDate, planName, routineName)
+        val sortOrder = "$EXERCISE_ORDER_COLUMN ASC"
+        return dataBaseRead.query(
+            TABLE_NAME,
+            select,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            sortOrder
+        )
+    }
+
+    fun getWorkoutExercises(
+        rawDate: String,
+        routineName: String,
+        planName: String
+    ): List<WorkoutExerciseDraft> {
+        val workoutExercises: MutableList<WorkoutExerciseDraft> = ArrayList()
+        val cursor = getWorkoutExercisesCursor(rawDate, routineName, planName)
+        if (cursor.moveToFirst()) {
+            val exerciseName =
+                cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
+
+            var pauseInt =
+                cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_COLUMN))
+            val pauseUnit: TimeUnit
+            if ((pauseInt % 60) == 0) {
+                pauseInt /= 60
+                pauseUnit = TimeUnit.min
+            } else {
+                pauseUnit = TimeUnit.s
+            }
+            val pause = pauseInt.toString()
+
+            val repsRangeFrom =
+                cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_FROM_COLUMN))
+            val repsRangeTo =
+                cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_TO_COLUMN))
+            val reps: String = if (repsRangeFrom == repsRangeTo) {
+                ExactReps(repsRangeFrom).toString()
+            } else {
+                RangeReps(repsRangeFrom, repsRangeTo).toString()
+            }
+
+            val series =
+                cursor.getString(cursor.getColumnIndexOrThrow(SERIES_COLUMN))
+
+            val rpeRangeFrom =
+                cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_FROM_COLUMN))
+            val rpeRangeTo =
+                cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_TO_COLUMN))
+            val rpe: String = if (rpeRangeFrom == rpeRangeTo) {
+                ExactReps(rpeRangeFrom).toString()
+            } else {
+                RangeReps(rpeRangeFrom, rpeRangeTo).toString()
+            }
+
+            val pace =
+                cursor.getString(cursor.getColumnIndexOrThrow(PACE_COLUMN))
+            val note = cursor.getString(cursor.getColumnIndexOrThrow(NOTES_COLUMN))
+
+            val workoutExercise =
+                WorkoutExerciseDraft(exerciseName, pause, pauseUnit, reps, series, rpe, pace, note)
+            workoutExercises.add(workoutExercise)
+
+            while (cursor.moveToNext()) {
+                val nextExerciseName =
+                    cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
+
+                var nextPauseInt =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_COLUMN))
+                val nextPauseUnit: TimeUnit
+                if ((nextPauseInt % 60) == 0) {
+                    nextPauseInt /= 60
+                    nextPauseUnit = TimeUnit.min
+                } else {
+                    nextPauseUnit = TimeUnit.s
+                }
+                val nextPause = nextPauseInt.toString()
+
+                val nextRepsRangeFrom =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_FROM_COLUMN))
+                val nextRepsRangeTo =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_TO_COLUMN))
+                val nextReps: String = if (nextRepsRangeFrom == nextRepsRangeTo) {
+                    ExactReps(nextRepsRangeFrom).toString()
+                } else {
+                    RangeReps(nextRepsRangeFrom, nextRepsRangeTo).toString()
+                }
+
+                val nextSeries =
+                    cursor.getString(cursor.getColumnIndexOrThrow(SERIES_COLUMN))
+
+                val nextRpeRangeFrom =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_FROM_COLUMN))
+                val nextRpeRangeTo =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_TO_COLUMN))
+                val nextRpe: String = if (nextRpeRangeFrom == nextRpeRangeTo) {
+                    ExactReps(nextRpeRangeFrom).toString()
+                } else {
+                    RangeReps(nextRpeRangeFrom, nextRpeRangeTo).toString()
+                }
+
+                val nextPace =
+                    cursor.getString(cursor.getColumnIndexOrThrow(PACE_COLUMN))
+                val nextNote = cursor.getString(cursor.getColumnIndexOrThrow(NOTES_COLUMN))
+
+                val nextWorkoutExercise =
+                    WorkoutExerciseDraft(
+                        nextExerciseName,
+                        nextPause,
+                        nextPauseUnit,
+                        nextReps,
+                        nextSeries,
+                        nextRpe,
+                        nextPace,
+                        nextNote
+                    )
+                workoutExercises.add(nextWorkoutExercise)
+            }
+        }
+        return workoutExercises
     }
 
 

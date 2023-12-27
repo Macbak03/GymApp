@@ -7,5 +7,4 @@ data class WorkoutSeriesDraft (
     var load: String?,
     var loadUnit: WeightUnit,
     var wasModified: Boolean
-){
-}
+)

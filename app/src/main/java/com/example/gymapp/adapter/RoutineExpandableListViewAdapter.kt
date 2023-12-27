@@ -6,9 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
-import android.widget.Toast
 import com.example.gymapp.R
-import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.layout.RoutineExpandableTitleLayout
 import com.example.gymapp.model.routine.Exercise

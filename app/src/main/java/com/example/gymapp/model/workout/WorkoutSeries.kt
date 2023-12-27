@@ -6,5 +6,4 @@ data class WorkoutSeries(
     var actualReps: Float,
     var seriesCount: Int,
     var load: Weight
-) {
-}
+)

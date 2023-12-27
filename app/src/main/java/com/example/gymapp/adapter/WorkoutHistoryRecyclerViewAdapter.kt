@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.databinding.WorkoutHistoryRecyclerViewItemBinding
 import com.example.gymapp.model.workoutHistory.WorkoutHistoryElement
 
-class WorkoutHistoryRecyclerViewAdapter (private val workoutHistoryElements: MutableList<WorkoutHistoryElement>) :
+class WorkoutHistoryRecyclerViewAdapter (private val workoutHistoryElements: List<WorkoutHistoryElement>) :
 RecyclerView.Adapter<WorkoutHistoryRecyclerViewAdapter.WorkoutHistoryViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
@@ -30,7 +30,7 @@ RecyclerView.Adapter<WorkoutHistoryRecyclerViewAdapter.WorkoutHistoryViewHolder>
     override fun onBindViewHolder(holder: WorkoutHistoryViewHolder, position: Int) {
         holder.trainingPlanName.text = workoutHistoryElements[position].planName
         holder.routineName.text = workoutHistoryElements[position].routineName
-        holder.date.text = workoutHistoryElements[position].date.toString()
+        holder.date.text = workoutHistoryElements[position].formattedDate
 
         holder.itemView.setOnClickListener {
             if (onClickListener != null) {

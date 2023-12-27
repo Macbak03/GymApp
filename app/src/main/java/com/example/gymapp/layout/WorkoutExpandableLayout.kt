@@ -1,6 +1,5 @@
 package com.example.gymapp.layout
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,7 +8,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.gymapp.R
-import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 
