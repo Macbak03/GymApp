@@ -22,6 +22,7 @@ class TrainingPlanActivity : AppCompatActivity() {
     private var planName: String? = null
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
     private val routinesDataBase = RoutinesDataBaseHelper(this, null)
+    private val defaultElement = "Create Routine"
 
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
@@ -68,9 +69,14 @@ class TrainingPlanActivity : AppCompatActivity() {
             TrainingPlanRecyclerViewAdapter.OnClickListener {
             override fun onClick(position: Int, model: TrainingPlanElement) {
                 val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
-                explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
-                explicitIntent.putExtra(PLAN_NAME, planName)
-                startCreateRoutineActivityForResult.launch(explicitIntent)
+                if (routines[0].routineName == defaultElement) {
+                    explicitIntent.putExtra(PLAN_NAME, planName)
+                    startCreateRoutineActivityForResult.launch(explicitIntent)
+                } else {
+                    explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
+                    explicitIntent.putExtra(PLAN_NAME, planName)
+                    startCreateRoutineActivityForResult.launch(explicitIntent)
+                }
             }
         })
 
@@ -81,17 +87,14 @@ class TrainingPlanActivity : AppCompatActivity() {
     private fun setRecyclerViewContent() {
         val plansDataBase = PlansDataBaseHelper(this, null)
         val planName = this.planName
-        if(planName != null)
-        {
+        if (planName != null) {
             val planId = plansDataBase.getPlanId(planName)
             if (planId != null) {
-                if(!routinesDataBase.isPlanEmpty(planId.toString()))
-                {
-                    routines.add(TrainingPlanElement("You don't have any routines yet"))
+                if (!routinesDataBase.isPlanNotEmpty(planId.toString())) {
+                    routines.add(TrainingPlanElement(defaultElement))
                 }
                 val routinesInPlan = routinesDataBase.getRoutinesInPlan(planId)
-                for (routine in routinesInPlan)
-                {
+                for (routine in routinesInPlan) {
                     routines.add(routine)
                 }
                 trainingPlanRecyclerViewAdapter.notifyDataSetChanged()

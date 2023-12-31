@@ -29,6 +29,7 @@ class TrainingPlansFragment : Fragment() {
 
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
+    private val defaultElement = "Create training plan"
 
     companion object {
         const val NEXT_SCREEN = "trainingPlanScreen"
@@ -55,7 +56,7 @@ class TrainingPlansFragment : Fragment() {
         )
         trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
         if (!plansDataBase.isTableNotEmpty()) {
-            trainingPlansNames.add((TrainingPlan("You don't have any training plans yet.")))
+            trainingPlansNames.add((TrainingPlan(defaultElement)))
         }
 
         trainingPlansRecyclerViewAdapter = TrainingPlansRecyclerViewAdapter(trainingPlansNames)
@@ -70,11 +71,19 @@ class TrainingPlansFragment : Fragment() {
         trainingPlansRecyclerViewAdapter.setOnClickListener(object :
             TrainingPlansRecyclerViewAdapter.OnClickListener {
             override fun onClick(position: Int, model: TrainingPlan) {
-                val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
-                explicitIntent.putExtra(NEXT_SCREEN, model.name)
-                startActivity(explicitIntent)
+                if(trainingPlansNames[0].name == defaultElement)
+                {
+                    showEditTextDialog()
+                }
+                else
+                {
+                    val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
+                    explicitIntent.putExtra(NEXT_SCREEN, model.name)
+                    startActivity(explicitIntent)
+                }
             }
         })
+
     }
 
     override fun onDestroyView() {
@@ -82,7 +91,7 @@ class TrainingPlansFragment : Fragment() {
         _binding = null
     }
 
-    @SuppressLint("InflateParams")
+    @SuppressLint("InflateParams", "NotifyDataSetChanged")
     private fun showEditTextDialog() {
         val builder = context?.let { AlertDialog.Builder(it) }
         val dialogLayout = layoutInflater.inflate(R.layout.enter_name_edit_text, null)
@@ -101,11 +110,16 @@ class TrainingPlansFragment : Fragment() {
                             throw ValidationException("There is already a plan with this name")
                         }
                     }
+                    if(editText.text.toString() == defaultElement)
+                    {
+                        throw ValidationException("Invalid plan name")
+                    }
+                    if (trainingPlansNames[0].name == defaultElement) {
+                        trainingPlansNames.clear()
+                    }
                     plansDataBase.addPLan(editText.text.toString())
                     trainingPlansNames.add(TrainingPlan(editText.text.toString()))
-                    trainingPlansRecyclerViewAdapter.notifyItemInserted(
-                        trainingPlansRecyclerViewAdapter.itemCount
-                    )
+                    trainingPlansRecyclerViewAdapter.notifyDataSetChanged()
                 } catch (exception: ValidationException) {
                     Toast.makeText(context, exception.message, Toast.LENGTH_LONG).show()
                 }
