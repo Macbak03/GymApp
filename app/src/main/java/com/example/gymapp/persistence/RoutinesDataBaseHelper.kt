@@ -46,7 +46,7 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
         return routines
     }
 
-    fun isPlanEmpty(planId: String): Boolean{
+    fun isPlanNotEmpty(planId: String): Boolean{
         val dataBaseRead = this.readableDatabase
         val selection = "$PLAN_ID_COLUMN = ?"
         val selectionArgs = arrayOf(planId)
