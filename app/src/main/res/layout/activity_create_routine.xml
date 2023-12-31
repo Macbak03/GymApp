@@ -30,18 +30,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <Button
         android:id="@+id/buttonAddExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:contentDescription="AddExercise"
-        android:src="@android:drawable/ic_input_add"
-        android:tint="@color/white"
-        app:backgroundTint="@color/material_dynamic_neutral20"
+        android:text="add"
         app:layout_constraintEnd_toStartOf="@+id/buttonDeleteExercise"
-        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems"
-        app:maxImageSize="50dp" />
+        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
 
     <EditText
         android:id="@+id/editTextRoutineName"
@@ -55,18 +51,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <Button
         android:id="@+id/buttonDeleteExercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        android:contentDescription="DeleteExercise"
-        android:src="@android:drawable/ic_delete"
-        android:tint="@color/white"
-        app:backgroundTint="@color/material_dynamic_neutral20"
+        android:text="Delete"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems"
-        app:maxImageSize="40dp" />
+        app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
