@@ -55,16 +55,15 @@ class HomeFragment : Fragment() {
         initSpinner()
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         binding.buttonStartWorkout.setOnClickListener {
-            if(spinner.selectedItem != null)
-            {
-                val planName = spinner.selectedItem.toString()
-                val planId = plansDataBase.getPlanId(planName)
-                if (planId != null && !routinesDataBase.isPlanNotEmpty(planId.toString())) {
-                    openRoutinesActivity(planName)
-                }
-            }
+            val planName = spinner.selectedItem.toString()
+            val planId = plansDataBase.getPlanId(planName)
             if (!plansDataBase.isTableNotEmpty()) {
                 openTrainingPlansFragment()
+            } else if (spinner.selectedItem != null && planId != null && !routinesDataBase.isPlanNotEmpty(
+                    planId.toString()
+                )
+            ) {
+                openRoutinesActivity(planName)
             } else {
                 openStartWorkoutMenuFragment()
             }
