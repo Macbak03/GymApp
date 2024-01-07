@@ -22,7 +22,7 @@ class WorkoutHistoryDatabaseHelper(
     ) {
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
-                + DATE_COLUMN + " TEXT NOT NULL," +
+                + DATE_COLUMN + " DATETIME NOT NULL," +
                 EXERCISE_ID_COLUMN + " INTEGER PRIMARY KEY," +
                 PLAN_NAME_COLUMN + " TEXT NOT NULL," +
                 ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
@@ -301,6 +301,43 @@ class WorkoutHistoryDatabaseHelper(
             }
         }
         return workoutExercises
+    }
+
+    fun isTableNotEmpty(): Boolean
+    {
+        val dataBaseRead = this.readableDatabase
+        val cursor = dataBaseRead.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
+        var isEmpty = true
+        if(cursor.moveToFirst())
+        {
+            val count = cursor.getInt(0)
+            isEmpty = count >0
+        }
+        cursor.close()
+        dataBaseRead.close()
+        return isEmpty
+    }
+
+    fun getLastWorkout() : List<String?>
+    {
+        var planName: String? = null
+        var date: String? = null
+        var routineName: String? = null
+        val dataBaseRead = this.readableDatabase
+        val cursor = dataBaseRead.rawQuery("SELECT $PLAN_NAME_COLUMN, $DATE_COLUMN, $ROUTINE_NAME_COLUMN " +
+                "FROM $TABLE_NAME " +
+                "WHERE $DATE_COLUMN = (" +
+                "   SELECT MAX($DATE_COLUMN)" +
+                "   FROM $TABLE_NAME)", null)
+        if(cursor.moveToFirst())
+        {
+            planName = cursor.getString(cursor.getColumnIndexOrThrow(PLAN_NAME_COLUMN))
+            date = cursor.getString(cursor.getColumnIndexOrThrow(DATE_COLUMN))
+            routineName = cursor.getString(cursor.getColumnIndexOrThrow(ROUTINE_NAME_COLUMN))
+        }
+        cursor.close()
+        dataBaseRead.close()
+        return listOf(planName, date, routineName)
     }
 
 

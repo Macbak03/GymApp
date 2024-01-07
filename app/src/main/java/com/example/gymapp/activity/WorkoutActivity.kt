@@ -4,6 +4,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ExpandableListView
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
 import com.example.gymapp.databinding.ActivityWorkoutBinding
 import com.example.gymapp.exception.ValidationException
@@ -53,6 +56,12 @@ class WorkoutActivity : AppCompatActivity() {
             val customDate = CustomDate()
             val date = customDate.getDate()
             saveWorkoutToHistory(date)
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)){view, insets ->
+            val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            view.updatePadding(bottom = bottom)
+            insets
         }
     }
 
@@ -107,5 +116,4 @@ class WorkoutActivity : AppCompatActivity() {
             }
         }
     }
-
 }

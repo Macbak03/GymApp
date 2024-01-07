@@ -9,11 +9,25 @@ class CustomDate {
     fun getDate() : String{
         val date = Calendar.getInstance().time
         val timeZone = TimeZone.getDefault()
-        val formatter = SimpleDateFormat(pattern, Locale.getDefault())
+        val formatter = SimpleDateFormat(rawPattern, Locale.getDefault())
         formatter.timeZone = timeZone
         return formatter.format(date)
     }
+
+    fun getFormattedDate(savedDate: String): String {
+        val inputFormat = SimpleDateFormat(rawPattern, Locale.getDefault())
+        val outputFormat = SimpleDateFormat(pattern, Locale.getDefault())
+
+        val date = inputFormat.parse(savedDate)
+        return if (date != null) {
+            outputFormat.format(date)
+        } else {
+            "dateError"
+        }
+    }
+
     companion object{
-        const val pattern = "dd.MM.yyyy hh:mm:ss"
+        const val rawPattern = "dd.MM.yyyy hh:mm:ss"
+        const val pattern = "dd.MM.yyyy"
     }
 }

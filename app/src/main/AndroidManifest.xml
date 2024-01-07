@@ -23,12 +23,14 @@
             android:name=".activity.HistoryDetailsActivity"
             android:exported="false" />
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".activity.WorkoutActivity"
             android:exported="false" />
         <activity
             android:name=".activity.TrainingPlanActivity"
             android:exported="false" />
         <activity
+            android:windowSoftInputMode="adjustResize"
             android:name=".activity.CreateRoutineActivity"
             android:exported="false" />
         <activity

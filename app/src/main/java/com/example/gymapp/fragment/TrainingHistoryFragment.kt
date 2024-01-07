@@ -68,11 +68,12 @@ class TrainingHistoryFragment : Fragment() {
     private fun setRecyclerViewContent(){
         val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(requireContext(), null)
         val cursor = workoutHistoryDatabase.getHistory()
+        val customDate = CustomDate()
         if (cursor.moveToFirst())
         {
             val savedDate = cursor.getString(cursor.getColumnIndexOrThrow(
                 WorkoutHistoryDatabaseHelper.DATE_COLUMN))
-            val date = getFormattedDate(savedDate)
+            val date = customDate.getFormattedDate(savedDate)
             workoutHistory.add(WorkoutHistoryElement(cursor.getString(cursor.getColumnIndexOrThrow(
                 WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
                 WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), date, savedDate
@@ -82,25 +83,13 @@ class TrainingHistoryFragment : Fragment() {
             {
                 val nextSavedDate = cursor.getString(cursor.getColumnIndexOrThrow(
                     WorkoutHistoryDatabaseHelper.DATE_COLUMN))
-                val nextDate = getFormattedDate(nextSavedDate)
+                val nextDate = customDate.getFormattedDate(nextSavedDate)
                 workoutHistory.add(WorkoutHistoryElement(cursor.getString(cursor.getColumnIndexOrThrow(
                     WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN)), cursor.getString(cursor.getColumnIndexOrThrow(
                     WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN)), nextDate, nextSavedDate
                 ))
                 workoutHistoryRecyclerViewAdapter.notifyItemInserted(workoutHistoryRecyclerViewAdapter.itemCount)
             }
-        }
-    }
-
-    private fun getFormattedDate(savedDate: String): String {
-        val inputFormat = SimpleDateFormat(CustomDate.pattern, Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
-
-        val date = inputFormat.parse(savedDate)
-        return if (date != null) {
-            outputFormat.format(date)
-        } else {
-            "dateError"
         }
     }
 
