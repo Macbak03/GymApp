@@ -24,7 +24,8 @@
             android:layout_marginStart="10dp"
             android:layout_weight="1"
             android:textSize="20sp"
-            android:text="Reps" />
+            android:text="Reps"
+            android:textAlignment="textEnd"/>
         <TextView
             android:layout_width="20dp"
             android:layout_height="wrap_content"

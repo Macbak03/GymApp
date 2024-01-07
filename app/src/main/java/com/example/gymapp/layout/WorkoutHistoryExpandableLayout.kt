@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat.getString
 import com.example.gymapp.R
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
@@ -36,8 +37,10 @@ class WorkoutHistoryExpandableLayout (
 
         workoutSeriesDraft = seriesDraft
         workoutExerciseDraft = exerciseDraft
+        val seriesCountFormat = getString(context, R.string.series_count_format)
+        val formattedCount = String.format(seriesCountFormat, count)
         try {
-            seriesCount.text = count.toString()
+            seriesCount.text = formattedCount
             weightUnitText.text = seriesDraft?.loadUnit.toString()
             reps.text = seriesDraft?.actualReps
             weightValue.text = seriesDraft?.load
