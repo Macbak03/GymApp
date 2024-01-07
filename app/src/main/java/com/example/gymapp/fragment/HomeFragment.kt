@@ -15,8 +15,10 @@ import com.example.gymapp.R
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.databinding.FragmentHomeBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
+import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
+import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 
 
 class HomeFragment : Fragment() {
@@ -55,20 +57,24 @@ class HomeFragment : Fragment() {
         initSpinner()
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         binding.buttonStartWorkout.setOnClickListener {
-            if(spinner.selectedItem != null)
-            {
-                val planName = spinner.selectedItem.toString()
-                val planId = plansDataBase.getPlanId(planName)
-                if (planId != null && !routinesDataBase.isPlanNotEmpty(planId.toString())) {
-                    openRoutinesActivity(planName)
-                }
-            }
+            val planName = spinner.selectedItem.toString()
+            val planId = plansDataBase.getPlanId(planName)
             if (!plansDataBase.isTableNotEmpty()) {
                 openTrainingPlansFragment()
+            } else if (spinner.selectedItem != null && planId != null && !routinesDataBase.isPlanNotEmpty(
+                    planId.toString()
+                )
+            ) {
+                openRoutinesActivity(planName)
             } else {
                 openStartWorkoutMenuFragment()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setLastTraining()
     }
 
     override fun onDestroyView() {
@@ -152,9 +158,28 @@ class HomeFragment : Fragment() {
         fragmentTransaction.commit()
     }
 
-    private fun openRoutinesActivity(planName: String){
+    private fun openRoutinesActivity(planName: String) {
         val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
         explicitIntent.putExtra(TrainingPlansFragment.NEXT_SCREEN, planName)
         startActivity(explicitIntent)
     }
+
+    private fun setLastTraining() {
+        val historyDataBase = WorkoutHistoryDatabaseHelper(requireContext(), null)
+        val customDate = CustomDate()
+        if (!historyDataBase.isTableNotEmpty()) {
+            binding.linearLayoutLastWorkout.visibility = View.GONE
+        } else {
+            binding.linearLayoutLastWorkout.visibility = View.VISIBLE
+            val rawDate = historyDataBase.getLastWorkout()[1]
+            if(rawDate != null)
+            {
+                val date = customDate.getFormattedDate(rawDate)
+                binding.textViewLastTrainingPlanName.text = historyDataBase.getLastWorkout()[0]
+                binding.textViewLastTrainingDate.text = date
+                binding.textViewLastTrainingRoutineName.text = historyDataBase.getLastWorkout()[2]
+            }
+        }
+    }
+
 }

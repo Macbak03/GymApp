@@ -5,6 +5,9 @@ import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
@@ -75,6 +78,12 @@ class CreateRoutineActivity : AppCompatActivity() {
         }
 
         onBackPressedDispatcher.addCallback(this, callback)
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)){ view, insets ->
+            val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+            view.updatePadding(bottom = bottom)
+            insets
+        }
     }
 
     private fun loadRoutine(planId: Int?) {

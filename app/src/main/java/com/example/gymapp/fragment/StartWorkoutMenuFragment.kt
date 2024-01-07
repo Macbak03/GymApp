@@ -68,7 +68,6 @@ class StartWorkoutMenuFragment : Fragment() {
                 val fragmentManager = requireActivity().supportFragmentManager
                 fragmentManager.popBackStack()
                 startActivity(explicitIntent)
-
             }
         })
     }
