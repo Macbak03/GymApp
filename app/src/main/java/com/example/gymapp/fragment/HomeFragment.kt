@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter
 import android.widget.Spinner
 import androidx.fragment.app.FragmentTransaction
 import com.example.gymapp.R
+import com.example.gymapp.activity.HistoryDetailsActivity
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.databinding.FragmentHomeBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
@@ -29,6 +30,14 @@ class HomeFragment : Fragment() {
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
     private lateinit var spinner: Spinner
     private val SPINNER_PREF_KEY = "selectedSpinnerItem"
+
+    companion object {
+        const val PLAN_NAME = "com.example.gymapp.planname"
+        const val ROUTINE_NAME = "com.example.gymapp.routinename"
+        const val FORMATTED_DATE =  "com.example.gymapp.formatteddate"
+        const val RAW_DATE = "com.example.gymapp.rawdate"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -178,7 +187,20 @@ class HomeFragment : Fragment() {
                 binding.textViewLastTrainingPlanName.text = historyDataBase.getLastWorkout()[0]
                 binding.textViewLastTrainingDate.text = date
                 binding.textViewLastTrainingRoutineName.text = historyDataBase.getLastWorkout()[2]
+                setLastTrainingClick(rawDate)
             }
+        }
+    }
+
+    private fun setLastTrainingClick(rawDate: String)
+    {
+        binding.cardViewLastWorkout.setOnClickListener{
+            val explicitIntent = Intent(context, HistoryDetailsActivity::class.java)
+            explicitIntent.putExtra(PLAN_NAME, binding.textViewLastTrainingPlanName.text)
+            explicitIntent.putExtra(ROUTINE_NAME, binding.textViewLastTrainingRoutineName.text)
+            explicitIntent.putExtra(FORMATTED_DATE, binding.textViewLastTrainingDate.text)
+            explicitIntent.putExtra(RAW_DATE, rawDate)
+            startActivity(explicitIntent)
         }
     }
 

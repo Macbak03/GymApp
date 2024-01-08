@@ -1,5 +1,6 @@
 package com.example.gymapp.activity
 
+import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ExpandableListView
@@ -84,8 +85,8 @@ class WorkoutActivity : AppCompatActivity() {
                 )
                     val seriesList = List(savedExercise.series!!.toInt()) {
                         WorkoutSeriesDraft(
-                            "",
-                            "",
+                            savedExercise.reps,
+                            savedExercise.load,
                             savedExercise.loadUnit,
                             false
                         )

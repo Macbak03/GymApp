@@ -1,6 +1,7 @@
 package com.example.gymapp.layout
 
 import android.content.Context
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -11,6 +12,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.example.gymapp.R
+import com.example.gymapp.adapter.RoutineExpandableListAdapter
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
@@ -39,6 +41,7 @@ class RoutineExpandableLayout(
     private val timeUnits = arrayOf(TimeUnit.min, TimeUnit.s)
     private val weightUnits = arrayOf(WeightUnit.kg, WeightUnit.lbs)
 
+    private var adapter: RoutineExpandableListAdapter? = null
 
     init {
         inflate(context, R.layout.routine_expandable_layout, this)
@@ -55,6 +58,7 @@ class RoutineExpandableLayout(
         rpeEditText = findViewById(R.id.editTextRpe)
         paceEditText = findViewById(R.id.editTextPace)
 
+
         exerciseEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -66,9 +70,25 @@ class RoutineExpandableLayout(
                 exercise?.name = exerciseEditText.text.toString()
                 exercise?.wasModified = true
 
-                exerciseTextChangedListener?.onExerciseNameChanged(exercise?.name ?: "")
+
             }
         })
+
+        val handler = android.os.Handler(Looper.myLooper()!!)
+        exerciseEditText.onFocusChangeListener =
+            OnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) {
+                    handler.postDelayed({
+                        if (!v.hasFocus()) {
+                            exerciseTextChangedListener?.onExerciseNameChanged(exercise?.name ?: "")
+                            adapter?.notifyDataSetChanged()
+                        }
+                    }, 50)
+                }
+
+            }
+
+
         pauseEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -146,10 +166,6 @@ class RoutineExpandableLayout(
         initWeightUnitSpinner()
         customAttributesStyle.recycle()
 
-    }
-
-    fun requestFocusOnEditText() {
-        exerciseEditText.requestFocus()
     }
 
     fun setExerciseTextChangedListener(listener: ExerciseTextChangedListener) {
@@ -251,6 +267,11 @@ class RoutineExpandableLayout(
 
         val selectionIndex = weightUnits.indexOf(weightUnit)
         loadSpinner.setSelection(selectionIndex)
+    }
+
+
+    fun setAdapter(adapter: RoutineExpandableListAdapter) {
+        this.adapter = adapter
     }
 
     interface ExerciseTextChangedListener {

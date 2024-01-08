@@ -12,6 +12,7 @@ import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
 import com.example.gymapp.exception.ValidationException
+import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit

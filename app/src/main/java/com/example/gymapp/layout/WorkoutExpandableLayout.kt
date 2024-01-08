@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.example.gymapp.R
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
@@ -79,8 +80,10 @@ class WorkoutExpandableLayout(
         val seriesCount = findViewById<TextView>(R.id.textViewSeriesCount)
         workoutSeriesDraft = seriesDraft
         workoutExerciseDraft = exerciseDraft
+        val seriesCountFormat = ContextCompat.getString(context, R.string.series_count_format)
+        val formattedCount = String.format(seriesCountFormat, count)
         try {
-            seriesCount.text = count.toString()
+            seriesCount.text = formattedCount
             weightUnitText.text = seriesDraft?.loadUnit.toString()
             repsEditText.setText(seriesDraft?.actualReps)
             weightEditText.setText(seriesDraft?.load)
