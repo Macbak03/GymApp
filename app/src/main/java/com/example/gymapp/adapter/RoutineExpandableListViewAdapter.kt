@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.EditText
 import com.example.gymapp.R
 import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.layout.RoutineExpandableTitleLayout
@@ -16,8 +17,8 @@ import com.example.gymapp.model.routine.ExerciseDraft
 class RoutineExpandableListAdapter(
     private val context: Context,
     private val exercises: List<ExerciseDraft>
-
     ) : BaseExpandableListAdapter() {
+
 
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
         return exercises[listPosition]
@@ -43,13 +44,13 @@ class RoutineExpandableListAdapter(
         }
         val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
         val routineExpandableLayout = view as RoutineExpandableLayout?
+        routineExpandableLayout?.setAdapter(this)
         routineExpandableLayout?.setExerciseTextChangedListener(object :
             RoutineExpandableLayout.ExerciseTextChangedListener {
             override fun onExerciseNameChanged(name: String?) {
-                /*val routineExpandableTitleLayout = getGroupView(listPosition, false, null, parent) as RoutineExpandableTitleLayout
+                val routineExpandableTitleLayout =
+                    getGroupView(listPosition, false, null, parent) as RoutineExpandableTitleLayout
                 routineExpandableTitleLayout.setExerciseNameText(name)
-                notifyDataSetChanged()
-                routineExpandableLayout.requestFocusOnEditText()*/ // text cursor goes to the beginning every change
             }
 
         })

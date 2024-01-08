@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/expandableLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -111,7 +112,7 @@
                 <TextView
                     android:id="@+id/textViewRpe"
                     style="@style/routine_text_view_item"
-                    android:text="@string/rpe"/>
+                    android:text="@string/rpe" />
 
                 <EditText
                     android:id="@+id/editTextRpe"

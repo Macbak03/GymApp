@@ -25,7 +25,8 @@
         android:layout_weight="1"
         android:hint="Reps"
         android:inputType="numberDecimal"
-        android:autofillHints="" />
+        android:autofillHints=""
+        android:textAlignment="textEnd"/>
     <TextView
         android:layout_width="20dp"
         android:layout_height="wrap_content"
