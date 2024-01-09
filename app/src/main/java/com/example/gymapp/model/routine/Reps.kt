@@ -10,7 +10,7 @@ sealed interface Reps {
             }
             val regex = Regex("""^(\d+)$|^(\d+)-(\d+)$""")
             val match = regex.matchEntire(reps)
-                ?: throw ValidationException("reps must be a number (eg. 5) or range (eg. 3-5)")
+                ?: throw ValidationException("reps must be a number (eg. 5) or range (eg. 3-5) and cannot be negative")
             val (exactValue, rangeFrom, rangeTo) = match.destructured
             return if (exactValue.isEmpty()) {
                 val intRangeFrom = rangeFrom.toInt()

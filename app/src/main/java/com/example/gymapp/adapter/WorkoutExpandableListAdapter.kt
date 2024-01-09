@@ -99,7 +99,13 @@ class WorkoutExpandableListAdapter(
                 getGroupView(i, true, null, null) as WorkoutExpandableTitleLayout?
             val workoutExerciseDraft = workoutExpandableTitleLayout?.getWorkoutExerciseDraft()
             val workoutExpandableLayout =
-                getChildView(i, getChildrenCount(i)-1, true, null, null) as WorkoutExpandableLayout?
+                getChildView(
+                    i,
+                    getChildrenCount(i) - 1,
+                    true,
+                    null,
+                    null
+                ) as WorkoutExpandableLayout?
             val workoutSeriesDraft = workoutExpandableLayout?.getWorkoutSeriesDraft()
             val note = workoutExpandableLayout?.getNote()
             if (workoutExerciseDraft != null && workoutSeriesDraft != null) {
@@ -128,16 +134,10 @@ class WorkoutExpandableListAdapter(
         for (i: Int in 0 until getChildrenCount(exerciseIndex)) {
             val workoutExpandableLayout =
                 getChildView(exerciseIndex, i, false, null, null) as WorkoutExpandableLayout?
-            val workoutSeriesDraft = workoutExpandableLayout?.getWorkoutSeriesDraft()
-            if (workoutSeriesDraft != null) {
-                val actualReps = workoutSeriesDraft.actualReps?.toFloat()
-                val load = workoutSeriesDraft.load?.toFloat()
-                if (actualReps != null && load != null) {
-                    val weight = Weight(load, workoutSeriesDraft.loadUnit)
-                    if (weight != null) {
-                        series.add(WorkoutSeries(actualReps, i + 1, weight))
-                    }
-                }
+            val workoutSeries =
+                workoutExpandableLayout?.getWorkoutSeriesDraft()?.toWorkoutSeries(i + 1)
+            if (workoutSeries != null) {
+                series.add(workoutSeries)
             }
         }
         return series
