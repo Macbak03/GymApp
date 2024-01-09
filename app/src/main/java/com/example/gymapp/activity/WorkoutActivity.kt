@@ -85,7 +85,7 @@ class WorkoutActivity : AppCompatActivity() {
                 )
                     val seriesList = List(savedExercise.series!!.toInt()) {
                         WorkoutSeriesDraft(
-                            savedExercise.reps,
+                            "",
                             savedExercise.load,
                             savedExercise.loadUnit,
                             false

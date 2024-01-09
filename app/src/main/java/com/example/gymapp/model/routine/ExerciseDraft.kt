@@ -24,15 +24,7 @@ data class ExerciseDraft (
             throw ValidationException("name cannot be empty")
 
         }
-        if(pause.isNullOrBlank())
-        {
-            throw ValidationException("pause cannot be empty")
-        }
-        if(pause?.toIntOrNull() == null)
-        {
-            throw ValidationException("pause must be a number")
-        }
-        val pauseDuration = Duration.parse(pause + pauseUnit.toString()[0])
+        val pauseDuration = Pause.fromString(pause, pauseUnit)
         val weight = Weight.fromStringWithUnit(load, loadUnit)
         val reps = Reps.fromString(reps)
         val series = series

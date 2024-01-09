@@ -27,29 +27,6 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
         onCreate(db)
     }
 
-    private fun addSeriesToHistory(
-        workoutSeries: WorkoutSeries,
-        exerciseId: Int
-    ) {
-        val db = this.writableDatabase
-        val values = ContentValues()
-
-        values.put(EXERCISE_ID_COLUMN, exerciseId)
-        values.put(SERIES_ORDER_COLUMN, workoutSeries.seriesCount)
-        values.put(ACTUAL_REPS_COLUMN, workoutSeries.actualReps)
-        values.put(LOAD_VALUE_COLUMN, workoutSeries.load.weight)
-
-        db.insert(TABLE_NAME, null, values)
-    }
-
-    fun addSeries(
-        series: ArrayList<WorkoutSeries>,
-        exerciseId: Int
-    ) {
-        for (ser in series) {
-            addSeriesToHistory(ser, exerciseId)
-        }
-    }
 
     private fun getSeriesCursor(exerciseId: Int): Cursor {
         val databaseRead = this.readableDatabase

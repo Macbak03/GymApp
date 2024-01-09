@@ -4,10 +4,12 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.example.gymapp.model.routine.ExactPause
 import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExactRpe
 import com.example.gymapp.model.routine.Exercise
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.RangePause
 import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.RangeRpe
 import com.example.gymapp.model.routine.TimeUnit
@@ -22,7 +24,8 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
                 EXERCISE_ORDER_COLUMN + " INTEGER NOT NULL," +
                 EXERCISE_NAME_COLUMN + " TEXT NOT NULL," +
-                PAUSE_COLUMN + " INTEGER NOT NULL," +
+                PAUSE_RANGE_FROM_COLUMN + " INTEGER NOT NULL," +
+                PAUSE_RANGE_TO_COLUMN + " INTEGER NOT NULL," +
                 LOAD_VALUE_COLUMN + " REAL NOT NULL," +
                 LOAD_UNIT_COLUMN + " TEXT NOT NULL," +
                 REPS_RANGE_FROM_COLUMN + " INTEGER NOT NULL," +
@@ -57,7 +60,16 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         values.put(ROUTINE_NAME_COLUMN, routineName)
         values.put(EXERCISE_ORDER_COLUMN, exerciseCount)
         values.put(EXERCISE_NAME_COLUMN, exercise.name)
-        values.put(PAUSE_COLUMN, exercise.pause.inWholeSeconds)
+        when (exercise.pause){
+            is ExactPause -> {
+                values.put(PAUSE_RANGE_FROM_COLUMN, exercise.pause.value)
+                values.put(PAUSE_RANGE_TO_COLUMN, exercise.pause.value)
+            }
+            is RangePause -> {
+                values.put(PAUSE_RANGE_FROM_COLUMN, exercise.pause.from)
+                values.put(PAUSE_RANGE_TO_COLUMN, exercise.pause.to)
+            }
+        }
         values.put(LOAD_VALUE_COLUMN, exercise.load.weight)
         values.put(LOAD_UNIT_COLUMN, exercise.load.unit.toString())
         when (exercise.reps) {
@@ -70,6 +82,7 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 values.put(REPS_RANGE_FROM_COLUMN, exercise.reps.from)
                 values.put(REPS_RANGE_TO_COLUMN, exercise.reps.to)
             }
+
         }
         values.put(SERIES_COLUMN, exercise.series)
         when (exercise.rpe) {
@@ -189,21 +202,29 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
     {
         val exercises: MutableList<ExerciseDraft> = ArrayList()
         val cursor = getRoutineCursor(routineName, planId)
+        val seconds = 60
         if (cursor.moveToFirst())
         {
             val exerciseName =
                 cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
 
-            var pauseInt =
-                cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_COLUMN))
+            var pauseRangeFromInt =
+                cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_RANGE_FROM_COLUMN))
+            var pauseRangeToInt =
+                cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_RANGE_TO_COLUMN))
             val pauseUnit: TimeUnit
-            if ((pauseInt % 60) == 0) {
-                pauseInt /= 60
+            if ((pauseRangeFromInt % seconds) == 0 && (pauseRangeToInt % seconds) == 0) {
+                pauseRangeFromInt /= seconds
+                pauseRangeToInt /= seconds
                 pauseUnit = TimeUnit.min
             } else {
                 pauseUnit = TimeUnit.s
             }
-            val pause = pauseInt.toString()
+            val pause: String = if (pauseRangeFromInt == pauseRangeToInt) {
+                ExactPause(pauseRangeFromInt, pauseUnit).toString()
+            } else {
+                RangePause(pauseRangeFromInt, pauseRangeToInt, pauseUnit).toString()
+            }
 
             val loadValue =
                 cursor.getString(cursor.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
@@ -255,16 +276,23 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 val nextExerciseName =
                     cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
 
-                var nextPauseInt =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_COLUMN))
+                var nextPauseRangeFromInt =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_RANGE_FROM_COLUMN))
+                var nextPauseRangeToInt =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_RANGE_TO_COLUMN))
                 val nextPauseUnit: TimeUnit
-                if ((nextPauseInt % 60) == 0) {
-                    nextPauseInt /= 60
+                if ((nextPauseRangeFromInt % seconds) == 0 && (nextPauseRangeToInt % seconds) == 0) {
+                    nextPauseRangeFromInt /= seconds
+                    nextPauseRangeToInt /= seconds
                     nextPauseUnit = TimeUnit.min
                 } else {
                     nextPauseUnit = TimeUnit.s
                 }
-                val nextPause = nextPauseInt.toString()
+                val nextPause: String = if (nextPauseRangeFromInt == nextPauseRangeToInt) {
+                    ExactPause(nextPauseRangeFromInt, nextPauseUnit).toString()
+                } else {
+                    RangePause(nextPauseRangeFromInt, nextPauseRangeToInt, nextPauseUnit).toString()
+                }
 
                 val nextLoadValue =
                     cursor.getString(cursor.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
@@ -335,7 +363,8 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         const val ROUTINE_NAME_COLUMN = "RoutineName"
         const val EXERCISE_ORDER_COLUMN = "ExerciseOrder"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
-        const val PAUSE_COLUMN = "Pause"
+        const val PAUSE_RANGE_FROM_COLUMN = "PauseRangeFrom"
+        const val PAUSE_RANGE_TO_COLUMN = "PauseRangeTo"
         const val LOAD_VALUE_COLUMN = "LoadValue"
         const val LOAD_UNIT_COLUMN = "LoadUnit"
         const val REPS_RANGE_FROM_COLUMN = "RepsRangeFrom"

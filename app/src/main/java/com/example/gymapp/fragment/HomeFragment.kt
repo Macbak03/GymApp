@@ -34,7 +34,7 @@ class HomeFragment : Fragment() {
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
         const val ROUTINE_NAME = "com.example.gymapp.routinename"
-        const val FORMATTED_DATE =  "com.example.gymapp.formatteddate"
+        const val FORMATTED_DATE = "com.example.gymapp.formatteddate"
         const val RAW_DATE = "com.example.gymapp.rawdate"
     }
 
@@ -66,17 +66,17 @@ class HomeFragment : Fragment() {
         initSpinner()
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         binding.buttonStartWorkout.setOnClickListener {
-            val planName = spinner.selectedItem.toString()
-            val planId = plansDataBase.getPlanId(planName)
             if (!plansDataBase.isTableNotEmpty()) {
                 openTrainingPlansFragment()
-            } else if (spinner.selectedItem != null && planId != null && !routinesDataBase.isPlanNotEmpty(
-                    planId.toString()
-                )
-            ) {
-                openRoutinesActivity(planName)
-            } else {
-                openStartWorkoutMenuFragment()
+            }
+            else if (spinner.selectedItem != null) {
+                val planName = spinner.selectedItem.toString()
+                val planId = plansDataBase.getPlanId(planName)
+                if (planId != null && !routinesDataBase.isPlanNotEmpty(planId.toString())) {
+                    openRoutinesActivity(planName)
+                }else {
+                    openStartWorkoutMenuFragment()
+                }
             }
         }
     }
@@ -181,8 +181,7 @@ class HomeFragment : Fragment() {
         } else {
             binding.linearLayoutLastWorkout.visibility = View.VISIBLE
             val rawDate = historyDataBase.getLastWorkout()[1]
-            if(rawDate != null)
-            {
+            if (rawDate != null) {
                 val date = customDate.getFormattedDate(rawDate)
                 binding.textViewLastTrainingPlanName.text = historyDataBase.getLastWorkout()[0]
                 binding.textViewLastTrainingDate.text = date
@@ -192,9 +191,8 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setLastTrainingClick(rawDate: String)
-    {
-        binding.cardViewLastWorkout.setOnClickListener{
+    private fun setLastTrainingClick(rawDate: String) {
+        binding.cardViewLastWorkout.setOnClickListener {
             val explicitIntent = Intent(context, HistoryDetailsActivity::class.java)
             explicitIntent.putExtra(PLAN_NAME, binding.textViewLastTrainingPlanName.text)
             explicitIntent.putExtra(ROUTINE_NAME, binding.textViewLastTrainingRoutineName.text)

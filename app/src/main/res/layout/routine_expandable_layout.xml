@@ -36,8 +36,7 @@
                     android:id="@+id/editTextPause"
                     style="@style/routine_edit_text_item"
                     android:hint="@string/enter_pause"
-                    android:layout_weight="1"
-                    android:inputType="numberDecimal"/>
+                    android:layout_weight="1" />
 
                 <Spinner
                     android:id="@+id/spinnerPause"

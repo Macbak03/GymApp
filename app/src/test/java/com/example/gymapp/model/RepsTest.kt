@@ -61,8 +61,9 @@ class RepsTest {
 
         @JvmStatic
         fun validationTestCases() = listOf(
-            Arguments.of("gae", "reps must be a number (eg. 5) or range (eg. 3-5)"),
-            Arguments.of("124awffw", "reps must be a number (eg. 5) or range (eg. 3-5)"),
+            Arguments.of("gae", "reps must be a number (eg. 5) or range (eg. 3-5) and cannot be negative"),
+            Arguments.of("124awffw", "reps must be a number (eg. 5) or range (eg. 3-5) and cannot be negative"),
+            Arguments.of("-5", "reps must be a number (eg. 5) or range (eg. 3-5) and cannot be negative"),
             Arguments.of("12-8", "first number of the range must be lower than the second number")
         )
     }

@@ -5,13 +5,16 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
+import com.example.gymapp.model.routine.ExactPause
 import com.example.gymapp.model.routine.ExactReps
 import com.example.gymapp.model.routine.ExactRpe
+import com.example.gymapp.model.routine.RangePause
 import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.RangeRpe
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.workout.WorkoutExercise
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
+import com.example.gymapp.model.workout.WorkoutSeries
 
 class WorkoutHistoryDatabaseHelper(
     val context: Context,
@@ -28,7 +31,8 @@ class WorkoutHistoryDatabaseHelper(
                 ROUTINE_NAME_COLUMN + " TEXT NOT NULL," +
                 EXERCISE_ORDER_COLUMN + " INTEGER NOT NULL," +
                 EXERCISE_NAME_COLUMN + " TEXT NOT NULL," +
-                PAUSE_COLUMN + " INTEGER NOT NULL," +
+                PAUSE_RANGE_FROM_COLUMN + " INTEGER NOT NULL," +
+                PAUSE_RANGE_TO_COLUMN + " INTEGER NOT NULL," +
                 LOAD_UNIT_COLUMN + " TEXT NOT NULL," +
                 REPS_RANGE_FROM_COLUMN + " INTEGER NOT NULL," +
                 REPS_RANGE_TO_COLUMN + " INTEGER NOT NULL," +
@@ -59,7 +63,19 @@ class WorkoutHistoryDatabaseHelper(
         values.put(ROUTINE_NAME_COLUMN, routineName)
         values.put(EXERCISE_ORDER_COLUMN, workoutExercise.exerciseCount)
         values.put(EXERCISE_NAME_COLUMN, workoutExercise.exercise.name)
-        values.put(PAUSE_COLUMN, workoutExercise.exercise.pause.inWholeSeconds)
+        when(workoutExercise.exercise.pause) {
+            is ExactPause -> {
+                values.put(PAUSE_RANGE_FROM_COLUMN, (workoutExercise.exercise.pause as ExactPause).value)
+                values.put(PAUSE_RANGE_TO_COLUMN, (workoutExercise.exercise.pause as ExactPause).value)
+            }
+            is RangePause -> {
+                values.put(
+                    PAUSE_RANGE_FROM_COLUMN,
+                    (workoutExercise.exercise.pause as RangePause).from
+                )
+                values.put(PAUSE_RANGE_TO_COLUMN, (workoutExercise.exercise.pause as RangePause).to)
+            }
+        }
         values.put(LOAD_UNIT_COLUMN, workoutExercise.exercise.load.unit.toString())
         when (workoutExercise.exercise.reps) {
             is ExactReps -> {
@@ -98,29 +114,66 @@ class WorkoutHistoryDatabaseHelper(
         db.insert(TABLE_NAME, null, values)
     }
 
+    private inline fun SQLiteDatabase.transaction(func: SQLiteDatabase.() -> Unit) {
+        beginTransaction()
+        try {
+            func()
+            setTransactionSuccessful()
+        } finally {
+            endTransaction()
+        }
+    }
+
+    private fun addSeriesToHistory(
+        workoutSeries: WorkoutSeries,
+        exerciseId: Int
+    ) {
+        val db = this.writableDatabase
+        val values = ContentValues()
+
+        values.put(WorkoutSeriesDataBaseHelper.EXERCISE_ID_COLUMN, exerciseId)
+        values.put(WorkoutSeriesDataBaseHelper.SERIES_ORDER_COLUMN, workoutSeries.seriesCount)
+        values.put(WorkoutSeriesDataBaseHelper.ACTUAL_REPS_COLUMN, workoutSeries.actualReps)
+        values.put(WorkoutSeriesDataBaseHelper.LOAD_VALUE_COLUMN, workoutSeries.load.weight)
+
+        db.insert(WorkoutSeriesDataBaseHelper.TABLE_NAME, null, values)
+    }
+
+    private fun addSeries(
+        series: ArrayList<WorkoutSeries>,
+        exerciseId: Int
+    ) {
+        for (ser in series) {
+            addSeriesToHistory(ser, exerciseId)
+        }
+    }
+
     fun addExercises(
         workoutExpandableListAdapter: WorkoutExpandableListAdapter,
         date: String,
         planName: String,
         routineName: String
     ) {
-        val workoutSeriesDatabase = WorkoutSeriesDataBaseHelper(context, factory)
-        val workout = workoutExpandableListAdapter.getWorkoutGroup()
-        for (workoutExercise in workout) {
-            addExerciseToHistory(
-                date,
-                workoutExercise,
-                planName,
-                routineName,
-            )
-            val series =
-                workoutExpandableListAdapter.getWorkoutSeries(workoutExercise.exerciseCount - 1)
-            val id = this.getLastID()
-            if (id != null) {
-                workoutSeriesDatabase.addSeries(series, id)
+        val db = this.writableDatabase
+        db.transaction {
+            val workout = workoutExpandableListAdapter.getWorkoutGroup()
+            for (workoutExercise in workout) {
+                addExerciseToHistory(
+                    date,
+                    workoutExercise,
+                    planName,
+                    routineName,
+                )
+                val series =
+                    workoutExpandableListAdapter.getWorkoutSeries(workoutExercise.exerciseCount - 1)
+                val id = getLastID()
+                if (id != null) {
+                    addSeries(series, id)
 
+                }
             }
         }
+        db.close()
 
     }
 
@@ -166,7 +219,8 @@ class WorkoutHistoryDatabaseHelper(
         val dataBaseRead = this.readableDatabase
         val select = arrayOf(
             EXERCISE_NAME_COLUMN,
-            PAUSE_COLUMN,
+            PAUSE_RANGE_FROM_COLUMN,
+            PAUSE_RANGE_TO_COLUMN,
             LOAD_UNIT_COLUMN,
             REPS_RANGE_FROM_COLUMN,
             REPS_RANGE_TO_COLUMN,
@@ -198,20 +252,28 @@ class WorkoutHistoryDatabaseHelper(
     ): List<WorkoutExerciseDraft> {
         val workoutExercises: MutableList<WorkoutExerciseDraft> = ArrayList()
         val cursor = getWorkoutExercisesCursor(rawDate, routineName, planName)
+        val seconds = 60
         if (cursor.moveToFirst()) {
             val exerciseName =
                 cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
 
-            var pauseInt =
-                cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_COLUMN))
+            var pauseRangeFromInt =
+                cursor.getInt(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PAUSE_RANGE_FROM_COLUMN))
+            var pauseRangeToInt =
+                cursor.getInt(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PAUSE_RANGE_TO_COLUMN))
             val pauseUnit: TimeUnit
-            if ((pauseInt % 60) == 0) {
-                pauseInt /= 60
+            if ((pauseRangeFromInt % seconds) == 0 && (pauseRangeToInt % seconds) == 0) {
+                pauseRangeFromInt /= seconds
+                pauseRangeToInt /= seconds
                 pauseUnit = TimeUnit.min
             } else {
                 pauseUnit = TimeUnit.s
             }
-            val pause = pauseInt.toString()
+            val pause: String = if (pauseRangeFromInt == pauseRangeToInt) {
+                ExactPause(pauseRangeFromInt, pauseUnit).toString()
+            } else {
+                RangePause(pauseRangeFromInt, pauseRangeToInt, pauseUnit).toString()
+            }
 
             val repsRangeFrom =
                 cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_FROM_COLUMN))
@@ -248,16 +310,23 @@ class WorkoutHistoryDatabaseHelper(
                 val nextExerciseName =
                     cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
 
-                var nextPauseInt =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_COLUMN))
+                var nextPauseRangeFromInt =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PAUSE_RANGE_FROM_COLUMN))
+                var nextPauseRangeToInt =
+                    cursor.getInt(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PAUSE_RANGE_TO_COLUMN))
                 val nextPauseUnit: TimeUnit
-                if ((nextPauseInt % 60) == 0) {
-                    nextPauseInt /= 60
+                if ((nextPauseRangeFromInt % seconds) == 0 && (nextPauseRangeToInt % seconds) == 0) {
+                    nextPauseRangeFromInt /= seconds
+                    nextPauseRangeToInt /= seconds
                     nextPauseUnit = TimeUnit.min
                 } else {
                     nextPauseUnit = TimeUnit.s
                 }
-                val nextPause = nextPauseInt.toString()
+                val nextPause: String = if (nextPauseRangeFromInt == nextPauseRangeToInt) {
+                    ExactPause(nextPauseRangeFromInt, nextPauseUnit).toString()
+                } else {
+                    RangePause(nextPauseRangeFromInt, nextPauseRangeToInt, nextPauseUnit).toString()
+                }
 
                 val nextRepsRangeFrom =
                     cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_FROM_COLUMN))
@@ -349,7 +418,8 @@ class WorkoutHistoryDatabaseHelper(
         const val ROUTINE_NAME_COLUMN = "RoutineName"
         const val EXERCISE_ORDER_COLUMN = "ExerciseOrder"
         const val EXERCISE_NAME_COLUMN = "ExerciseName"
-        const val PAUSE_COLUMN = "Pause"
+        const val PAUSE_RANGE_FROM_COLUMN = "PauseRangeFrom"
+        const val PAUSE_RANGE_TO_COLUMN = "PauseRangeTo"
         const val LOAD_UNIT_COLUMN = "LoadUnit"
         const val REPS_RANGE_FROM_COLUMN = "RepsRangeFrom"
         const val REPS_RANGE_TO_COLUMN = "RepsRangeTo"

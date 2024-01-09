@@ -1,5 +1,6 @@
 package com.example.gymapp.model.workout
 
+import com.example.gymapp.model.routine.Reps
 import com.example.gymapp.model.routine.Weight
 
 data class WorkoutSeries(

@@ -13,14 +13,15 @@
         android:hint="Plan"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="6dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/RecyclerViewTrainingPlan"
         android:layout_width="410dp"
-        android:layout_height="383dp"
-        android:layout_marginTop="1dp"
+        android:layout_height="600dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTrainingPlanName"
@@ -30,9 +31,10 @@
         android:id="@+id/buttonAddRoutine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
         android:text="Add Routine"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/RecyclerViewTrainingPlan" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
