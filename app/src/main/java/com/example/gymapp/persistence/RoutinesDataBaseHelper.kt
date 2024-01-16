@@ -9,6 +9,8 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
     Repository(
         context, factory,
     ) {
+
+
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                 + PLAN_ID_COLUMN + " INTEGER NOT NULL," +
@@ -17,14 +19,29 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
                 "FOREIGN KEY " + "(" + PLAN_ID_COLUMN + ")" + " REFERENCES " + PlansDataBaseHelper.TABLE_NAME + "(" + PlansDataBaseHelper.PLAN_ID_COLUMN + ")"
                 + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
         db.execSQL(query)
-        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onCreate(db)
     }
+    fun deletePlans(planID: Int, routineNames: List<String>) {
+        val db = this.writableDatabase
+        for (routineName in routineNames)
+        {
+            val deleteSelection =
+                "$PLAN_ID_COLUMN = ? AND $ROUTINE_NAME_COLUMN = ?"
+            val deleteSelectionArgs =
+                arrayOf(planID.toString(), routineName)
 
-
+            val cursor =
+                db.query(TABLE_NAME, null, deleteSelection, deleteSelectionArgs, null, null, null)
+            cursor.use { cur ->
+                if (cur.moveToFirst()) {
+                    db.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
+                }
+            }
+        }
+    }
     private fun getRoutinesInPlanCursor(planId: Int): Cursor {
         val dataBaseRead = this.readableDatabase
         return dataBaseRead.rawQuery(

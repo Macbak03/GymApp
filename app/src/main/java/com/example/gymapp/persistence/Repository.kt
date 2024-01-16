@@ -14,6 +14,11 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
         DATABASE_VERSION
     ) {
 
+    override fun onConfigure(db: SQLiteDatabase?) {
+        super.onConfigure(db)
+        db?.execSQL("PRAGMA foreign_keys=ON;")
+    }
+
     open fun getValue(
         tableName: String?,
         select: String,

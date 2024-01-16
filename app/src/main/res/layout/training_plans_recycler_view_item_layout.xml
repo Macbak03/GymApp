@@ -22,7 +22,7 @@
         android:padding="5dp">
 
         <CheckBox
-            android:id="@+id/checkBoxTrainingPlans"
+            android:id="@+id/checkBoxElement"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:visibility="invisible"

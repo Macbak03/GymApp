@@ -16,13 +16,11 @@ import com.example.gymapp.model.workout.WorkoutExercise
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeries
 
-class WorkoutHistoryDatabaseHelper(
-    val context: Context,
-    private val factory: SQLiteDatabase.CursorFactory?
-) :
-    Repository(
+class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?
+) : Repository(
         context, factory,
     ) {
+
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                 + DATE_COLUMN + " DATETIME NOT NULL," +
@@ -43,12 +41,12 @@ class WorkoutHistoryDatabaseHelper(
                 NOTES_COLUMN + " TEXT" +
                 ")")
         db.execSQL(query)
-        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onCreate(db)
     }
+
 
     private fun addExerciseToHistory(
         date: String,

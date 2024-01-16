@@ -12,6 +12,7 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
     Repository(
         context, factory,
     ) {
+
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                 + EXERCISE_ID_COLUMN + " INTEGER NOT NULL," +
@@ -21,13 +22,11 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
                 " FOREIGN KEY " + "(" + EXERCISE_ID_COLUMN + ")" + " REFERENCES " + WorkoutHistoryDatabaseHelper.TABLE_NAME + "(" + WorkoutHistoryDatabaseHelper.EXERCISE_ID_COLUMN + ")"
                 + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
         db.execSQL(query)
-        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onCreate(db)
     }
-
 
     private fun getSeriesCursor(exerciseId: Int): Cursor {
         val databaseRead = this.readableDatabase
