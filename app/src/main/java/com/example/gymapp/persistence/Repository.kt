@@ -14,7 +14,6 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
         DATABASE_VERSION
     ) {
 
-
     open fun getValue(
         tableName: String?,
         select: String,
@@ -66,7 +65,7 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
         return originalList.mapTo(mutableListOf()) { converter(it) }
     }
 
-    fun setForeignKeys(switch: String) {
+    protected fun setForeignKeys(switch: String) {
         val dataBaseWrite = this.writableDatabase
         val query = ("PRAGMA foreign_keys = $switch")
         dataBaseWrite.execSQL(query)

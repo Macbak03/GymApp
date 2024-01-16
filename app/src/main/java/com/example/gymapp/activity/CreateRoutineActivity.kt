@@ -12,7 +12,6 @@ import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
 import com.example.gymapp.exception.ValidationException
-import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
@@ -29,7 +28,7 @@ class CreateRoutineActivity : AppCompatActivity() {
     private var exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 0
 
-    private val callback = object : OnBackPressedCallback(true) {
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
 
             goBackToTrainingPlanActivity()
@@ -78,7 +77,7 @@ class CreateRoutineActivity : AppCompatActivity() {
             }
         }
 
-        onBackPressedDispatcher.addCallback(this, callback)
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)){ view, insets ->
             val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom

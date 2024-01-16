@@ -21,6 +21,7 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
                 " FOREIGN KEY " + "(" + EXERCISE_ID_COLUMN + ")" + " REFERENCES " + WorkoutHistoryDatabaseHelper.TABLE_NAME + "(" + WorkoutHistoryDatabaseHelper.EXERCISE_ID_COLUMN + ")"
                 + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
         db.execSQL(query)
+        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
