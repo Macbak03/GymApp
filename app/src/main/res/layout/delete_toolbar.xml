@@ -26,6 +26,7 @@
                 android:contentDescription="Back" />
 
             <TextView
+                android:id="@+id/textViewToolbarText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -36,7 +37,7 @@
                 android:textSize="22sp" />
 
             <Button
-                android:id="@+id/buttonDeletePlans"
+                android:id="@+id/buttonDeleteElements"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="@android:drawable/ic_menu_delete"

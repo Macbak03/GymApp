@@ -5,32 +5,35 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.TrainingPlansRecyclerViewItemLayoutBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 
-class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>) :
+class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>, private val deleteButton: Button) :
     RecyclerView.Adapter<TrainingPlansRecyclerViewAdapter.TrainingPlansViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
     private var onLongCLickListener: OnLongClickListener? = null
 
-    private lateinit var textAnimator: ValueAnimator
+    private val animations: Animations = Animations()
 
     var isLongClickActivated = false
+    private var checkBoxTracker = 0
+    private val deletedTrainingPlans: MutableList<String> = ArrayList()
 
     inner class TrainingPlansViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) :
         ViewHolder(binding.root) {
         val trainingPlanName = binding.textViewElement
-        val checkBox = binding.checkBoxTrainingPlans
+        val checkBox = binding.checkBoxElement
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingPlansViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val trainingPlansItemBinding =
             TrainingPlansRecyclerViewItemLayoutBinding.inflate(inflater, parent, false)
-        textAnimator = ValueAnimator()
         return TrainingPlansViewHolder(trainingPlansItemBinding)
     }
 
@@ -43,6 +46,19 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         val trainingPlan = trainingPlans[position]
         holder.trainingPlanName.text = trainingPlan.name
         holder.checkBox.isChecked = trainingPlan.isSelected
+        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            trainingPlan.isSelected = !trainingPlan.isSelected
+            if(trainingPlan.isSelected) {
+                checkBoxTracker ++
+            } else {
+                checkBoxTracker --
+            }
+            if(checkBoxTracker == 0){
+                switchButtonAccessibility(false)
+            }else{
+                switchButtonAccessibility(true)
+            }
+        }
 
         holder.itemView.setOnClickListener {
             if (onClickListener != null) {
@@ -54,41 +70,45 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
             if (onLongCLickListener != null) {
                 onLongCLickListener!!.onLongClick(position, trainingPlans[position])
                 isLongClickActivated = true
-                trainingPlan.isSelected = true
+                holder.checkBox.isChecked = true
                 notifyDataSetChanged()
             }
             true
         }
 
-        if (isLongClickActivated)
-        {
+        if (isLongClickActivated) {
             showCheckBox(holder)
-        }
-        else
-        {
+        } else {
             hideCheckBox(holder)
         }
     }
 
-    private fun showCheckBox(holder: TrainingPlansViewHolder){
+    private fun showCheckBox(holder: TrainingPlansViewHolder) {
         holder.checkBox.visibility = View.VISIBLE
-        holder.checkBox.alpha = 0f
         holder.checkBox.animate()
             .alpha(1f)
-            .setDuration(300)
-            .withStartAction{
-                translateTextViewRight(holder)
+            .setDuration(200)
+            .withStartAction {
+                animations.translateX(
+                    holder.trainingPlanName.translationX,
+                    holder.checkBox.width.toFloat(),
+                    holder.trainingPlanName
+                )
             }
             .withEndAction(null)
             .start()
     }
 
-    private fun hideCheckBox(holder: TrainingPlansViewHolder){
+    private fun hideCheckBox(holder: TrainingPlansViewHolder) {
         holder.checkBox.animate()
             .alpha(0f)
-            .setDuration(300)
-            .withStartAction{
-                translateTextViewLeft(holder)
+            .setDuration(200)
+            .withStartAction {
+                animations.translateX(
+                    holder.trainingPlanName.translationX,
+                    0f,
+                    holder.trainingPlanName
+                )
             }
             .withEndAction {
                 holder.checkBox.visibility = View.GONE
@@ -97,32 +117,30 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
             .start()
     }
 
-    private fun translateTextViewRight(holder: TrainingPlansViewHolder){
-        val currentTranslationX = holder.trainingPlanName.translationX
-        val targetTranslationX = holder.checkBox.width.toFloat()
-
-        textAnimator.setFloatValues(currentTranslationX, targetTranslationX)
-        textAnimator.duration = 300
-        textAnimator.start()
-
-        textAnimator.addUpdateListener { animation ->
-            val value = animation.animatedValue as Float
-            holder.trainingPlanName.translationX = value
-        }
-
-        textAnimator.start()
+    private fun switchButtonAccessibility(switch: Boolean)
+    {
+        deleteButton.isEnabled = switch
     }
 
-    private fun translateTextViewLeft(holder: TrainingPlansViewHolder){
-        val currentTranslationX = holder.trainingPlanName.translationX
-        val targetTranslationX =  0f
-        val animator = ValueAnimator.ofFloat( currentTranslationX, targetTranslationX)
-        animator.addUpdateListener { animation ->
-            val value = animation.animatedValue as Float
-            holder.trainingPlanName.translationX = value
+    @SuppressLint("NotifyDataSetChanged")
+    fun deletePlansFromRecyclerView()
+    {
+        trainingPlans.removeAll {
+            if(it.isSelected)
+            {
+                deletedTrainingPlans.add(it.name)
+                true
+            } else
+            {
+                false
+            }
         }
-        animator.duration = 300
-        animator.start()
+        notifyDataSetChanged()
+    }
+
+    fun getDeletedPlans() : MutableList<String>
+    {
+        return deletedTrainingPlans
     }
 
     fun setOnClickListener(onClickListener: OnClickListener) {
@@ -136,9 +154,6 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
     @SuppressLint("NotifyDataSetChanged")
     fun resetLongClickState() {
         isLongClickActivated = false
-        for (trainingPlan in trainingPlans) {
-            trainingPlan.isSelected = false
-        }
         notifyDataSetChanged()
     }
 

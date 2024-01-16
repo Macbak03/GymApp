@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".activity.TrainingPlanActivity">
 
+    <include
+        android:id="@+id/toolbarDeleteRoutine"
+        layout="@layout/delete_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/textViewTrainingPlanName"
         android:layout_width="wrap_content"
@@ -21,7 +28,7 @@
         android:id="@+id/RecyclerViewTrainingPlan"
         android:layout_width="410dp"
         android:layout_height="600dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textViewTrainingPlanName"

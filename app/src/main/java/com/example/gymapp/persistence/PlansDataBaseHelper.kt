@@ -13,11 +13,28 @@ class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactor
                 + PLAN_ID_COLUMN + " INTEGER PRIMARY KEY," +
                 PLAN_NAME_COLUMN + " TEXT NOT NULL" + ")")
         db.execSQL(query)
-        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onCreate(db)
+    }
+    fun deletePlans(planNames: List<String>) {
+        val db = this.writableDatabase
+        for (planName in planNames)
+        {
+            val deleteSelection =
+                "$PLAN_NAME_COLUMN = ?"
+            val deleteSelectionArgs =
+                arrayOf(planName)
+
+            val cursor =
+                db.query(TABLE_NAME, null, deleteSelection, deleteSelectionArgs, null, null, null)
+            cursor.use { cur ->
+                if (cur.moveToFirst()) {
+                    db.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
+                }
+            }
+        }
     }
 
     fun addPLan(planName: String) {
@@ -41,8 +58,8 @@ class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactor
 
     fun isTableNotEmpty(): Boolean
     {
-        val dataBaseRead = this.readableDatabase
-        val cursor = dataBaseRead.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
+        val db = this.readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
         var isEmpty = true
         if(cursor.moveToFirst())
         {
@@ -50,7 +67,7 @@ class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactor
             isEmpty = count >0
         }
         cursor.close()
-        dataBaseRead.close()
+        db.close()
         return isEmpty
     }
 

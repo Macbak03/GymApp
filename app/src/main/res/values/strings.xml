@@ -19,5 +19,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="val">Val</string>
     <string name="series_count_format">%d.</string>
+    <string name="delete_routines_text">Choose routines to delete</string>
 
 </resources>

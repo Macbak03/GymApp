@@ -17,6 +17,7 @@ import com.example.gymapp.model.routine.WeightUnit
 
 class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
     Repository(context, factory) {
+
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
                 + PLAN_ID_COLUMN + " INTEGER NOT NULL," +
@@ -39,7 +40,6 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 "FOREIGN KEY " + "(" + PLAN_ID_COLUMN + ")" + " REFERENCES " + PlansDataBaseHelper.TABLE_NAME + "(" + PlansDataBaseHelper.PLAN_ID_COLUMN + ")"
                 + "ON UPDATE CASCADE ON DELETE CASCADE" + ")")
         db.execSQL(query)
-        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -134,7 +134,6 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 }
             }
         }
-        db.close()
     }
 
     private fun addToRoutines(routineName: String, planId: Int) {
