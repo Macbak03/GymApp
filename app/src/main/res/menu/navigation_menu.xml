@@ -4,21 +4,21 @@
     <item
         android:id="@+id/buttonHome"
         android:title="Home"
-        android:icon="@drawable/baseline_home_24"/>
+        android:icon="@drawable/house_icon"/>
 
     <item
         android:id="@+id/buttonTrainingPlans"
         android:title="Training Plans"
-        android:icon="@drawable/baseline_event_note_24"/>
+        android:icon="@drawable/plans_icon"/>
 
     <item
         android:id="@+id/buttonTrainingHistory"
         android:title="Training History"
-        android:icon="@drawable/baseline_history_24"/>
+        android:icon="@drawable/history_icon"/>
 
     <item
         android:id="@+id/buttonSettings"
         android:title="Settings"
-        android:icon="@drawable/ic_settings_icon"/>
+        android:icon="@drawable/settings_icon"/>
 
 </menu>
