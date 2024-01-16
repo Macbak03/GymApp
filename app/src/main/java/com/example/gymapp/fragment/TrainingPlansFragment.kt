@@ -1,5 +1,6 @@
 package com.example.gymapp.fragment
 
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +8,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +23,7 @@ import com.example.gymapp.databinding.FragmentTrainingPlansBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.persistence.PlansDataBaseHelper
+import com.google.android.material.appbar.AppBarLayout
 
 class TrainingPlansFragment : Fragment() {
     private var _binding: FragmentTrainingPlansBinding? = null
@@ -27,9 +32,25 @@ class TrainingPlansFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var trainingPlansRecyclerViewAdapter: TrainingPlansRecyclerViewAdapter
 
+    private lateinit var slideUpAnimation: Animation
+    private lateinit var slideDownAnimation: Animation
+    private lateinit var recyclerAnimator: ValueAnimator
+
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
     private val defaultElement = "Create training plan"
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (trainingPlansRecyclerViewAdapter.isLongClickActivated) {
+                trainingPlansRecyclerViewAdapter.resetLongClickState()
+                hideToolbar()
+            } else {
+                isEnabled = false
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+        }
+    }
 
     companion object {
         const val NEXT_SCREEN = "trainingPlanScreen"
@@ -40,7 +61,10 @@ class TrainingPlansFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTrainingPlansBinding.inflate(layoutInflater, container, false)
+        slideUpAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.toolbar_slide_up)
+        slideDownAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.toolbar_slide_down)
 
+        recyclerAnimator = ValueAnimator()
         return binding.root
     }
 
@@ -71,12 +95,9 @@ class TrainingPlansFragment : Fragment() {
         trainingPlansRecyclerViewAdapter.setOnClickListener(object :
             TrainingPlansRecyclerViewAdapter.OnClickListener {
             override fun onClick(position: Int, model: TrainingPlan) {
-                if(trainingPlansNames[0].name == defaultElement)
-                {
+                if (trainingPlansNames[0].name == defaultElement) {
                     showEditTextDialog()
-                }
-                else
-                {
+                } else {
                     val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
                     explicitIntent.putExtra(NEXT_SCREEN, model.name)
                     startActivity(explicitIntent)
@@ -84,6 +105,22 @@ class TrainingPlansFragment : Fragment() {
             }
         })
 
+        trainingPlansRecyclerViewAdapter.setOnLongClickListener(object :
+            TrainingPlansRecyclerViewAdapter.OnLongClickListener {
+            override fun onLongClick(position: Int, model: TrainingPlan) {
+                showToolbar()
+            }
+        })
+
+        binding.toolbarDeletePlan.buttonBackFromDeleteMode.setOnClickListener {
+            trainingPlansRecyclerViewAdapter.resetLongClickState()
+            hideToolbar()
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            onBackPressedCallback
+        )
     }
 
     override fun onDestroyView() {
@@ -110,8 +147,7 @@ class TrainingPlansFragment : Fragment() {
                             throw ValidationException("There is already a plan with this name")
                         }
                     }
-                    if(editText.text.toString() == defaultElement)
-                    {
+                    if (editText.text.toString() == defaultElement) {
                         throw ValidationException("Invalid plan name")
                     }
                     if (trainingPlansNames[0].name == defaultElement) {
@@ -128,5 +164,71 @@ class TrainingPlansFragment : Fragment() {
             this?.setView(dialogLayout)
             this?.show()
         }
+    }
+
+
+    private fun showToolbar() {
+        val toolbar = binding.toolbarDeletePlan.toolbar
+
+        slideUpAnimation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(anim: Animation?) {
+                translateRecyclerViewDown(toolbar)
+            }
+
+            override fun onAnimationEnd(anim: Animation?) {
+
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {}
+        })
+        toolbar.visibility = View.VISIBLE
+        toolbar.startAnimation(slideUpAnimation)
+
+    }
+
+    private fun hideToolbar() {
+        val toolbar = binding.toolbarDeletePlan.toolbar
+
+        slideDownAnimation.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationStart(anim: Animation?) {
+                translateRecyclerViewUp()
+            }
+
+            override fun onAnimationEnd(animation: Animation?) {
+                toolbar.visibility = View.GONE
+            }
+
+            override fun onAnimationRepeat(animation: Animation?) {}
+        })
+
+        toolbar.startAnimation(slideDownAnimation)
+    }
+
+    private fun translateRecyclerViewUp(){
+        val currentTranslationY = recyclerView.translationY
+        val targetTranslationY = 0f
+
+        recyclerAnimator.setFloatValues(currentTranslationY, targetTranslationY)
+        recyclerAnimator.duration = 300
+        recyclerAnimator.start()
+
+        recyclerAnimator.addUpdateListener { animation ->
+            val value = animation.animatedValue as Float
+            recyclerView.translationY = value
+        }
+
+        recyclerAnimator.start()
+    }
+
+    private fun translateRecyclerViewDown(toolbar: AppBarLayout){
+        val currentTranslationY = recyclerView.translationY
+        val targetTranslationY = toolbar.translationY + toolbar.height.toFloat()
+        val animator = ValueAnimator.ofFloat( currentTranslationY, targetTranslationY)
+        animator.addUpdateListener { animation ->
+            val value = animation.animatedValue as Float
+            recyclerView.translationY = value
+        }
+        animator.duration = 300
+        animator.start()
     }
 }

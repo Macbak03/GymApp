@@ -47,9 +47,6 @@ class MainActivity : AppCompatActivity() {
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
         workoutHistoryDataBase.onCreate(workoutHistoryDataBase.readableDatabase)
         workoutSeriesDataBase.onCreate(workoutSeriesDataBase.readableDatabase)
-        planDataBase.setForeignKeys("ON")
-
-        
     }
 
 

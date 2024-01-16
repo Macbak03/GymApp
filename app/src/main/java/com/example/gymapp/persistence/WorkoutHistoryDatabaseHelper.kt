@@ -43,6 +43,7 @@ class WorkoutHistoryDatabaseHelper(
                 NOTES_COLUMN + " TEXT" +
                 ")")
         db.execSQL(query)
+        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {

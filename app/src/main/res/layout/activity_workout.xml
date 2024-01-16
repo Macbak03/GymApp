@@ -7,7 +7,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         tools:context=".activity.WorkoutActivity">
 
         <TextView
@@ -25,12 +25,11 @@
         <ExpandableListView
             android:id="@+id/expandableListViewWorkout"
             android:layout_width="match_parent"
-            android:layout_height="520dp"
+            android:layout_height="580dp"
             android:layout_marginTop="48dp"
             android:descendantFocusability="beforeDescendants"
             android:nestedScrollingEnabled="true"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -38,6 +37,7 @@
             android:id="@+id/buttonSaveWorkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:text="Save Workout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

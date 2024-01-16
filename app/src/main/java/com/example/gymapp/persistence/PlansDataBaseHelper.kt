@@ -13,6 +13,7 @@ class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactor
                 + PLAN_ID_COLUMN + " INTEGER PRIMARY KEY," +
                 PLAN_NAME_COLUMN + " TEXT NOT NULL" + ")")
         db.execSQL(query)
+        setForeignKeys("ON")
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
