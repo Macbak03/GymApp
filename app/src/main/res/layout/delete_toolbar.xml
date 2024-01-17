@@ -18,10 +18,10 @@
 
             <Button
                 android:id="@+id/buttonBackFromDeleteMode"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_marginStart="10dp"
-                android:background="@android:drawable/ic_delete"
+                android:background="@android:drawable/ic_menu_close_clear_cancel"
                 android:backgroundTint="@color/white"
                 android:contentDescription="Back" />
 

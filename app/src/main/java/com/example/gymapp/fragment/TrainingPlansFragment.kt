@@ -83,7 +83,9 @@ class TrainingPlansFragment : Fragment() {
 
         trainingPlansRecyclerViewAdapter = TrainingPlansRecyclerViewAdapter(
             trainingPlansNames,
-            binding.toolbarDeletePlan.buttonDeleteElements
+            binding.toolbarDeletePlan.buttonDeleteElements,
+            context,
+            plansDataBase
         )
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = trainingPlansRecyclerViewAdapter
@@ -175,7 +177,7 @@ class TrainingPlansFragment : Fragment() {
         val builder = context?.let { AlertDialog.Builder(it) }
         with(builder) {
             this?.setTitle("Are you sure you want to delete?")
-            this?.setPositiveButton("OK") { _, _ ->
+            this?.setPositiveButton("Yes") { _, _ ->
                 trainingPlansRecyclerViewAdapter.deletePlansFromRecyclerView()
                 val deletedPlans = trainingPlansRecyclerViewAdapter.getDeletedPlans()
                 plansDataBase.deletePlans(deletedPlans)
@@ -184,6 +186,8 @@ class TrainingPlansFragment : Fragment() {
             this?.show()
         }
     }
+
+
 
 
     private fun showToolbar() {

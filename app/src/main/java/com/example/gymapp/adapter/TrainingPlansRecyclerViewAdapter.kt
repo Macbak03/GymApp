@@ -1,26 +1,30 @@
 package com.example.gymapp.adapter
 
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.TrainingPlansRecyclerViewItemLayoutBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
+import com.example.gymapp.persistence.PlansDataBaseHelper
 
-class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>, private val deleteButton: Button) :
+class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>, private val deleteButton: Button,
+                                       private val context: Context?, private val plansDataBase: PlansDataBaseHelper
+) :
     RecyclerView.Adapter<TrainingPlansRecyclerViewAdapter.TrainingPlansViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
     private var onLongCLickListener: OnLongClickListener? = null
-
     private val animations: Animations = Animations()
 
     var isLongClickActivated = false
+
     private var checkBoxTracker = 0
     private val deletedTrainingPlans: MutableList<String> = ArrayList()
 
@@ -28,6 +32,7 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         ViewHolder(binding.root) {
         val trainingPlanName = binding.textViewElement
         val checkBox = binding.checkBoxElement
+        val deleteButton = binding.buttonSingleDelete
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingPlansViewHolder {
@@ -41,17 +46,20 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         return trainingPlans.size
     }
 
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(holder: TrainingPlansViewHolder, position: Int) {
         val trainingPlan = trainingPlans[position]
         holder.trainingPlanName.text = trainingPlan.name
         holder.checkBox.isChecked = trainingPlan.isSelected
+
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            trainingPlan.isSelected = !trainingPlan.isSelected
-            if(trainingPlan.isSelected) {
+            if(isChecked) {
                 checkBoxTracker ++
+                trainingPlan.isSelected = true
             } else {
                 checkBoxTracker --
+                trainingPlan.isSelected = false
             }
             if(checkBoxTracker == 0){
                 switchButtonAccessibility(false)
@@ -70,7 +78,7 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
             if (onLongCLickListener != null) {
                 onLongCLickListener!!.onLongClick(position, trainingPlans[position])
                 isLongClickActivated = true
-                holder.checkBox.isChecked = true
+                trainingPlan.isSelected = true
                 notifyDataSetChanged()
             }
             true
@@ -80,6 +88,10 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
             showCheckBox(holder)
         } else {
             hideCheckBox(holder)
+        }
+
+        holder.deleteButton.setOnClickListener {
+            showSingleDeleteDialog(position)
         }
     }
 
@@ -122,9 +134,31 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         deleteButton.isEnabled = switch
     }
 
+    private fun showSingleDeleteDialog(position: Int) {
+            val builder = context?.let { AlertDialog.Builder(it) }
+            with(builder) {
+                this?.setTitle("Are you sure you want to delete ${trainingPlans[position].name}?")
+                this?.setPositiveButton("Yes") { _, _ ->
+                    deleteSinglePlan(position)
+                    plansDataBase.deletePlans(deletedTrainingPlans)
+                }
+                this?.setNegativeButton("Cancel") { _, _ -> }
+                this?.show()
+        }
+    }
+
+    private fun deleteSinglePlan(position: Int){
+        deletedTrainingPlans.clear()
+        deletedTrainingPlans.add(trainingPlans[position].name)
+        trainingPlans.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
+
     @SuppressLint("NotifyDataSetChanged")
     fun deletePlansFromRecyclerView()
     {
+        deletedTrainingPlans.clear()
         trainingPlans.removeAll {
             if(it.isSelected)
             {
@@ -154,6 +188,10 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
     @SuppressLint("NotifyDataSetChanged")
     fun resetLongClickState() {
         isLongClickActivated = false
+        for (trainingPlan in trainingPlans) {
+            trainingPlan.isSelected = false
+        }
+        checkBoxTracker = 0
         notifyDataSetChanged()
     }
 
