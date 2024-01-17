@@ -24,7 +24,7 @@ class RoutinesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFac
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         onCreate(db)
     }
-    fun deletePlans(planID: Int, routineNames: List<String>) {
+    fun deleteRoutines(planID: Int, routineNames: List<String>) {
         val db = this.writableDatabase
         for (routineName in routineNames)
         {

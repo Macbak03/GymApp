@@ -33,6 +33,7 @@ class TrainingPlanActivity : AppCompatActivity() {
     private var planName: String? = null
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
     private val routinesDataBase = RoutinesDataBaseHelper(this, null)
+    private val plansDataBase = PlansDataBaseHelper(this, null)
     private val defaultElement = "Create Routine"
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -78,74 +79,81 @@ class TrainingPlanActivity : AppCompatActivity() {
 
         }
         planName = binding.textViewTrainingPlanName.text.toString()
+        val planId = plansDataBase.getPlanId(planName)
 
 
         recyclerView = binding.RecyclerViewTrainingPlan
-        trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(routines, binding.toolbarDeleteRoutine.buttonDeleteElements)
-        recyclerView.layoutManager = LinearLayoutManager(applicationContext)
-        recyclerView.adapter = trainingPlanRecyclerViewAdapter
-
-        setRecyclerViewContent()
-
-        binding.buttonAddRoutine.setOnClickListener()
+        if(planId != null)
         {
-            val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
-            explicitIntent.putExtra(PLAN_NAME, planName)
-            startCreateRoutineActivityForResult.launch(explicitIntent)
-        }
+            trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(
+                routines,
+                binding.toolbarDeleteRoutine.buttonDeleteElements,
+                this,
+                routinesDataBase,
+                planId
+            )
 
-        trainingPlanRecyclerViewAdapter.setOnClickListener(object :
-            TrainingPlanRecyclerViewAdapter.OnClickListener {
-            override fun onClick(position: Int, model: TrainingPlanElement) {
+            recyclerView.layoutManager = LinearLayoutManager(applicationContext)
+            recyclerView.adapter = trainingPlanRecyclerViewAdapter
+
+            setRecyclerViewContent()
+
+            binding.buttonAddRoutine.setOnClickListener()
+            {
                 val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
-                if (routines[0].routineName == defaultElement) {
-                    explicitIntent.putExtra(PLAN_NAME, planName)
-                    startCreateRoutineActivityForResult.launch(explicitIntent)
-                } else {
-                    explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
-                    explicitIntent.putExtra(PLAN_NAME, planName)
-                    startCreateRoutineActivityForResult.launch(explicitIntent)
+                explicitIntent.putExtra(PLAN_NAME, planName)
+                startCreateRoutineActivityForResult.launch(explicitIntent)
+            }
+
+            trainingPlanRecyclerViewAdapter.setOnClickListener(object :
+                TrainingPlanRecyclerViewAdapter.OnClickListener {
+                override fun onClick(position: Int, model: TrainingPlanElement) {
+                    val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
+                    if (routines[0].routineName == defaultElement) {
+                        explicitIntent.putExtra(PLAN_NAME, planName)
+                        startCreateRoutineActivityForResult.launch(explicitIntent)
+                    } else {
+                        explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
+                        explicitIntent.putExtra(PLAN_NAME, planName)
+                        startCreateRoutineActivityForResult.launch(explicitIntent)
+                    }
                 }
+            })
+
+            trainingPlanRecyclerViewAdapter.setOnLongClickListener(object :
+                TrainingPlanRecyclerViewAdapter.OnLongClickListener {
+                override fun onLongClick(position: Int, model: TrainingPlanElement) {
+                    showToolbar()
+                }
+            })
+
+            binding.toolbarDeleteRoutine.buttonBackFromDeleteMode.setOnClickListener {
+                trainingPlanRecyclerViewAdapter.resetLongClickState()
+                hideToolbar()
             }
-        })
 
-        trainingPlanRecyclerViewAdapter.setOnLongClickListener(object :
-            TrainingPlanRecyclerViewAdapter.OnLongClickListener {
-            override fun onLongClick(position: Int, model: TrainingPlanElement) {
-                showToolbar()
+            binding.toolbarDeleteRoutine.buttonDeleteElements.setOnClickListener {
+                showDeleteDialog()
             }
-        })
 
-        binding.toolbarDeleteRoutine.buttonBackFromDeleteMode.setOnClickListener {
-            trainingPlanRecyclerViewAdapter.resetLongClickState()
-            hideToolbar()
+            onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
-
-        binding.toolbarDeleteRoutine.buttonDeleteElements.setOnClickListener {
-            showDeleteDialog()
-        }
-
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
     }
 
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent() {
-        val plansDataBase = PlansDataBaseHelper(this, null)
-        val planName = this.planName
-        if (planName != null) {
-            val planId = plansDataBase.getPlanId(planName)
-            if (planId != null) {
-                if (!routinesDataBase.isPlanNotEmpty(planId.toString())) {
-                    routines.add(TrainingPlanElement(defaultElement))
-                }
-                val routinesInPlan = routinesDataBase.getRoutinesInPlan(planId)
-                for (routine in routinesInPlan) {
-                    routines.add(routine)
-                }
-                trainingPlanRecyclerViewAdapter.notifyDataSetChanged()
+        val planId = plansDataBase.getPlanId(planName)
+        if (planId != null) {
+            if (!routinesDataBase.isPlanNotEmpty(planId.toString())) {
+                routines.add(TrainingPlanElement(defaultElement))
             }
+            val routinesInPlan = routinesDataBase.getRoutinesInPlan(planId)
+            for (routine in routinesInPlan) {
+                routines.add(routine)
+            }
+            trainingPlanRecyclerViewAdapter.notifyDataSetChanged()
         }
     }
 
@@ -154,15 +162,11 @@ class TrainingPlanActivity : AppCompatActivity() {
         with(builder) {
             this.setTitle("Are you sure you want to delete?")
             this.setPositiveButton("OK") { _, _ ->
-                val plansDataBase = PlansDataBaseHelper(context, null)
-                val planName = this@TrainingPlanActivity.planName
-                if(planName != null){
-                    val planId = plansDataBase.getPlanId(planName)
-                    if(planId != null){
-                        trainingPlanRecyclerViewAdapter.deleteRoutinesFromRecyclerView()
-                        val deletedRoutines = trainingPlanRecyclerViewAdapter.getDeletedRoutines()
-                        routinesDataBase.deletePlans(planId, deletedRoutines)
-                    }
+                val planId = plansDataBase.getPlanId(planName)
+                if (planId != null) {
+                    trainingPlanRecyclerViewAdapter.deleteRoutinesFromRecyclerView()
+                    val deletedRoutines = trainingPlanRecyclerViewAdapter.getDeletedRoutines()
+                    routinesDataBase.deleteRoutines(planId, deletedRoutines)
                 }
             }
             this.setNegativeButton("Cancel") { _, _ -> }
@@ -207,7 +211,7 @@ class TrainingPlanActivity : AppCompatActivity() {
         toolbar.startAnimation(slideDownAnimation)
     }
 
-    private fun showPlanName(){
+    private fun showPlanName() {
         val planName = binding.textViewTrainingPlanName
         planName.visibility = View.VISIBLE
         planName.animate()
@@ -216,7 +220,8 @@ class TrainingPlanActivity : AppCompatActivity() {
             .withEndAction(null)
             .start()
     }
-    private fun hidePlanName(){
+
+    private fun hidePlanName() {
         val planName = binding.textViewTrainingPlanName
         planName.animate()
             .alpha(0f)

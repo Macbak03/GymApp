@@ -1,18 +1,22 @@
 package com.example.gymapp.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.TrainingPlansRecyclerViewItemLayoutBinding
-import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.model.trainingPlans.TrainingPlanElement
+import com.example.gymapp.persistence.RoutinesDataBaseHelper
 
-class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<TrainingPlanElement>, private val deleteButton: Button) :
+class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<TrainingPlanElement>, private val deleteButton: Button,
+                                      private val context: Context?, private val routinesDataBaseHelper: RoutinesDataBaseHelper, private val planId: Int
+) :
     RecyclerView.Adapter<TrainingPlanRecyclerViewAdapter.TrainingPlanViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
@@ -28,6 +32,7 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
         ViewHolder(binding.root) {
         val routineName = binding.textViewElement
         val checkBox = binding.checkBoxElement
+        val deleteButton = binding.buttonSingleDelete
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingPlanViewHolder {
@@ -48,11 +53,12 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
         holder.checkBox.isChecked = routine.isSelected
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            routine.isSelected = !routine.isSelected
-            if(routine.isSelected) {
+            if(isChecked) {
                 checkBoxTracker ++
+                routine.isSelected = true
             } else {
                 checkBoxTracker --
+                routine.isSelected = false
             }
             if(checkBoxTracker == 0){
                 switchButtonAccessibility(false)
@@ -71,7 +77,7 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
             if (onLongCLickListener != null) {
                 onLongCLickListener!!.onLongClick(position, routines[position])
                 isLongClickActivated = true
-                holder.checkBox.isChecked = true
+                routine.isSelected = true
                 notifyDataSetChanged()
             }
             true
@@ -81,6 +87,10 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
             showCheckBox(holder)
         } else {
             hideCheckBox(holder)
+        }
+
+        holder.deleteButton.setOnClickListener {
+            showSingleDeleteDialog(position)
         }
     }
 
@@ -123,9 +133,30 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
         deleteButton.isEnabled = switch
     }
 
+    private fun showSingleDeleteDialog(position: Int) {
+        val builder = context?.let { AlertDialog.Builder(it) }
+        with(builder) {
+            this?.setTitle("Are you sure you want to delete ${routines[position].routineName}?")
+            this?.setPositiveButton("Yes") { _, _ ->
+                deleteSinglePlan(position)
+                routinesDataBaseHelper.deleteRoutines(planId, deletedRoutines)
+            }
+            this?.setNegativeButton("Cancel") { _, _ -> }
+            this?.show()
+        }
+    }
+
+    private fun deleteSinglePlan(position: Int){
+        deletedRoutines.clear()
+        deletedRoutines.add(routines[position].routineName)
+        routines.removeAt(position)
+        notifyItemRemoved(position)
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     fun deleteRoutinesFromRecyclerView()
     {
+        deletedRoutines.clear()
         routines.removeAll {
             if(it.isSelected)
             {
@@ -155,6 +186,10 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
     @SuppressLint("NotifyDataSetChanged")
     fun resetLongClickState() {
         isLongClickActivated = false
+        for (routine in routines) {
+            routine.isSelected = false
+        }
+        checkBoxTracker = 0
         notifyDataSetChanged()
     }
 
