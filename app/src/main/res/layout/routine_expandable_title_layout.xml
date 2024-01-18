@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/expandableLayoutTitle"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal" >
+    android:layout_height="wrap_content"
+    android:background="?android:attr/windowBackground"
+    android:orientation="horizontal">
 
 
     <TextView
         android:id="@+id/textViewExercise"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="6dp"
+        android:layout_weight="1"
         android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
         android:text="@string/exercise_name"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:layout_marginEnd="6dp"
         tools:ignore="RtlSymmetry" />
+
+<!--    <Button
+        android:id="@+id/buttonDrag"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/baseline_drag_indicator_24"
+        android:contentDescription="More" />-->
 </LinearLayout>
