@@ -132,7 +132,6 @@ class TrainingPlanActivity : AppCompatActivity() {
         const val ROUTINE_NAME = "com.example.gymapp.routinename"
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private val startCreateRoutineActivityForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {

@@ -1,17 +1,20 @@
 package com.example.gymapp.activity
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
 import com.example.gymapp.databinding.ActivityWorkoutBinding
 import com.example.gymapp.exception.ValidationException
+import com.example.gymapp.fragment.HomeFragment
 import com.example.gymapp.fragment.StartWorkoutMenuFragment
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
@@ -35,6 +38,9 @@ class WorkoutActivity : AppCompatActivity() {
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             saveRepsAndLoad()
+            val resultIntent = Intent()
+            resultIntent.putExtra(HomeFragment.ROUTINE_NAME, binding.textViewCurrentWorkout.text)
+            setResult(RESULT_CANCELED, resultIntent)
             isEnabled = false
             onBackPressedDispatcher.onBackPressed()
         }
@@ -67,6 +73,10 @@ class WorkoutActivity : AppCompatActivity() {
             val customDate = CustomDate()
             val date = customDate.getDate()
             saveWorkoutToHistory(date)
+        }
+
+        binding.buttonCancelWorkout.setOnClickListener {
+            showCancelDialog()
         }
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -107,7 +117,12 @@ class WorkoutActivity : AppCompatActivity() {
                 workoutExpandableListAdapter.notifyDataSetChanged()
             }
         }
-        restoreRepsAndLoad()
+        val isUnsaved = intent.getBooleanExtra(HomeFragment.IS_UNSAVED, false)
+        if(isUnsaved)
+        {
+            restoreRepsAndLoad()
+        }
+
     }
 
     private fun saveWorkoutToHistory(date: String) {
@@ -123,6 +138,7 @@ class WorkoutActivity : AppCompatActivity() {
                         routineName
                     )
                     Toast.makeText(this, "Workout Saved!", Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
                     finish()
                 } catch (exception: ValidationException) {
                     Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
@@ -179,5 +195,20 @@ class WorkoutActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun showCancelDialog() {
+        val builder = this.let { AlertDialog.Builder(it) }
+        with(builder) {
+            this.setTitle("Are you sure you want to cancel this training? It won't be saved.")
+            this.setPositiveButton("Yes") { _, _ ->
+                setResult(RESULT_OK)
+                finish()
+            }
+            this.setNegativeButton("No") { _, _ -> }
+            this.show()
+        }
+    }
+
+
 
 }

@@ -1,5 +1,7 @@
 package com.example.gymapp.fragment
 
+import android.app.Activity.RESULT_CANCELED
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +11,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.Spinner
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentTransaction
 import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
@@ -30,14 +35,34 @@ class HomeFragment : Fragment() {
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
     private lateinit var spinner: Spinner
+    lateinit var buttonReturn: Button
     private val SPINNER_PREF_KEY = "selectedSpinnerItem"
+
+    var isUnsaved = false
+    var routineNameResult: String? = null
 
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
         const val ROUTINE_NAME = "com.example.gymapp.routinename"
         const val FORMATTED_DATE = "com.example.gymapp.formatteddate"
         const val RAW_DATE = "com.example.gymapp.rawdate"
+        const val IS_UNSAVED = "com.example.gymapp.isunsaved"
     }
+
+    private val startWorkoutActivityForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_CANCELED) {
+                isUnsaved = true
+                routineNameResult = result.data?.getStringExtra(ROUTINE_NAME)
+                buttonReturn.visibility = View.VISIBLE
+            } else if (result.resultCode == RESULT_OK) {
+                isUnsaved = false
+                buttonReturn.visibility = View.GONE
+            }
+            spinner.isEnabled = !isUnsaved
+            routineNameResult?.let { saveResult(isUnsaved, it) }
+        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,24 +90,45 @@ class HomeFragment : Fragment() {
             spinner.visibility = View.VISIBLE
         }
         initSpinner()
+
+        buttonReturn = binding.buttonReturnToWorkout
+        buttonReturn.visibility = View.GONE
+
+        loadResult()
+        if (isUnsaved) {
+            spinner.isEnabled = false
+            buttonReturn.visibility = View.VISIBLE
+        } else {
+            spinner.isEnabled = true
+            buttonReturn.visibility = View.GONE
+        }
+
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         binding.buttonStartWorkout.setOnClickListener {
             if (!plansDataBase.isTableNotEmpty()) {
                 openTrainingPlansFragment()
-            }
-            else if (spinner.selectedItem != null) {
+            } else if (spinner.selectedItem != null) {
                 val planName = spinner.selectedItem.toString()
                 val planId = plansDataBase.getPlanId(planName)
                 if (planId != null && !routinesDataBase.isPlanNotEmpty(planId.toString())) {
                     openRoutinesActivity(planName)
-                }else {
-                    openStartWorkoutMenuFragment()
+                } else {
+                    if (isUnsaved) {
+                        showWarningDialog()
+                    } else {
+                        openStartWorkoutMenuFragment()
+                    }
+
                 }
             }
         }
         binding.buttonReturnToWorkout.setOnClickListener {
             val explicitIntent = Intent(context, WorkoutActivity::class.java)
-            startActivity(explicitIntent)
+            val planName = spinner.selectedItem.toString()
+            explicitIntent.putExtra(IS_UNSAVED, isUnsaved)
+            explicitIntent.putExtra(PLAN_NAME, planName)
+            explicitIntent.putExtra(ROUTINE_NAME, routineNameResult)
+            startWorkoutActivityForResult.launch(explicitIntent)
         }
     }
 
@@ -204,6 +250,41 @@ class HomeFragment : Fragment() {
             explicitIntent.putExtra(FORMATTED_DATE, binding.textViewLastTrainingDate.text)
             explicitIntent.putExtra(RAW_DATE, rawDate)
             startActivity(explicitIntent)
+        }
+    }
+
+    private fun saveResult(boolValue: Boolean, stringValue: String) {
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        val keyBool = "is_unsaved"
+        val keyRoutineName = "routine_name"
+
+        editor.putBoolean(keyBool, boolValue)
+        editor.putString(keyRoutineName, stringValue)
+
+        editor.apply()
+    }
+
+    private fun loadResult() {
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+
+        val keyBool = "is_unsaved"
+        val keyRoutineName = "routine_name"
+
+        isUnsaved = sharedPreferences.getBoolean(keyBool, false)
+        routineNameResult = sharedPreferences.getString(keyRoutineName, "")
+    }
+
+    private fun showWarningDialog() {
+        val builder = context?.let { AlertDialog.Builder(it) }
+        with(builder) {
+            this?.setTitle("You have unsaved workout that will be lost. Do you want to start new one?")
+            this?.setPositiveButton("Yes") { _, _ ->
+                openStartWorkoutMenuFragment()
+            }
+            this?.setNegativeButton("No") { _, _ -> }
+            this?.show()
         }
     }
 
