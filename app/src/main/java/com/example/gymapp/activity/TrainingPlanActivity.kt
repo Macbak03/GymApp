@@ -49,7 +49,7 @@ class TrainingPlanActivity : AppCompatActivity() {
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            val position = viewHolder.adapterPosition
+            val position = viewHolder.absoluteAdapterPosition
             if (direction == ItemTouchHelper.RIGHT) {
                 showSingleDeleteDialog(position)
             }
@@ -258,7 +258,9 @@ class TrainingPlanActivity : AppCompatActivity() {
                     routinesDataBase.deleteRoutines(planId, trainingPlanRecyclerViewAdapter.getDeletedRoutines())
                 }
             }
-            this.setNegativeButton("Cancel") { _, _ -> }
+            this.setNegativeButton("Cancel") { _, _ ->
+                trainingPlanRecyclerViewAdapter.notifyItemChanged(position)
+            }
             this.show()
         }
     }

@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
 import com.example.gymapp.activity.TrainingPlanActivity
+import com.example.gymapp.activity.WorkoutActivity
 import com.example.gymapp.databinding.FragmentHomeBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.model.workout.CustomDate
@@ -78,6 +79,10 @@ class HomeFragment : Fragment() {
                     openStartWorkoutMenuFragment()
                 }
             }
+        }
+        binding.buttonReturnToWorkout.setOnClickListener {
+            val explicitIntent = Intent(context, WorkoutActivity::class.java)
+            startActivity(explicitIntent)
         }
     }
 

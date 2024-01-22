@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
@@ -43,9 +44,11 @@ class StartWorkoutMenuFragment : Fragment() {
             val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
+            val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
             button?.visibility = View.GONE
             spinner?.isEnabled = false
             textView?.isEnabled = false
+            cardView?.isEnabled = false
         }
         return binding.root
     }
@@ -78,9 +81,11 @@ class StartWorkoutMenuFragment : Fragment() {
             val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
+            val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
             button?.visibility = View.VISIBLE
             spinner?.isEnabled = true
             textView?.isEnabled = true
+            cardView?.isEnabled = true
         }
         _binding = null
     }

@@ -106,4 +106,12 @@ class WorkoutExpandableLayout(
         return this.workoutExerciseDraft?.note
     }
 
+    fun getRepsEditText(): EditText{
+        return this.repsEditText
+    }
+
+    fun getWeightEditText(): EditText{
+        return this.weightEditText
+    }
+
 }
