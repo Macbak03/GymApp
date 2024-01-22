@@ -15,7 +15,6 @@ import com.example.gymapp.model.trainingPlans.TrainingPlanElement
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
 
 class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<TrainingPlanElement>, private val deleteButton: Button,
-                                      private val context: Context?, private val routinesDataBaseHelper: RoutinesDataBaseHelper, private val planId: Int
 ) :
     RecyclerView.Adapter<TrainingPlanRecyclerViewAdapter.TrainingPlanViewHolder>() {
 
@@ -32,7 +31,6 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
         ViewHolder(binding.root) {
         val routineName = binding.textViewElement
         val checkBox = binding.checkBoxElement
-        val deleteButton = binding.buttonSingleDelete
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingPlanViewHolder {
@@ -88,10 +86,6 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
         } else {
             hideCheckBox(holder)
         }
-
-        holder.deleteButton.setOnClickListener {
-            showSingleDeleteDialog(position)
-        }
     }
 
     private fun showCheckBox(holder: TrainingPlanViewHolder) {
@@ -133,20 +127,7 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
         deleteButton.isEnabled = switch
     }
 
-    private fun showSingleDeleteDialog(position: Int) {
-        val builder = context?.let { AlertDialog.Builder(it) }
-        with(builder) {
-            this?.setTitle("Are you sure you want to delete ${routines[position].routineName}?")
-            this?.setPositiveButton("Yes") { _, _ ->
-                deleteSinglePlan(position)
-                routinesDataBaseHelper.deleteRoutines(planId, deletedRoutines)
-            }
-            this?.setNegativeButton("Cancel") { _, _ -> }
-            this?.show()
-        }
-    }
-
-    private fun deleteSinglePlan(position: Int){
+    fun deleteSingleRoutine(position: Int){
         deletedRoutines.clear()
         deletedRoutines.add(routines[position].routineName)
         routines.removeAt(position)

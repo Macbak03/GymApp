@@ -2,8 +2,9 @@ package com.example.gymapp.fragment
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Canvas
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,9 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
@@ -23,6 +27,8 @@ import com.example.gymapp.databinding.FragmentTrainingPlansBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.persistence.PlansDataBaseHelper
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+
 
 class TrainingPlansFragment : Fragment() {
     private var _binding: FragmentTrainingPlansBinding? = null
@@ -36,8 +42,85 @@ class TrainingPlansFragment : Fragment() {
     private val animations: Animations = Animations()
 
     private lateinit var plansDataBase: PlansDataBaseHelper
-    private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
+    private var trainingPlans: MutableList<TrainingPlan> = ArrayList()
     private val defaultElement = "Create training plan"
+
+    private val simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+        override fun onMove(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            target: RecyclerView.ViewHolder
+        ): Boolean {
+            return trainingPlansRecyclerViewAdapter.isLongClickActivated
+        }
+
+        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.absoluteAdapterPosition
+            if (direction == ItemTouchHelper.RIGHT) {
+                showSingleDeleteDialog(position)
+            }
+        }
+
+        override fun getSwipeDirs(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int {
+            if (trainingPlansRecyclerViewAdapter.isLongClickActivated) {
+                return 0
+            }
+            return super.getSwipeDirs(recyclerView, viewHolder)
+        }
+
+        /*Copyright {2024} {Maciej Bąk}
+
+        Licensed under the Apache License, Version 2.0 (the "License");
+        you may not use this file except in compliance with the License.
+        You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        See the License for the specific language governing permissions and
+        limitations under the License.*/
+
+        override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            RecyclerViewSwipeDecorator.Builder(
+                c,
+                recyclerView,
+                viewHolder,
+                dX,
+                dY,
+                actionState,
+                isCurrentlyActive
+            )
+                .addBackgroundColor(
+                    ContextCompat.getColor(
+                        requireContext(),
+                        R.color.red
+                    )
+                )
+                .addActionIcon(R.drawable.baseline_delete_24)
+                .setActionIconTint(0xFFFFFFFF.toInt())
+                .addCornerRadius(TypedValue.COMPLEX_UNIT_DIP, 3)
+                .addPadding(TypedValue.COMPLEX_UNIT_DIP, 6f, 14f, 6f)
+                .addSwipeRightLabel("Delete")
+                .setSwipeRightLabelColor(0xFFFFFFFF.toInt())
+                .setSwipeRightLabelTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+                .create()
+                .decorate()
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+        }
+    }
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -76,16 +159,14 @@ class TrainingPlansFragment : Fragment() {
             PlansDataBaseHelper.PLAN_NAME_COLUMN,
             PlansDataBaseHelper.PLAN_ID_COLUMN
         )
-        trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
+        trainingPlans = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
         if (!plansDataBase.isTableNotEmpty()) {
-            trainingPlansNames.add((TrainingPlan(defaultElement)))
+            trainingPlans.add((TrainingPlan(defaultElement)))
         }
 
         trainingPlansRecyclerViewAdapter = TrainingPlansRecyclerViewAdapter(
-            trainingPlansNames,
-            binding.toolbarDeletePlan.buttonDeleteElements,
-            context,
-            plansDataBase
+            trainingPlans,
+            binding.toolbarDeletePlan.buttonDeleteElements
         )
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = trainingPlansRecyclerViewAdapter
@@ -98,7 +179,7 @@ class TrainingPlansFragment : Fragment() {
         trainingPlansRecyclerViewAdapter.setOnClickListener(object :
             TrainingPlansRecyclerViewAdapter.OnClickListener {
             override fun onClick(position: Int, model: TrainingPlan) {
-                if (trainingPlansNames[0].name == defaultElement) {
+                if (trainingPlans[0].name == defaultElement) {
                     showEditTextDialog()
                 } else {
                     val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
@@ -128,6 +209,9 @@ class TrainingPlansFragment : Fragment() {
             viewLifecycleOwner,
             onBackPressedCallback
         )
+
+        val itemTouchHelper = ItemTouchHelper(simpleCallback)
+        itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
     override fun onDestroyView() {
@@ -149,7 +233,7 @@ class TrainingPlansFragment : Fragment() {
                     if (editText.text.isBlank()) {
                         throw ValidationException("Training plan name cannot be empty")
                     }
-                    for (item in trainingPlansNames) {
+                    for (item in trainingPlans) {
                         if (editText.text.toString() == item.toString()) {
                             throw ValidationException("There is already a plan with this name")
                         }
@@ -157,11 +241,11 @@ class TrainingPlansFragment : Fragment() {
                     if (editText.text.toString() == defaultElement) {
                         throw ValidationException("Invalid plan name")
                     }
-                    if (trainingPlansNames[0].name == defaultElement) {
-                        trainingPlansNames.clear()
+                    if (trainingPlans[0].name == defaultElement) {
+                        trainingPlans.clear()
                     }
                     plansDataBase.addPLan(editText.text.toString())
-                    trainingPlansNames.add(TrainingPlan(editText.text.toString()))
+                    trainingPlans.add(TrainingPlan(editText.text.toString()))
                     trainingPlansRecyclerViewAdapter.notifyDataSetChanged()
                 } catch (exception: ValidationException) {
                     Toast.makeText(context, exception.message, Toast.LENGTH_LONG).show()
@@ -187,7 +271,20 @@ class TrainingPlansFragment : Fragment() {
         }
     }
 
-
+    private fun showSingleDeleteDialog(position: Int) {
+        val builder = context?.let { AlertDialog.Builder(it) }
+        with(builder) {
+            this?.setTitle("Are you sure you want to delete ${trainingPlans[position].name}?")
+            this?.setPositiveButton("Yes") { _, _ ->
+                trainingPlansRecyclerViewAdapter.deleteSinglePlan(position)
+                plansDataBase.deletePlans(trainingPlansRecyclerViewAdapter.getDeletedPlans())
+            }
+            this?.setNegativeButton("Cancel") { _, _ ->
+                trainingPlansRecyclerViewAdapter.notifyItemChanged(position)
+            }
+            this?.show()
+        }
+    }
 
 
     private fun showToolbar() {

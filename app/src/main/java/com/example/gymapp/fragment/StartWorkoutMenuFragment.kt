@@ -1,7 +1,10 @@
 package com.example.gymapp.fragment
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,6 +13,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
@@ -28,6 +34,25 @@ class StartWorkoutMenuFragment : Fragment() {
     private lateinit var startWorkoutMenuRecyclerViewAdapter: StartWorkoutMenuRecycleViewAdapter
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
 
+    private val startWorkoutActivityForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            homeFragment?.let {
+                if (result.resultCode == Activity.RESULT_CANCELED) {
+                    it.isUnsaved = true
+                    it.routineNameResult = result.data?.getStringExtra(HomeFragment.ROUTINE_NAME)
+                    it.buttonReturn.visibility = View.VISIBLE
+                } else if (result.resultCode == Activity.RESULT_OK) {
+                    it.isUnsaved = false
+                    it.buttonReturn.visibility = View.GONE
+                }
+                val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
+                spinner?.isEnabled = !it.isUnsaved
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentManager.popBackStack()
+                it.routineNameResult?.let { it1 -> saveResult(it.isUnsaved, it1) }
+            }
+        }
+
     companion object {
         const val ROUTINE_NAME = "com.example.gymapp.routinename"
         const val PLAN_NAME = "com.example.gymapp.planname"
@@ -43,9 +68,11 @@ class StartWorkoutMenuFragment : Fragment() {
             val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
+            val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
             button?.visibility = View.GONE
             spinner?.isEnabled = false
             textView?.isEnabled = false
+            cardView?.isEnabled = false
         }
         return binding.root
     }
@@ -65,9 +92,7 @@ class StartWorkoutMenuFragment : Fragment() {
                 val explicitIntent = Intent(context, WorkoutActivity::class.java)
                 explicitIntent.putExtra(ROUTINE_NAME, model.routineName)
                 explicitIntent.putExtra(PLAN_NAME, chosenTrainingPlan)
-                val fragmentManager = requireActivity().supportFragmentManager
-                fragmentManager.popBackStack()
-                startActivity(explicitIntent)
+                startWorkoutActivityForResult.launch(explicitIntent)
             }
         })
     }
@@ -78,9 +103,11 @@ class StartWorkoutMenuFragment : Fragment() {
             val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
+            val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
             button?.visibility = View.VISIBLE
             spinner?.isEnabled = true
             textView?.isEnabled = true
+            cardView?.isEnabled = true
         }
         _binding = null
     }
@@ -95,5 +122,19 @@ class StartWorkoutMenuFragment : Fragment() {
                 routines = routinesDataBase.getRoutinesInPlan(planId)
             }
         }
+    }
+
+    private fun saveResult(boolValue: Boolean, stringValue: String)
+    {
+        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        val keyBool = "is_unsaved"
+        val keyRoutineName = "routine_name"
+
+        editor.putBoolean(keyBool, boolValue)
+        editor.putString(keyRoutineName, stringValue)
+
+        editor.apply()
     }
 }

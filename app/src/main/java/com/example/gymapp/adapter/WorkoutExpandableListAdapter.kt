@@ -10,7 +10,6 @@ import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
 import com.example.gymapp.model.routine.ExerciseDraft
-import com.example.gymapp.model.routine.Weight
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutExercise
@@ -141,6 +140,28 @@ class WorkoutExpandableListAdapter(
             }
         }
         return series
+    }
+
+    fun getRepsFromEditText(listPosition: Int, expandedListPosition: Int): String{
+        var reps = ""
+        val workoutExpandableLayout =
+        getChildView(listPosition, expandedListPosition, false, null, null) as WorkoutExpandableLayout?
+        if (workoutExpandableLayout != null)
+        {
+            reps = workoutExpandableLayout.getRepsEditText().text.toString()
+        }
+        return reps
+    }
+
+    fun getWeightFromEditText(listPosition: Int, expandedListPosition: Int): String{
+        var weight = ""
+        val workoutExpandableLayout =
+            getChildView(listPosition, expandedListPosition, false, null, null) as WorkoutExpandableLayout?
+        if (workoutExpandableLayout != null)
+        {
+            weight = workoutExpandableLayout.getWeightEditText().text.toString()
+        }
+        return weight
     }
 
 

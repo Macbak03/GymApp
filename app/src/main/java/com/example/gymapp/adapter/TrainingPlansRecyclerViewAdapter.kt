@@ -14,8 +14,7 @@ import com.example.gymapp.databinding.TrainingPlansRecyclerViewItemLayoutBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.persistence.PlansDataBaseHelper
 
-class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>, private val deleteButton: Button,
-                                       private val context: Context?, private val plansDataBase: PlansDataBaseHelper
+class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>, private val deleteButton: Button
 ) :
     RecyclerView.Adapter<TrainingPlansRecyclerViewAdapter.TrainingPlansViewHolder>() {
 
@@ -32,7 +31,6 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         ViewHolder(binding.root) {
         val trainingPlanName = binding.textViewElement
         val checkBox = binding.checkBoxElement
-        val deleteButton = binding.buttonSingleDelete
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingPlansViewHolder {
@@ -89,10 +87,6 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         } else {
             hideCheckBox(holder)
         }
-
-        holder.deleteButton.setOnClickListener {
-            showSingleDeleteDialog(position)
-        }
     }
 
     private fun showCheckBox(holder: TrainingPlansViewHolder) {
@@ -134,20 +128,9 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         deleteButton.isEnabled = switch
     }
 
-    private fun showSingleDeleteDialog(position: Int) {
-            val builder = context?.let { AlertDialog.Builder(it) }
-            with(builder) {
-                this?.setTitle("Are you sure you want to delete ${trainingPlans[position].name}?")
-                this?.setPositiveButton("Yes") { _, _ ->
-                    deleteSinglePlan(position)
-                    plansDataBase.deletePlans(deletedTrainingPlans)
-                }
-                this?.setNegativeButton("Cancel") { _, _ -> }
-                this?.show()
-        }
-    }
 
-    private fun deleteSinglePlan(position: Int){
+
+    fun deleteSinglePlan(position: Int){
         deletedTrainingPlans.clear()
         deletedTrainingPlans.add(trainingPlans[position].name)
         trainingPlans.removeAt(position)

@@ -40,7 +40,7 @@
                 android:id="@+id/buttonDeleteElements"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@android:drawable/ic_menu_delete"
+                android:background="@drawable/baseline_delete_24"
                 android:contentDescription="Delete"
                 android:gravity="center" />
 

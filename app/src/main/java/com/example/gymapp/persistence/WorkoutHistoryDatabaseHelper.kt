@@ -172,8 +172,6 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
                 }
             }
         }
-        db.close()
-
     }
 
     fun getHistory(): Cursor {
@@ -382,7 +380,6 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
             isEmpty = count >0
         }
         cursor.close()
-        dataBaseRead.close()
         return isEmpty
     }
 
@@ -404,7 +401,6 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
             routineName = cursor.getString(cursor.getColumnIndexOrThrow(ROUTINE_NAME_COLUMN))
         }
         cursor.close()
-        dataBaseRead.close()
         return listOf(planName, date, routineName)
     }
 
