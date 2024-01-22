@@ -37,7 +37,7 @@ class WorkoutActivity : AppCompatActivity() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            saveRepsAndLoad()
+            saveSeries()
             val resultIntent = Intent()
             resultIntent.putExtra(HomeFragment.ROUTINE_NAME, binding.textViewCurrentWorkout.text)
             setResult(RESULT_CANCELED, resultIntent)
@@ -120,7 +120,7 @@ class WorkoutActivity : AppCompatActivity() {
         val isUnsaved = intent.getBooleanExtra(HomeFragment.IS_UNSAVED, false)
         if(isUnsaved)
         {
-            restoreRepsAndLoad()
+            restoreSeries()
         }
 
     }
@@ -147,11 +147,12 @@ class WorkoutActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveRepsAndLoad() {
+    private fun saveSeries() {
         val sharedPreferences = getPreferences(Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
         for (groupPosition in 0 until workoutExpandableListAdapter.groupCount) {
+            val keyNote = "child_${groupPosition}_note"
             for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(
                 groupPosition
             )) {
@@ -168,15 +169,18 @@ class WorkoutActivity : AppCompatActivity() {
                 editor.putString(keyReps, reps)
                 editor.putString(keyLoad, load)
             }
+            val note = workoutExpandableListAdapter.getNoteFromEditText(groupPosition)
+            editor.putString(keyNote, note)
         }
 
         editor.apply()
     }
 
-    private fun restoreRepsAndLoad() {
+    private fun restoreSeries() {
         val sharedPreferences = getPreferences(Context.MODE_PRIVATE)
 
         for (groupPosition in 0 until workoutExpandableListAdapter.groupCount) {
+            val keyNote = "child_${groupPosition}_note"
             for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(groupPosition)) {
                 val keyReps = "child_${groupPosition}_${childPosition}_reps"
                 val keyLoad = "child_${groupPosition}_${childPosition}_load"
@@ -191,8 +195,10 @@ class WorkoutActivity : AppCompatActivity() {
                 {
                     workout[groupPosition].second[childPosition].load = load
                 }
-                workoutExpandableListAdapter.notifyDataSetChanged()
             }
+            val note = sharedPreferences.getString(keyNote, "")
+            workout[groupPosition].first.note = note
+            workoutExpandableListAdapter.notifyDataSetChanged()
         }
     }
 
