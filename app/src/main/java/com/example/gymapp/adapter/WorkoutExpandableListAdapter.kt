@@ -142,26 +142,51 @@ class WorkoutExpandableListAdapter(
         return series
     }
 
-    fun getRepsFromEditText(listPosition: Int, expandedListPosition: Int): String{
+    fun getRepsFromEditText(listPosition: Int, expandedListPosition: Int): String {
         var reps = ""
         val workoutExpandableLayout =
-        getChildView(listPosition, expandedListPosition, false, null, null) as WorkoutExpandableLayout?
-        if (workoutExpandableLayout != null)
-        {
+            getChildView(
+                listPosition,
+                expandedListPosition,
+                false,
+                null,
+                null
+            ) as WorkoutExpandableLayout?
+        if (workoutExpandableLayout != null) {
             reps = workoutExpandableLayout.getRepsEditText().text.toString()
         }
         return reps
     }
 
-    fun getWeightFromEditText(listPosition: Int, expandedListPosition: Int): String{
+    fun getWeightFromEditText(listPosition: Int, expandedListPosition: Int): String {
         var weight = ""
         val workoutExpandableLayout =
-            getChildView(listPosition, expandedListPosition, false, null, null) as WorkoutExpandableLayout?
-        if (workoutExpandableLayout != null)
-        {
+            getChildView(
+                listPosition,
+                expandedListPosition,
+                false,
+                null,
+                null
+            ) as WorkoutExpandableLayout?
+        if (workoutExpandableLayout != null) {
             weight = workoutExpandableLayout.getWeightEditText().text.toString()
         }
         return weight
+    }
+
+    fun getNoteFromEditText(listPosition: Int): String {
+        var note = ""
+        val workoutExpandableLayout = getChildView(
+            listPosition,
+            getChildrenCount(listPosition) -1,
+            true,
+            null,
+            null
+        ) as WorkoutExpandableLayout?
+        if(workoutExpandableLayout != null){
+            note = workoutExpandableLayout.getNoteEditText().text.toString()
+        }
+        return note
     }
 
 
