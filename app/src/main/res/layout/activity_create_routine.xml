@@ -19,7 +19,16 @@
             android:descendantFocusability="beforeDescendants"
             android:nestedScrollingEnabled="true"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName" />
+            app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName"
+            android:visibility="gone"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewRoutineItems"
+            android:layout_width="match_parent"
+            android:layout_height="580dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName"/>
 
 
         <Button
@@ -31,7 +40,7 @@
             app:layout_constraintEnd_toStartOf="@+id/buttonAddExercise"
             app:layout_constraintHorizontal_bias="0.895"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewRoutineItems" />
 
         <Button
             android:id="@+id/buttonAddExercise"
@@ -40,7 +49,7 @@
             android:layout_marginEnd="8dp"
             android:text="add"
             app:layout_constraintEnd_toStartOf="@+id/buttonDeleteExercise"
-            app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewRoutineItems" />
 
         <EditText
             android:id="@+id/editTextRoutineName"
@@ -61,7 +70,7 @@
             android:layout_marginEnd="10dp"
             android:text="Delete"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ExpandableListViewRoutineItems" />
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewRoutineItems" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

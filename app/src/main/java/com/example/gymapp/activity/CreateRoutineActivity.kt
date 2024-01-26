@@ -8,8 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
+import com.example.gymapp.adapter.RoutineRecyclerViewAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.routine.ExerciseDraft
@@ -22,6 +25,9 @@ class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
     private lateinit var expandableListView: ExpandableListView
     private lateinit var routineExpandableListAdapter: RoutineExpandableListAdapter
+
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var routineRecyclerViewAdapter: RoutineRecyclerViewAdapter
 
     private val exercisesDataBase = ExercisesDataBaseHelper(this, null)
     private val plansDataBase = PlansDataBaseHelper(this, null)
@@ -55,6 +61,11 @@ class CreateRoutineActivity : AppCompatActivity() {
                 loadRoutine(planId)
             }
         }
+
+        recyclerView = binding.recyclerViewRoutineItems
+        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises)
+        recyclerView.layoutManager = LinearLayoutManager(applicationContext)
+        recyclerView.adapter = routineRecyclerViewAdapter
 
         expandableListView = binding.ExpandableListViewRoutineItems
         routineExpandableListAdapter = RoutineExpandableListAdapter(this, exercises)
