@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import com.example.gymapp.R
 import com.example.gymapp.adapter.RoutineExpandableListAdapter
+import com.example.gymapp.adapter.RoutineRecyclerViewAdapter
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
@@ -41,7 +42,7 @@ class RoutineExpandableLayout(
     private val timeUnits = arrayOf(TimeUnit.min, TimeUnit.s)
     private val weightUnits = arrayOf(WeightUnit.kg, WeightUnit.lbs)
 
-    private var adapter: RoutineExpandableListAdapter? = null
+    private var adapter: RoutineRecyclerViewAdapter? = null
 
     init {
         inflate(context, R.layout.routine_expandable_layout, this)
@@ -270,7 +271,7 @@ class RoutineExpandableLayout(
     }
 
 
-    fun setAdapter(adapter: RoutineExpandableListAdapter) {
+    fun setAdapter(adapter: RoutineRecyclerViewAdapter) {
         this.adapter = adapter
     }
 

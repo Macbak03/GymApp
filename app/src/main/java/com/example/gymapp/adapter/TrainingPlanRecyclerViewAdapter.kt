@@ -97,7 +97,8 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
                 animations.translateX(
                     holder.routineName.translationX,
                     holder.checkBox.width.toFloat(),
-                    holder.routineName
+                    holder.routineName,
+                    300
                 )
             }
             .withEndAction(null)
@@ -112,7 +113,8 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
                 animations.translateX(
                     holder.routineName.translationX,
                     0f,
-                    holder.routineName
+                    holder.routineName,
+                    300
                 )
             }
             .withEndAction {
