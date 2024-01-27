@@ -167,7 +167,10 @@ class CreateRoutineActivity : AppCompatActivity() {
         {
             val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? RoutineRecyclerViewAdapter.RoutineViewHolder
             viewHolder?.let {
-                val exercise = it.exerciseDetails.getExerciseDraft()?.toExercise()
+                val exerciseDraft = it.exerciseDetails.getExerciseDraft()
+                val exerciseName =it.exerciseName.text.toString()
+                exerciseDraft?.name = exerciseName
+                val exercise = exerciseDraft?.toExercise()
                 if (exercise != null) {
                     routine.add(exercise)
                 }

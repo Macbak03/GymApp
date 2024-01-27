@@ -9,7 +9,7 @@
     <LinearLayout
         android:id="@+id/linearLayoutExerciseTitleElement"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:clickable="true">
 
@@ -18,19 +18,19 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_marginStart="5dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="6dp"
             android:background="@drawable/baseline_expand_more_24"
             android:rotation="-90"/>
 
-        <TextView
-            android:id="@+id/textViewExerciseName"
+        <EditText
+            android:id="@+id/editTextExerciseName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="7dp"
+            android:layout_marginEnd="60dp"
             android:layout_weight="1"
             android:text="Exercise Name"
-            android:textSize="25sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.CreateRoutineRecyclerViewItemBinding
+import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.model.routine.ExerciseDraft
 
 class RoutineRecyclerViewAdapter(
@@ -21,7 +22,7 @@ class RoutineRecyclerViewAdapter(
 
     inner class RoutineViewHolder(binding: CreateRoutineRecyclerViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val exerciseName = binding.textViewExerciseName
+        val exerciseName = binding.editTextExerciseName
         val expandImage = binding.buttonExpand
         val exerciseDetails = binding.exerciseDetails
         val exerciseTitleElement = binding.linearLayoutExerciseTitleElement
@@ -47,17 +48,16 @@ class RoutineRecyclerViewAdapter(
         val exerciseTitleElement = holder.exerciseTitleElement
         val exerciseDetails = holder.exerciseDetails
         val moveButton = holder.moveButton
-        exerciseName.text = exercise.name
+        exerciseName.setText(exercise.name)
         exerciseDetails.setExercise(exercise)
 
-/*        exerciseDetails.setAdapter(this)
-        exerciseDetails.setExerciseTextChangedListener(object: RoutineExpandableLayout.ExerciseTextChangedListener{
+        //exerciseDetails.setAdapter(this)
+/*        exerciseDetails.setExerciseTextChangedListener(object: RoutineExpandableLayout.ExerciseTextChangedListener{
             override fun onExerciseNameChanged(name: String?) {
                 exerciseName.text = name
-                this@RoutineRecyclerViewAdapter.notifyItemChanged(holder.bindingAdapterPosition)
             }
 
-        }) do poprawy */
+        })*/
 
         exerciseTitleElement.setOnClickListener{
             if (exerciseDetails.visibility == View.VISIBLE) {
@@ -87,17 +87,14 @@ class RoutineRecyclerViewAdapter(
 
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
-                holder.exerciseTitleElement.isClickable = false
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                holder.exerciseTitleElement.isClickable = true
                 animator.removeAllUpdateListeners()
 
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                holder.exerciseTitleElement.isClickable = true
             }
 
             override fun onAnimationRepeat(animation: Animator) {
@@ -116,16 +113,15 @@ class RoutineRecyclerViewAdapter(
 
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {
-                holder.exerciseTitleElement.isClickable = false
+
             }
 
             override fun onAnimationEnd(animation: Animator) {
-                holder.exerciseTitleElement.isClickable = true
+
                 animator.removeAllUpdateListeners()
             }
 
             override fun onAnimationCancel(animation: Animator) {
-                holder.exerciseTitleElement.isClickable = true
             }
 
             override fun onAnimationRepeat(animation: Animator) {
@@ -142,7 +138,14 @@ class RoutineRecyclerViewAdapter(
         exerciseDetails.animate()
             .alpha(1f)
             .setDuration(400)
-            .withEndAction(null)
+            .withStartAction{
+                holder.exerciseTitleElement.isClickable = false
+                holder.exerciseName.isClickable = false
+            }
+            .withEndAction {
+                holder.exerciseTitleElement.isClickable = true
+                holder.exerciseName.isClickable = true
+            }
             .start()
     }
 
@@ -151,7 +154,13 @@ class RoutineRecyclerViewAdapter(
         exerciseDetails.animate()
             .alpha(0f)
             .setDuration(400)
+            .withStartAction {
+                holder.exerciseTitleElement.isClickable = false
+                holder.exerciseName.isClickable = false
+            }
             .withEndAction {
+                holder.exerciseTitleElement.isClickable = true
+                holder.exerciseName.isClickable = true
                 exerciseDetails.visibility = View.GONE
                 exerciseDetails.clearAnimation()
             }
