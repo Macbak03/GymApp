@@ -1,15 +1,19 @@
 package com.example.gymapp.activity
 
+import android.graphics.Canvas
 import android.os.Bundle
+import android.util.TypedValue
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gymapp.R
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.adapter.RoutineRecyclerViewAdapter
 import com.example.gymapp.databinding.ActivityCreateRoutineBinding
@@ -19,6 +23,7 @@ import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.persistence.PlansDataBaseHelper
+import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import java.util.Collections
 
 
@@ -33,7 +38,7 @@ class CreateRoutineActivity : AppCompatActivity() {
     private var exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 0
 
-    private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,0 ) {
+    private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,ItemTouchHelper.RIGHT ) {
         override fun onMove(
             recyclerView: RecyclerView,
             source: RecyclerView.ViewHolder,
@@ -43,12 +48,83 @@ class CreateRoutineActivity : AppCompatActivity() {
             val targetPosition = target.absoluteAdapterPosition
 
             Collections.swap(exercises, sourcePosition, targetPosition)
+
             routineRecyclerViewAdapter.notifyItemMoved(sourcePosition, targetPosition)
 
             return true
         }
 
+        override fun isLongPressDragEnabled(): Boolean {
+            return false
+        }
+
+        override fun getDragDirs(
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder
+        ): Int {
+            val routineViewHolder = recyclerView.findViewHolderForAdapterPosition(viewHolder.absoluteAdapterPosition) as RoutineRecyclerViewAdapter.RoutineViewHolder?
+            if (routineViewHolder != null) {
+                routineRecyclerViewAdapter.hideDetails(routineViewHolder)
+            }
+            return super.getDragDirs(recyclerView, viewHolder)
+        }
+
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+            val position = viewHolder.absoluteAdapterPosition
+            if (direction == ItemTouchHelper.RIGHT) {
+                exercises.removeAt(position)
+                exerciseCount--
+                routineRecyclerViewAdapter.notifyItemRemoved(position)
+            }
+        }
+
+        /*Copyright {2024} {Maciej Bąk}
+
+      Licensed under the Apache License, Version 2.0 (the "License");
+      you may not use this file except in compliance with the License.
+      You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+      Unless required by applicable law or agreed to in writing, software
+      distributed under the License is distributed on an "AS IS" BASIS,
+      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      See the License for the specific language governing permissions and
+      limitations under the License.*/
+
+        override fun onChildDraw(
+            c: Canvas,
+            recyclerView: RecyclerView,
+            viewHolder: RecyclerView.ViewHolder,
+            dX: Float,
+            dY: Float,
+            actionState: Int,
+            isCurrentlyActive: Boolean
+        ) {
+            RecyclerViewSwipeDecorator.Builder(
+                c,
+                recyclerView,
+                viewHolder,
+                dX,
+                dY,
+                actionState,
+                isCurrentlyActive
+            )
+                .addBackgroundColor(
+                    ContextCompat.getColor(
+                        this@CreateRoutineActivity,
+                        R.color.red
+                    )
+                )
+                .addActionIcon(R.drawable.baseline_delete_24)
+                .setActionIconTint(0xFFFFFFFF.toInt())
+                .addPadding(TypedValue.COMPLEX_UNIT_DIP, 6f, 14f, 6f)
+                .addSwipeRightLabel("Delete")
+                .setSwipeRightLabelColor(0xFFFFFFFF.toInt())
+                .setSwipeRightLabelTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+                .create()
+                .decorate()
+            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }
     }
 
@@ -91,9 +167,6 @@ class CreateRoutineActivity : AppCompatActivity() {
 
         binding.buttonAddExercise.setOnClickListener {
             addExercise()
-        }
-        binding.buttonDeleteExercise.setOnClickListener {
-            removeExercise()
         }
         binding.buttonSaveRoutine.setOnClickListener()
         {
@@ -144,15 +217,6 @@ class CreateRoutineActivity : AppCompatActivity() {
         )
         exercises.add(exercise)
         adapter.notifyItemInserted(adapter.itemCount + 1)
-    }
-
-    private fun removeExercise() {
-        val adapter = routineRecyclerViewAdapter
-        if (exercises.isNotEmpty()) {
-            exercises.removeAt(exercises.lastIndex)
-            exerciseCount--
-            adapter.notifyItemRemoved(adapter.itemCount)
-        }
     }
 
     private fun goBackToTrainingPlanActivity() {

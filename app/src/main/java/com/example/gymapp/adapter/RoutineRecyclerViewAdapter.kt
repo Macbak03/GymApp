@@ -1,6 +1,7 @@
 package com.example.gymapp.adapter
 
 import android.animation.Animator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.CreateRoutineRecyclerViewItemBinding
-import com.example.gymapp.layout.RoutineExpandableLayout
 import com.example.gymapp.model.routine.ExerciseDraft
 
 class RoutineRecyclerViewAdapter(
@@ -27,6 +27,7 @@ class RoutineRecyclerViewAdapter(
         val exerciseDetails = binding.exerciseDetails
         val exerciseTitleElement = binding.linearLayoutExerciseTitleElement
         val moveButton = binding.imageButtonMove
+        val wholeItem = binding.wholeExerciseElement
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoutineViewHolder {
@@ -51,22 +52,12 @@ class RoutineRecyclerViewAdapter(
         exerciseName.setText(exercise.name)
         exerciseDetails.setExercise(exercise)
 
-        //exerciseDetails.setAdapter(this)
-/*        exerciseDetails.setExerciseTextChangedListener(object: RoutineExpandableLayout.ExerciseTextChangedListener{
-            override fun onExerciseNameChanged(name: String?) {
-                exerciseName.text = name
-            }
-
-        })*/
-
         exerciseTitleElement.setOnClickListener{
             if (exerciseDetails.visibility == View.VISIBLE) {
                 hideDetails(holder)
-                rotateExpandButtonRight(holder)
 
             } else if(exerciseDetails.visibility == View.GONE) {
                 showDetails(holder)
-                rotateExpandButtonLeft(holder)
             }
         }
 
@@ -82,53 +73,57 @@ class RoutineRecyclerViewAdapter(
     private fun rotateExpandButtonRight(holder: RoutineViewHolder) {
         val expandImage = holder.expandImage
         val currentRotation = expandImage.rotation
-        val targetRotation = expandImage.rotation + - 90
-        val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
+        val targetRotation = expandImage.rotation - 90
+        if(currentRotation == 0f) {
+            val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
 
-        animator.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
-            }
+            animator.addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {
+                }
 
-            override fun onAnimationEnd(animation: Animator) {
-                animator.removeAllUpdateListeners()
+                override fun onAnimationEnd(animation: Animator) {
+                    animator.removeAllUpdateListeners()
 
-            }
+                }
 
-            override fun onAnimationCancel(animation: Animator) {
-            }
+                override fun onAnimationCancel(animation: Animator) {
+                }
 
-            override fun onAnimationRepeat(animation: Animator) {
-            }
+                override fun onAnimationRepeat(animation: Animator) {
+                }
 
-        })
-
-        animator.start()
+            })
+            animator.start()
+        }
     }
 
     private fun rotateExpandButtonLeft(holder: RoutineViewHolder) {
         val expandImage = holder.expandImage
         val currentRotation = expandImage.rotation
         val targetRotation = expandImage.rotation + 90
-        val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
+        if(currentRotation == -90f)
+        {
+            val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
 
-        animator.addListener(object : Animator.AnimatorListener {
-            override fun onAnimationStart(animation: Animator) {
+            animator.addListener(object : Animator.AnimatorListener {
+                override fun onAnimationStart(animation: Animator) {
 
-            }
+                }
 
-            override fun onAnimationEnd(animation: Animator) {
+                override fun onAnimationEnd(animation: Animator) {
 
-                animator.removeAllUpdateListeners()
-            }
+                    animator.removeAllUpdateListeners()
+                }
 
-            override fun onAnimationCancel(animation: Animator) {
-            }
+                override fun onAnimationCancel(animation: Animator) {
+                }
 
-            override fun onAnimationRepeat(animation: Animator) {
-            }
-        })
+                override fun onAnimationRepeat(animation: Animator) {
+                }
+            })
 
-        animator.start()
+            animator.start()
+        }
     }
 
 
@@ -137,10 +132,12 @@ class RoutineRecyclerViewAdapter(
         exerciseDetails.visibility = View.VISIBLE
         exerciseDetails.animate()
             .alpha(1f)
-            .setDuration(400)
+            .setDuration(300)
             .withStartAction{
                 holder.exerciseTitleElement.isClickable = false
                 holder.exerciseName.isClickable = false
+                rotateExpandButtonLeft(holder)
+                moveItemsDown(holder)
             }
             .withEndAction {
                 holder.exerciseTitleElement.isClickable = true
@@ -149,14 +146,16 @@ class RoutineRecyclerViewAdapter(
             .start()
     }
 
-    private fun hideDetails(holder: RoutineViewHolder) {
+    fun hideDetails(holder: RoutineViewHolder) {
         val exerciseDetails = holder.exerciseDetails
         exerciseDetails.animate()
             .alpha(0f)
-            .setDuration(400)
+            .setDuration(100)
             .withStartAction {
                 holder.exerciseTitleElement.isClickable = false
                 holder.exerciseName.isClickable = false
+                rotateExpandButtonRight(holder)
+                moveItemsUp(holder)
             }
             .withEndAction {
                 holder.exerciseTitleElement.isClickable = true
@@ -166,5 +165,26 @@ class RoutineRecyclerViewAdapter(
             }
             .start()
     }
+
+    private fun moveItemsDown(holder: RoutineViewHolder)
+    {
+        val wholeItem = holder.wholeItem
+        wholeItem.measure(
+            View.MeasureSpec.UNSPECIFIED,
+            View.MeasureSpec.UNSPECIFIED
+        )
+        val initialHeight = holder.exerciseTitleElement.height
+        val targetHeight = wholeItem.measuredHeight
+       animations.moveItemsY(initialHeight, targetHeight, holder.itemView, 300)
+    }
+
+    private fun moveItemsUp(holder: RoutineViewHolder)
+    {
+        val initialHeight = holder.wholeItem.height
+        val targetHeight = holder.exerciseTitleElement.height
+
+       animations.moveItemsY(initialHeight, targetHeight, holder.itemView, 100)
+    }
+
 
 }
