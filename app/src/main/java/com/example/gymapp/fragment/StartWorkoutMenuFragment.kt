@@ -69,10 +69,12 @@ class StartWorkoutMenuFragment : Fragment() {
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
             val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
+            val returnButton = it.view?.findViewById<Button>(R.id.buttonReturnToWorkout)
             button?.visibility = View.GONE
             spinner?.isEnabled = false
             textView?.isEnabled = false
             cardView?.isEnabled = false
+            returnButton?.isEnabled = false
         }
         return binding.root
     }
@@ -104,10 +106,12 @@ class StartWorkoutMenuFragment : Fragment() {
             val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
             val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
             val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
+            val returnButton = it.view?.findViewById<Button>(R.id.buttonReturnToWorkout)
             button?.visibility = View.VISIBLE
             spinner?.isEnabled = true
             textView?.isEnabled = true
             cardView?.isEnabled = true
+            returnButton?.isEnabled = true
         }
         _binding = null
     }

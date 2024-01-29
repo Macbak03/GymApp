@@ -295,7 +295,8 @@ class TrainingPlansFragment : Fragment() {
                 animations.translateY(
                     recyclerView.translationY,
                     toolbar.translationY + toolbar.height.toFloat(),
-                    recyclerView
+                    recyclerView,
+                    300
                 )
             }
 
@@ -315,7 +316,7 @@ class TrainingPlansFragment : Fragment() {
 
         slideDownAnimation.setAnimationListener(object : Animation.AnimationListener {
             override fun onAnimationStart(anim: Animation?) {
-                animations.translateY(recyclerView.translationY, 0f, recyclerView)
+                animations.translateY(recyclerView.translationY, 0f, recyclerView, 300)
             }
 
             override fun onAnimationEnd(animation: Animation?) {

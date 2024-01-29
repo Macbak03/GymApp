@@ -18,7 +18,7 @@ import com.example.gymapp.model.routine.ExerciseDraft
 class RoutineExpandableListAdapter(
     private val context: Context,
     private val exercises: MutableList<ExerciseDraft>
-    ) : BaseExpandableListAdapter(), View.OnDragListener {
+    ) : BaseExpandableListAdapter(){
 
 
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
@@ -45,7 +45,7 @@ class RoutineExpandableListAdapter(
         }
         val exercise = getChild(listPosition, expandedListPosition) as ExerciseDraft
         val routineExpandableLayout = view as RoutineExpandableLayout?
-        routineExpandableLayout?.setAdapter(this)
+        //routineExpandableLayout?.setAdapter(this)
         routineExpandableLayout?.setExerciseTextChangedListener(object :
             RoutineExpandableLayout.ExerciseTextChangedListener {
             override fun onExerciseNameChanged(name: String?) {
@@ -106,14 +106,6 @@ class RoutineExpandableListAdapter(
         val routineExpandableTitleLayout = view as RoutineExpandableTitleLayout?
         routineExpandableTitleLayout?.setExerciseNameText(exercise.name)
 
-       /* view?.setOnDragListener(this)
-        view?.tag = listPosition
-        view?.getDragButton()?.setOnLongClickListener {
-            startDrag(view)
-            true
-        }*/
-
-
         return view
     }
 
@@ -124,61 +116,6 @@ class RoutineExpandableListAdapter(
 
     override fun isChildSelectable(listPosition: Int, expandedListPosition: Int): Boolean {
         return true
-    }
-
-    private fun reorderGroupElements(oldPosition: Int, newPosition: Int) {
-        if (oldPosition in 0 until exercises.size && newPosition in 0 until exercises.size) {
-            // Remove the item from the old position
-            val exercise = exercises.removeAt(oldPosition)
-
-            // Add the item to the new position
-            exercises.add(newPosition, exercise)
-
-            // Notify the adapter about the change
-            notifyDataSetChanged()
-        }
-    }
-
-    override fun onDrag(view: View?, dragEvent: DragEvent?): Boolean {
-        when (dragEvent?.action) {
-            DragEvent.ACTION_DRAG_STARTED -> {
-                // Handle drag started
-                return true
-            }
-            DragEvent.ACTION_DRAG_ENTERED -> {
-                // Handle drag entered
-                return true
-            }
-            DragEvent.ACTION_DRAG_LOCATION -> {
-                // Handle drag location
-                return true
-            }
-            DragEvent.ACTION_DRAG_EXITED -> {
-                // Handle drag exited
-                return true
-            }
-            DragEvent.ACTION_DROP -> {
-                // Handle the drop
-                val draggedView = dragEvent.localState as View
-                val sourcePosition = draggedView.tag as Int
-                val targetPosition = view?.tag as Int
-
-                // Perform the reorder based on source and target positions
-                reorderGroupElements(sourcePosition, targetPosition)
-
-                return true
-            }
-            DragEvent.ACTION_DRAG_ENDED -> {
-                // Handle drag ended
-                return true
-            }
-            else -> return false
-        }
-    }
-
-    private fun startDrag(view: View) {
-        val dragData = View.DragShadowBuilder(view)
-        view.startDragAndDrop(null, dragData, view, 0)
     }
 
 }
