@@ -114,10 +114,11 @@
         android:id="@+id/buttonReturnToWorkout"
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:text="Return to your workout"
         android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="#4A4A4A"
+        android:text="Return to your workout"
         android:textSize="23sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -138,8 +139,6 @@
         android:id="@+id/startWorkoutMenu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_start_workout_menu"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        tools:layout="@layout/fragment_start_workout_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

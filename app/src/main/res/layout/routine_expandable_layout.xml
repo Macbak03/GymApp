@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-        <LinearLayout
+<!--        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
@@ -20,7 +20,7 @@
                     android:id="@+id/editTextExercise"
                     style="@style/routine_edit_text_item"
                     android:hint="@string/enter_exercise_name" />
-        </LinearLayout>
+        </LinearLayout>-->
 
         <LinearLayout
             android:layout_width="match_parent"
