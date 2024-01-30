@@ -150,7 +150,7 @@ class RoutineRecyclerViewAdapter(
         val exerciseDetails = holder.exerciseDetails
         exerciseDetails.animate()
             .alpha(0f)
-            .setDuration(100)
+            .setDuration(300)
             .withStartAction {
                 holder.exerciseTitleElement.isClickable = false
                 holder.exerciseName.isClickable = false
@@ -183,7 +183,7 @@ class RoutineRecyclerViewAdapter(
         val initialHeight = holder.wholeItem.height
         val targetHeight = holder.exerciseTitleElement.height
 
-       animations.moveItemsY(initialHeight, targetHeight, holder.itemView, 100)
+       animations.moveItemsY(initialHeight, targetHeight, holder.itemView, 300)
     }
 
 

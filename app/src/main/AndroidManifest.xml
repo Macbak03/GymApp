@@ -24,7 +24,7 @@
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan"
             android:name=".activity.WorkoutActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
