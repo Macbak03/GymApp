@@ -81,7 +81,7 @@ class WorkoutActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
+       ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             view.updatePadding(bottom = bottom)
             insets

@@ -1,68 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RoutineLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/RoutineLayout"
+
+    <!--        <ExpandableListView
+                android:id="@+id/ExpandableListViewRoutineItems"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:descendantFocusability="beforeDescendants"
+                android:nestedScrollingEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName"
+                android:visibility="gone"/>-->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewRoutineItems"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/hGuideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName" />
 
 
-        <ExpandableListView
-            android:id="@+id/ExpandableListViewRoutineItems"
-            android:layout_width="match_parent"
-            android:layout_height="580dp"
-            android:descendantFocusability="beforeDescendants"
-            android:nestedScrollingEnabled="true"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName"
-            android:visibility="gone"/>
+    <Button
+        android:id="@+id/buttonSaveRoutine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Save Routine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hGuideline" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewRoutineItems"
-            android:layout_width="match_parent"
-            android:layout_height="600dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName"/>
+    <Button
+        android:id="@+id/buttonAddExercise"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/baseline_add_circle_24"
+        android:contentDescription="add"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintEnd_toEndOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline"
+        app:layout_constraintTop_toBottomOf="@+id/hGuideline" />
+
+    <EditText
+        android:id="@+id/editTextRoutineName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="Enter routine name"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.93" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/hGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.88" />
 
 
-        <Button
-            android:id="@+id/buttonSaveRoutine"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Save Routine"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewRoutineItems" />
-
-        <Button
-            android:id="@+id/buttonAddExercise"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginEnd="30dp"
-            android:background="@drawable/baseline_add_circle_24"
-            android:contentDescription="add"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewRoutineItems" />
-
-        <EditText
-            android:id="@+id/editTextRoutineName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:hint="Enter routine name"
-            android:textAlignment="center"
-            android:textSize="25sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
