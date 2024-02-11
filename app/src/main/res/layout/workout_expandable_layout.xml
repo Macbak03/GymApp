@@ -20,7 +20,7 @@
     <EditText
         android:id="@+id/editTextWorkoutReps"
         android:layout_width="0dp"
-        android:layout_height="50sp"
+        android:layout_height="50dp"
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:hint="Reps"
@@ -36,7 +36,7 @@
     <EditText
         android:id="@+id/editTextWorkoutWeight"
         android:layout_width="0dp"
-        android:layout_height="50sp"
+        android:layout_height="50dp"
         android:layout_weight="1"
         android:hint="Weight"
         android:autofillHints=""
@@ -53,7 +53,8 @@
     <EditText
         android:id="@+id/editTextNote"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
         android:hint="Note"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"

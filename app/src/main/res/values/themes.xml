@@ -6,9 +6,8 @@
     <style name="routine_text_view_item" parent="@android:style/TextAppearance.Small">
         <item name="android:textSize">20sp</item>
         <item name="android:inputType">text</item>
-        <item name="android:layout_marginStart">10dp</item>
         <item name="android:layout_height">48dp</item>
-        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_width">90dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAlignment">textEnd</item>
         <item name="android:paddingRight">10dp</item>
@@ -20,6 +19,18 @@
         <item name="android:textSize">16sp</item>
         <item name="android:layout_marginRight">10dp</item>
         <item name="android:singleLine">true</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="routine_image_view_description">
+        <item name="android:layout_height">25dp</item>
+        <item name="android:layout_width">25dp</item>
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:contentDescription">@string/termdescription</item>
+        <item name="android:background">@drawable/baseline_help_outline_24</item>
+        <item name="android:clickable">true</item>
+        <item name="android:layout_marginEnd">10dp</item>
     </style>
 
     <style name="workout_text_view_title_item" parent="@android:style/TextAppearance.Small">

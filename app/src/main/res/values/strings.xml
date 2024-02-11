@@ -3,7 +3,7 @@
     <string name="reps">Reps</string>
     <string name="series">Series</string>
     <string name="load">Load</string>
-    <string name="pause">Pause</string>
+    <string name="pause">Rest</string>
     <string name="progression">Progression</string>
     <string name="exercise">Exercise</string>
     <string name="rpe">RPE</string>
@@ -15,10 +15,11 @@
     <string name="pace">Pace</string>
     <string name="enter_pace">Enter Pace</string>
     <string name="exercise_name">Exercise name</string>
-    <string name="enter_pause">Enter pause</string>
+    <string name="enter_pause">Enter rest</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="val">Val</string>
     <string name="series_count_format">%d.</string>
     <string name="delete_routines_text">Choose routines to delete</string>
+    <string name="termdescription">termDescription</string>
 
 </resources>

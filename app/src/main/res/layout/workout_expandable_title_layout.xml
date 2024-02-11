@@ -25,7 +25,7 @@
         <LinearLayout
             style="@style/workout_linear_layout_title_item">
             <TextView
-                android:text="Pause:"
+                android:text="Rest:"
                 style="@style/workout_text_view_title_item"/>
             <LinearLayout
                 android:layout_width="wrap_content"
