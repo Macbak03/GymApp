@@ -8,16 +8,6 @@
     android:layout_height="match_parent">
 
 
-    <!--        <ExpandableListView
-                android:id="@+id/ExpandableListViewRoutineItems"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:descendantFocusability="beforeDescendants"
-                android:nestedScrollingEnabled="true"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/editTextRoutineName"
-                android:visibility="gone"/>-->
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewRoutineItems"
         android:layout_width="match_parent"

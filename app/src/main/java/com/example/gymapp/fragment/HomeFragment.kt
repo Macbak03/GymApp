@@ -34,7 +34,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
-    private lateinit var spinner: Spinner
+    lateinit var spinner: Spinner
     lateinit var buttonReturn: Button
     private val SPINNER_PREF_KEY = "selectedSpinnerItem"
 

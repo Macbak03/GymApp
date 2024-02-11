@@ -161,7 +161,7 @@ class CreateRoutineActivity : AppCompatActivity() {
         recyclerView = binding.recyclerViewRoutineItems
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
-        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper)
+        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper, this, layoutInflater)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = routineRecyclerViewAdapter
 

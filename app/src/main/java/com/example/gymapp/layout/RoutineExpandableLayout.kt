@@ -2,7 +2,7 @@ package com.example.gymapp.layout
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Looper
+import android.media.Image
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -10,11 +10,10 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.example.gymapp.R
-import com.example.gymapp.adapter.RoutineExpandableListAdapter
-import com.example.gymapp.adapter.RoutineRecyclerViewAdapter
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
@@ -27,7 +26,6 @@ class RoutineExpandableLayout(
 
 ) : LinearLayout(context, attributes) {
 
-    //private val exerciseEditText: EditText
     private val pauseEditText: EditText
     private val pauseSpinner: Spinner
     private val loadEditText: EditText
@@ -37,14 +35,18 @@ class RoutineExpandableLayout(
     private val rpeEditText: EditText
     private val paceEditText: EditText
 
-    private var exercise: ExerciseDraft? = null
+    private val pauseDescription: ImageView
+    private val loadDescription: ImageView
+    private val repsDescription: ImageView
+    private val seriesDescription: ImageView
+    private val rpeDescription: ImageView
+    private val paceDescription: ImageView
 
-    private var exerciseTextChangedListener: ExerciseTextChangedListener? = null
+
+    private var exercise: ExerciseDraft? = null
 
     private val timeUnits = arrayOf(TimeUnit.min, TimeUnit.s)
     private val weightUnits = arrayOf(WeightUnit.kg, WeightUnit.lbs)
-
-    private var adapter: RoutineRecyclerViewAdapter? = null
 
 
 
@@ -53,7 +55,6 @@ class RoutineExpandableLayout(
         val customAttributesStyle =
             context.obtainStyledAttributes(attributes, R.styleable.RoutineExpandableLayout, 0, 0)
 
-        //exerciseEditText = findViewById(R.id.editTextExercise)
         pauseEditText = findViewById(R.id.editTextPause)
         pauseSpinner = findViewById(R.id.spinnerPause)
         loadEditText = findViewById(R.id.editTextLoad)
@@ -63,35 +64,12 @@ class RoutineExpandableLayout(
         rpeEditText = findViewById(R.id.editTextRpe)
         paceEditText = findViewById(R.id.editTextPace)
 
-
-/*        exerciseEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                exercise?.name = exerciseEditText.text.toString()
-                exercise?.wasModified = true
-
-
-            }
-        })
-
-        val handler = android.os.Handler(Looper.myLooper()!!)
-        exerciseEditText.onFocusChangeListener =
-            OnFocusChangeListener { v, hasFocus ->
-                if (!hasFocus) {
-                    handler.postDelayed({
-                        if (!v.hasFocus()) {
-                            exerciseTextChangedListener?.onExerciseNameChanged(exercise?.name ?: "")
-                            adapter?.notifyDataSetChanged()
-                        }
-                    }, 0)
-                }
-
-            }*/
+        pauseDescription = findViewById(R.id.imageViewPauseDescription)
+        loadDescription = findViewById(R.id.imageViewLoadDescription)
+        repsDescription = findViewById(R.id.imageViewRepsDescription)
+        seriesDescription = findViewById(R.id.imageViewSeriesDescription)
+        rpeDescription = findViewById(R.id.imageViewRpeDescription)
+        paceDescription = findViewById(R.id.imageViewPaceDescription)
 
 
         pauseEditText.addTextChangedListener(object : TextWatcher {
@@ -173,9 +151,6 @@ class RoutineExpandableLayout(
 
     }
 
-    fun setExerciseTextChangedListener(listener: ExerciseTextChangedListener) {
-        exerciseTextChangedListener = listener
-    }
 
     fun setExercise(exercise: ExerciseDraft?) {
         val customAttributesStyle =
@@ -191,7 +166,6 @@ class RoutineExpandableLayout(
     }
 
     private fun setExerciseText(exercise: ExerciseDraft?) {
-        //exerciseEditText.setText(exercise?.name)
         pauseEditText.setText(exercise?.pause.toString())
         if (exercise != null) {
             setTimeUnitSpinner(exercise.pauseUnit)
@@ -274,13 +248,28 @@ class RoutineExpandableLayout(
         loadSpinner.setSelection(selectionIndex)
     }
 
-
-    fun setAdapter(adapter: RoutineRecyclerViewAdapter) {
-        this.adapter = adapter
+    fun getPauseDescription():ImageView
+    {
+        return this.pauseDescription
     }
-
-    interface ExerciseTextChangedListener {
-        fun onExerciseNameChanged(name: String?)
+    fun getLoadDescription():ImageView
+    {
+        return this.loadDescription
     }
-
+    fun getRepsDescription():ImageView
+    {
+        return this.repsDescription
+    }
+    fun getSeriesDescription():ImageView
+    {
+        return this.seriesDescription
+    }
+    fun getRpeDescription():ImageView
+    {
+        return this.rpeDescription
+    }
+    fun getPaceDescription():ImageView
+    {
+        return this.paceDescription
+    }
 }

@@ -45,8 +45,7 @@ class StartWorkoutMenuFragment : Fragment() {
                     it.isUnsaved = false
                     it.buttonReturn.visibility = View.GONE
                 }
-                val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
-                spinner?.isEnabled = !it.isUnsaved
+                it.spinner.isEnabled = !it.isUnsaved
                 val fragmentManager = requireActivity().supportFragmentManager
                 fragmentManager.popBackStack()
                 it.routineNameResult?.let { it1 -> saveResult(it.isUnsaved, it1) }
@@ -108,7 +107,9 @@ class StartWorkoutMenuFragment : Fragment() {
             val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
             val returnButton = it.view?.findViewById<Button>(R.id.buttonReturnToWorkout)
             button?.visibility = View.VISIBLE
-            spinner?.isEnabled = true
+            if(!it.isUnsaved){
+                spinner?.isEnabled = true
+            }
             textView?.isEnabled = true
             cardView?.isEnabled = true
             returnButton?.isEnabled = true
