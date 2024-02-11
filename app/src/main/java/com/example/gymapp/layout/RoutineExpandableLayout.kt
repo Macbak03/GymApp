@@ -2,7 +2,6 @@ package com.example.gymapp.layout
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.media.Image
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
@@ -10,7 +9,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ImageView
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Spinner
 import com.example.gymapp.R
@@ -35,19 +34,18 @@ class RoutineExpandableLayout(
     private val rpeEditText: EditText
     private val paceEditText: EditText
 
-    private val pauseDescription: ImageView
-    private val loadDescription: ImageView
-    private val repsDescription: ImageView
-    private val seriesDescription: ImageView
-    private val rpeDescription: ImageView
-    private val paceDescription: ImageView
+    private val pauseDescription: FrameLayout
+    private val loadDescription: FrameLayout
+    private val repsDescription: FrameLayout
+    private val seriesDescription: FrameLayout
+    private val rpeDescription: FrameLayout
+    private val paceDescription: FrameLayout
 
 
     private var exercise: ExerciseDraft? = null
 
     private val timeUnits = arrayOf(TimeUnit.min, TimeUnit.s)
     private val weightUnits = arrayOf(WeightUnit.kg, WeightUnit.lbs)
-
 
 
     init {
@@ -191,23 +189,27 @@ class RoutineExpandableLayout(
         with(pauseSpinner)
         {
             setSelection(0, false)
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
                     val item = parent?.getItemAtPosition(position) as TimeUnit?
-                    if (item != null)
-                    {
+                    if (item != null) {
                         exercise?.pauseUnit = item
                     }
                     //item?.let { exercise?.pauseUnit = it } - to to samo co 180-183 linijka
                 }
+
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
         }
     }
 
-    private fun setTimeUnitSpinner(timeUnit: TimeUnit)
-    {
+    private fun setTimeUnitSpinner(timeUnit: TimeUnit) {
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, timeUnits)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         pauseSpinner.adapter = adapter
@@ -223,11 +225,15 @@ class RoutineExpandableLayout(
         with(loadSpinner)
         {
             setSelection(0, false)
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
                     val item = parent?.getItemAtPosition(position) as WeightUnit?
-                    if (item != null)
-                    {
+                    if (item != null) {
                         exercise?.loadUnit = item
                     }
                 }
@@ -238,8 +244,7 @@ class RoutineExpandableLayout(
         }
     }
 
-    private fun setWeightUnitSpinner(weightUnit: WeightUnit)
-    {
+    private fun setWeightUnitSpinner(weightUnit: WeightUnit) {
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, weightUnits)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         loadSpinner.adapter = adapter
@@ -248,28 +253,27 @@ class RoutineExpandableLayout(
         loadSpinner.setSelection(selectionIndex)
     }
 
-    fun getPauseDescription():ImageView
-    {
+    fun getPauseDescription(): FrameLayout {
         return this.pauseDescription
     }
-    fun getLoadDescription():ImageView
-    {
+
+    fun getLoadDescription(): FrameLayout {
         return this.loadDescription
     }
-    fun getRepsDescription():ImageView
-    {
+
+    fun getRepsDescription(): FrameLayout {
         return this.repsDescription
     }
-    fun getSeriesDescription():ImageView
-    {
+
+    fun getSeriesDescription(): FrameLayout {
         return this.seriesDescription
     }
-    fun getRpeDescription():ImageView
-    {
+
+    fun getRpeDescription(): FrameLayout {
         return this.rpeDescription
     }
-    fun getPaceDescription():ImageView
-    {
+
+    fun getPaceDescription(): FrameLayout {
         return this.paceDescription
     }
 }

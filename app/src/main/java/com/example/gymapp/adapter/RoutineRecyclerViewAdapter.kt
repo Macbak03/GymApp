@@ -1,25 +1,20 @@
 package com.example.gymapp.adapter
 
 import android.animation.Animator
-import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.CreateRoutineRecyclerViewItemBinding
-import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.routine.ExerciseDraft
-import com.example.gymapp.model.trainingPlans.TrainingPlan
 
 class RoutineRecyclerViewAdapter(
     private val exercises: MutableList<ExerciseDraft>,
@@ -83,6 +78,7 @@ class RoutineRecyclerViewAdapter(
             }
             false
         }
+
 
         holder.pauseDescription.setOnClickListener{
             showDescriptionDialog("Rest", "A period of time between sets, " +
