@@ -1,6 +1,7 @@
 package com.example.gymapp.activity
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -17,6 +18,7 @@ import com.example.gymapp.persistence.RoutinesDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var fragmentManager: FragmentManager
@@ -32,15 +34,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         fragmentManager = supportFragmentManager
         binding.bottomNavigationBar.setOnItemSelectedListener { item ->
-            when(item.itemId){
+            when (item.itemId) {
                 R.id.buttonHome -> openFragment(HomeFragment(), "HomeFragment")
-                R.id.buttonTrainingPlans -> openFragment(TrainingPlansFragment(), "TrainingPlansFragment")
-                R.id.buttonTrainingHistory -> openFragment(TrainingHistoryFragment(), "TrainingHistoryFragment")
+                R.id.buttonTrainingPlans -> openFragment(
+                        TrainingPlansFragment(),
+                        "TrainingPlansFragment"
+                    )
+                R.id.buttonTrainingHistory -> openFragment(
+                        TrainingHistoryFragment(),
+                        "TrainingHistoryFragment"
+                    )
                 R.id.buttonSettings -> openFragment(SettingsFragment(), "SettingsFragment")
             }
             true
         }
-
         openFragment(HomeFragment(), "HomeFragment")
         planDataBase.onCreate(planDataBase.readableDatabase)
         routinesDataBase.onCreate(routinesDataBase.readableDatabase)
@@ -50,8 +57,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun openFragment(fragment: Fragment, tag: String?)
-    {
+    private fun openFragment(fragment: Fragment, tag: String?) {
         val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag)
         fragmentTransaction.commit()

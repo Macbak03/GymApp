@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.EditText
@@ -146,6 +147,7 @@ class TrainingPlansFragment : Fragment() {
         slideUpAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.toolbar_slide_up)
         slideDownAnimation =
             AnimationUtils.loadAnimation(requireContext(), R.anim.toolbar_slide_down)
+        requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         return binding.root
     }
 

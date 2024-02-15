@@ -6,15 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".fragment.TrainingHistoryFragment">
 
+    <SearchView
+        android:id="@+id/searchViewHistory"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:iconifiedByDefault="false"
+        android:searchHintIcon="@null"
+        android:queryHint="Search in history..."
+        android:focusable="false"
+        android:closeIcon="@drawable/baseline_clear_24"
+        android:background="@drawable/search_background"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewWorkoutHistory"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/searchViewHistory" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

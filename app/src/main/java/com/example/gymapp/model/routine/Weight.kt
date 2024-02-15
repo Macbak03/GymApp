@@ -25,11 +25,7 @@ data class Weight private constructor(
             {
                 throw ValidationException("weight cannot be empty")
             }
-            val floatWeight = weight.toFloatOrNull()
-            if(floatWeight == null)
-            {
-                throw ValidationException("weight must be a number")
-            }
+            val floatWeight = weight.toFloatOrNull() ?: throw ValidationException("weight must be a number")
             if(floatWeight < 0)
             {
                 throw ValidationException("weight cannot be negative")

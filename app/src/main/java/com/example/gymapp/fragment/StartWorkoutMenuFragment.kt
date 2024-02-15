@@ -1,32 +1,27 @@
 package com.example.gymapp.fragment
 
-import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gymapp.R
 import com.example.gymapp.activity.WorkoutActivity
 import com.example.gymapp.adapter.StartWorkoutMenuRecycleViewAdapter
 import com.example.gymapp.databinding.FragmentStartWorkoutMenuBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlanElement
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class StartWorkoutMenuFragment : Fragment() {
+class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentStartWorkoutMenuBinding? = null
     private val binding get() = _binding!!
     private var homeFragment: HomeFragment? = null
@@ -41,9 +36,11 @@ class StartWorkoutMenuFragment : Fragment() {
                     it.isUnsaved = true
                     it.routineNameResult = result.data?.getStringExtra(HomeFragment.ROUTINE_NAME)
                     it.buttonReturn.visibility = View.VISIBLE
+                    requireActivity().supportFragmentManager.beginTransaction().remove(this@StartWorkoutMenuFragment).commit()
                 } else if (result.resultCode == Activity.RESULT_OK) {
                     it.isUnsaved = false
                     it.buttonReturn.visibility = View.GONE
+                    requireActivity().supportFragmentManager.beginTransaction().remove(this@StartWorkoutMenuFragment).commit()
                 }
                 it.spinner.isEnabled = !it.isUnsaved
                 val fragmentManager = requireActivity().supportFragmentManager
@@ -63,19 +60,19 @@ class StartWorkoutMenuFragment : Fragment() {
     ): View {
         _binding = FragmentStartWorkoutMenuBinding.inflate(layoutInflater, container, false)
         homeFragment = parentFragmentManager.findFragmentByTag("HomeFragment") as? HomeFragment
-        homeFragment?.let {
-            val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
-            val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
-            val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
-            val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
-            val returnButton = it.view?.findViewById<Button>(R.id.buttonReturnToWorkout)
-            button?.visibility = View.GONE
-            spinner?.isEnabled = false
-            textView?.isEnabled = false
-            cardView?.isEnabled = false
-            returnButton?.isEnabled = false
-        }
         return binding.root
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        dialog?.setOnShowListener {it->
+            val dialog = it as BottomSheetDialog
+            val bottomSheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            bottomSheet?.let {
+                val behaviour = BottomSheetBehavior.from(it)
+                behaviour.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+        return super.onCreateDialog(savedInstanceState)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -96,28 +93,14 @@ class StartWorkoutMenuFragment : Fragment() {
                 startWorkoutActivityForResult.launch(explicitIntent)
             }
         })
+
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        homeFragment?.let {
-            val spinner = it.view?.findViewById<Spinner>(R.id.spinnerTrainingPlans)
-            val button = it.view?.findViewById<Button>(R.id.buttonStartWorkout)
-            val textView = it.view?.findViewById<TextView>(R.id.textViewCurrentTrainingPlan)
-            val cardView = it.view?.findViewById<CardView>(R.id.cardViewLastWorkout)
-            val returnButton = it.view?.findViewById<Button>(R.id.buttonReturnToWorkout)
-            button?.visibility = View.VISIBLE
-            if(!it.isUnsaved){
-                spinner?.isEnabled = true
-            }
-            textView?.isEnabled = true
-            cardView?.isEnabled = true
-            returnButton?.isEnabled = true
-        }
         _binding = null
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent(planName: String?) {
         val plansDataBase = PlansDataBaseHelper(requireContext(), null)
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
