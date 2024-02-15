@@ -1,16 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/workoutMenu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#80000000"
-    tools:context=".fragment.StartWorkoutMenuFragment">
+    tools:context=".fragment.StartWorkoutMenuFragment"
+    android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/RecyclerViewStartWorkoutMenu"
+    <LinearLayout
+        android:id="@+id/menuLayout"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_gravity="bottom"
-        android:background="@color/black" />
+        android:background="#1B1B1B">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/swipeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/baseline_call_to_action_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="SwipeButton" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/RecyclerViewStartWorkoutMenu"
+            android:layout_width="match_parent"
+            android:layout_height="330dp"
+            android:layout_marginTop="5dp"/>
+    </LinearLayout>
+
+
 </FrameLayout>

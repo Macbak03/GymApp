@@ -1,18 +1,15 @@
 package com.example.gymapp.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.TrainingPlansRecyclerViewItemLayoutBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlanElement
-import com.example.gymapp.persistence.RoutinesDataBaseHelper
 
 class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<TrainingPlanElement>, private val deleteButton: Button,
 ) :
@@ -29,7 +26,7 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
 
     inner class TrainingPlanViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) :
         ViewHolder(binding.root) {
-        val routineName = binding.textViewElement
+        val routineNameTextView = binding.textViewElement
         val checkBox = binding.checkBoxElement
     }
 
@@ -47,8 +44,9 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(holder: TrainingPlanViewHolder, position: Int) {
         val routine = routines[position]
-        holder.routineName.text = routine.routineName
+        holder.routineNameTextView.text = routine.routineName
         holder.checkBox.isChecked = routine.isSelected
+
 
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             if(isChecked) {
@@ -95,9 +93,9 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
             .setDuration(200)
             .withStartAction {
                 animations.translateX(
-                    holder.routineName.translationX,
+                    holder.routineNameTextView.translationX,
                     holder.checkBox.width.toFloat(),
-                    holder.routineName,
+                    holder.routineNameTextView,
                     300
                 )
             }
@@ -111,9 +109,9 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
             .setDuration(200)
             .withStartAction {
                 animations.translateX(
-                    holder.routineName.translationX,
+                    holder.routineNameTextView.translationX,
                     0f,
-                    holder.routineName,
+                    holder.routineNameTextView,
                     300
                 )
             }

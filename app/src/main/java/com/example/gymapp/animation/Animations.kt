@@ -3,8 +3,9 @@ package com.example.gymapp.animation
 import android.animation.ValueAnimator
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
 
-class Animations{
+class Animations: Animation(){
 
     private val animator = ValueAnimator()
 

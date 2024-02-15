@@ -147,15 +147,9 @@ class HomeFragment : Fragment() {
         if (selectedSpinnerItem != null) {
             val bundle = Bundle()
             bundle.putString("SELECTED_ITEM_KEY", selectedSpinnerItem.name)
-
             val startWorkoutMenuFragment = StartWorkoutMenuFragment()
             startWorkoutMenuFragment.arguments = bundle
-
-            val transaction: FragmentTransaction =
-                requireActivity().supportFragmentManager.beginTransaction()
-            transaction.add(R.id.startWorkoutMenu, startWorkoutMenuFragment, "WorkoutMenu")
-            transaction.addToBackStack(null)
-            transaction.commit()
+            requireActivity().supportFragmentManager.let { startWorkoutMenuFragment.show(it, "WorkoutMenu")}
         }
     }
 
