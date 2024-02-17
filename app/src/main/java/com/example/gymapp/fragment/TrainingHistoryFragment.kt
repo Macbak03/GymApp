@@ -9,17 +9,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.SearchView
-import androidx.compose.ui.graphics.Color
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
 import com.example.gymapp.adapter.WorkoutHistoryRecyclerViewAdapter
 import com.example.gymapp.databinding.FragmentTrainingHistoryBinding
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workoutHistory.WorkoutHistoryElement
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.Locale
 
 class TrainingHistoryFragment : Fragment() {

@@ -9,14 +9,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gymapp.R
 import com.example.gymapp.activity.WorkoutActivity
 import com.example.gymapp.adapter.StartWorkoutMenuRecycleViewAdapter
 import com.example.gymapp.databinding.FragmentStartWorkoutMenuBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlanElement
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
+import com.example.gymapp.viewModel.ActivityResultData
+import com.example.gymapp.viewModel.SharedViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -24,29 +28,19 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentStartWorkoutMenuBinding? = null
     private val binding get() = _binding!!
-    private var homeFragment: HomeFragment? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var startWorkoutMenuRecyclerViewAdapter: StartWorkoutMenuRecycleViewAdapter
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
 
     private val startWorkoutActivityForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            homeFragment?.let {
-                if (result.resultCode == Activity.RESULT_CANCELED) {
-                    it.isUnsaved = true
-                    it.routineNameResult = result.data?.getStringExtra(HomeFragment.ROUTINE_NAME)
-                    it.buttonReturn.visibility = View.VISIBLE
-                    requireActivity().supportFragmentManager.beginTransaction().remove(this@StartWorkoutMenuFragment).commit()
-                } else if (result.resultCode == Activity.RESULT_OK) {
-                    it.isUnsaved = false
-                    it.buttonReturn.visibility = View.GONE
-                    requireActivity().supportFragmentManager.beginTransaction().remove(this@StartWorkoutMenuFragment).commit()
-                }
-                it.spinner.isEnabled = !it.isUnsaved
-                val fragmentManager = requireActivity().supportFragmentManager
-                fragmentManager.popBackStack()
-                it.routineNameResult?.let { it1 -> saveResult(it.isUnsaved, it1) }
-            }
+            val sharedViewModel: SharedViewModel by activityViewModels()
+            val isUnsaved = result.resultCode == Activity.RESULT_CANCELED
+            val routineNameResult = result.data?.getStringExtra(HomeFragment.ROUTINE_NAME)
+            val shouldShowButton = isUnsaved
+
+            sharedViewModel.setActivityResult(ActivityResultData(isUnsaved, routineNameResult, shouldShowButton))
+            requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
         }
 
     companion object {
@@ -54,12 +48,17 @@ class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
         const val PLAN_NAME = "com.example.gymapp.planname"
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStartWorkoutMenuBinding.inflate(layoutInflater, container, false)
-        homeFragment = parentFragmentManager.findFragmentByTag("HomeFragment") as? HomeFragment
         return binding.root
     }
 
@@ -112,17 +111,4 @@ class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun saveResult(boolValue: Boolean, stringValue: String)
-    {
-        val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        val keyBool = "is_unsaved"
-        val keyRoutineName = "routine_name"
-
-        editor.putBoolean(keyBool, boolValue)
-        editor.putString(keyRoutineName, stringValue)
-
-        editor.apply()
-    }
 }

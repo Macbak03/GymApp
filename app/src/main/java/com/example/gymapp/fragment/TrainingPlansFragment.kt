@@ -4,16 +4,16 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.adapter.TrainingPlansRecyclerViewAdapter
-import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.FragmentTrainingPlansBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.trainingPlans.TrainingPlan
@@ -38,13 +37,8 @@ class TrainingPlansFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var trainingPlansRecyclerViewAdapter: TrainingPlansRecyclerViewAdapter
 
-    private lateinit var slideUpAnimation: Animation
-    private lateinit var slideDownAnimation: Animation
-    private val animations: Animations = Animations()
-
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlans: MutableList<TrainingPlan> = ArrayList()
-    private val defaultElement = "Create training plan"
 
     private val simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
         override fun onMove(
@@ -52,24 +46,14 @@ class TrainingPlansFragment : Fragment() {
             viewHolder: RecyclerView.ViewHolder,
             target: RecyclerView.ViewHolder
         ): Boolean {
-            return trainingPlansRecyclerViewAdapter.isLongClickActivated
+            return false
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.absoluteAdapterPosition
             if (direction == ItemTouchHelper.RIGHT) {
-                showSingleDeleteDialog(position)
+                showDeleteDialog(position)
             }
-        }
-
-        override fun getSwipeDirs(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder
-        ): Int {
-            if (trainingPlansRecyclerViewAdapter.isLongClickActivated) {
-                return 0
-            }
-            return super.getSwipeDirs(recyclerView, viewHolder)
         }
 
         /*Copyright {2024} {Maciej Bąk}
@@ -123,20 +107,9 @@ class TrainingPlansFragment : Fragment() {
         }
     }
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (trainingPlansRecyclerViewAdapter.isLongClickActivated) {
-                trainingPlansRecyclerViewAdapter.resetLongClickState()
-                hideToolbar()
-            } else {
-                isEnabled = false
-                requireActivity().onBackPressedDispatcher.onBackPressed()
-            }
-        }
-    }
-
     companion object {
         const val NEXT_SCREEN = "trainingPlanScreen"
+        const val DEFAULT_ELEMENT = "Create training plan"
     }
 
     override fun onCreateView(
@@ -144,9 +117,6 @@ class TrainingPlansFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentTrainingPlansBinding.inflate(layoutInflater, container, false)
-        slideUpAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.toolbar_slide_up)
-        slideDownAnimation =
-            AnimationUtils.loadAnimation(requireContext(), R.anim.toolbar_slide_down)
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         return binding.root
     }
@@ -163,12 +133,12 @@ class TrainingPlansFragment : Fragment() {
         )
         trainingPlans = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
         if (!plansDataBase.isTableNotEmpty()) {
-            trainingPlans.add((TrainingPlan(defaultElement)))
+            trainingPlans.add((TrainingPlan(DEFAULT_ELEMENT)))
         }
 
         trainingPlansRecyclerViewAdapter = TrainingPlansRecyclerViewAdapter(
             trainingPlans,
-            binding.toolbarDeletePlan.buttonDeleteElements
+            this
         )
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = trainingPlansRecyclerViewAdapter
@@ -181,7 +151,7 @@ class TrainingPlansFragment : Fragment() {
         trainingPlansRecyclerViewAdapter.setOnClickListener(object :
             TrainingPlansRecyclerViewAdapter.OnClickListener {
             override fun onClick(position: Int, model: TrainingPlan) {
-                if (trainingPlans[0].name == defaultElement) {
+                if (trainingPlans[0].name == DEFAULT_ELEMENT) {
                     showEditTextDialog()
                 } else {
                     val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
@@ -190,27 +160,6 @@ class TrainingPlansFragment : Fragment() {
                 }
             }
         })
-
-        trainingPlansRecyclerViewAdapter.setOnLongClickListener(object :
-            TrainingPlansRecyclerViewAdapter.OnLongClickListener {
-            override fun onLongClick(position: Int, model: TrainingPlan) {
-                showToolbar()
-            }
-        })
-
-        binding.toolbarDeletePlan.buttonBackFromDeleteMode.setOnClickListener {
-            trainingPlansRecyclerViewAdapter.resetLongClickState()
-            hideToolbar()
-        }
-
-        binding.toolbarDeletePlan.buttonDeleteElements.setOnClickListener {
-            showDeleteDialog()
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(
-            viewLifecycleOwner,
-            onBackPressedCallback
-        )
 
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
@@ -235,16 +184,16 @@ class TrainingPlansFragment : Fragment() {
                     if (editText.text.isBlank()) {
                         throw ValidationException("Training plan name cannot be empty")
                     }
-                    for (item in trainingPlans) {
-                        if (editText.text.toString() == item.toString()) {
-                            throw ValidationException("There is already a plan with this name")
-                        }
+                    if (plansDataBase.doesPlanNameExist(editText.text.toString())) {
+                        throw ValidationException("There is already a plan with this name")
                     }
-                    if (editText.text.toString() == defaultElement) {
+                    if (editText.text.toString() == DEFAULT_ELEMENT) {
                         throw ValidationException("Invalid plan name")
                     }
-                    if (trainingPlans[0].name == defaultElement) {
-                        trainingPlans.clear()
+                    if (trainingPlans.isNotEmpty()) {
+                        if (trainingPlans[0].name == DEFAULT_ELEMENT) {
+                            trainingPlans.clear()
+                        }
                     }
                     plansDataBase.addPLan(editText.text.toString())
                     trainingPlans.add(TrainingPlan(editText.text.toString()))
@@ -259,21 +208,7 @@ class TrainingPlansFragment : Fragment() {
         }
     }
 
-    private fun showDeleteDialog() {
-        val builder = context?.let { AlertDialog.Builder(it) }
-        with(builder) {
-            this?.setTitle("Are you sure you want to delete?")
-            this?.setPositiveButton("Yes") { _, _ ->
-                trainingPlansRecyclerViewAdapter.deletePlansFromRecyclerView()
-                val deletedPlans = trainingPlansRecyclerViewAdapter.getDeletedPlans()
-                plansDataBase.deletePlans(deletedPlans)
-            }
-            this?.setNegativeButton("Cancel") { _, _ -> }
-            this?.show()
-        }
-    }
-
-    private fun showSingleDeleteDialog(position: Int) {
+    private fun showDeleteDialog(position: Int) {
         val builder = context?.let { AlertDialog.Builder(it) }
         with(builder) {
             this?.setTitle("Are you sure you want to delete ${trainingPlans[position].name}?")
@@ -286,48 +221,5 @@ class TrainingPlansFragment : Fragment() {
             }
             this?.show()
         }
-    }
-
-
-    private fun showToolbar() {
-        val toolbar = binding.toolbarDeletePlan.toolbar
-
-        slideUpAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(anim: Animation?) {
-                animations.translateY(
-                    recyclerView.translationY,
-                    toolbar.translationY + toolbar.height.toFloat(),
-                    recyclerView,
-                    300
-                )
-            }
-
-            override fun onAnimationEnd(anim: Animation?) {
-
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {}
-        })
-        toolbar.visibility = View.VISIBLE
-        toolbar.startAnimation(slideUpAnimation)
-
-    }
-
-    private fun hideToolbar() {
-        val toolbar = binding.toolbarDeletePlan.toolbar
-
-        slideDownAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(anim: Animation?) {
-                animations.translateY(recyclerView.translationY, 0f, recyclerView, 300)
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-                toolbar.visibility = View.GONE
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {}
-        })
-
-        toolbar.startAnimation(slideDownAnimation)
     }
 }

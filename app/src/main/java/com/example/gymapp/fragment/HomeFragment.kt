@@ -16,16 +16,21 @@ import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentTransaction
+import androidx.fragment.app.activityViewModels
+import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
+import com.example.gymapp.activity.MainActivity
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.activity.WorkoutActivity
+import com.example.gymapp.adapter.ViewPagerAdapter
 import com.example.gymapp.databinding.FragmentHomeBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
+import com.example.gymapp.viewModel.SharedViewModel
 
 
 class HomeFragment : Fragment() {
@@ -34,12 +39,12 @@ class HomeFragment : Fragment() {
 
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
-    lateinit var spinner: Spinner
-    lateinit var buttonReturn: Button
+    private lateinit var spinner: Spinner
+    private lateinit var buttonReturn: Button
     private val SPINNER_PREF_KEY = "selectedSpinnerItem"
 
-    var isUnsaved = false
-    var routineNameResult: String? = null
+    private var isUnsaved = false
+    private var routineNameResult: String? = null
 
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
@@ -75,6 +80,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         spinner = binding.spinnerTrainingPlans
+
+
         plansDataBase = PlansDataBaseHelper(requireContext(), null)
         val trainingPlanNamesString = plansDataBase.getColumn(
             PlansDataBaseHelper.TABLE_NAME,
@@ -93,6 +100,8 @@ class HomeFragment : Fragment() {
 
         buttonReturn = binding.buttonReturnToWorkout
         buttonReturn.visibility = View.GONE
+
+        observeViewModel()
 
         loadResult()
         if (isUnsaved) {
@@ -135,6 +144,25 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setLastTraining()
+        val trainingPlanNamesString = plansDataBase.getColumn(
+            PlansDataBaseHelper.TABLE_NAME,
+            PlansDataBaseHelper.PLAN_NAME_COLUMN,
+            PlansDataBaseHelper.PLAN_ID_COLUMN
+        )
+        trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
+        if (!plansDataBase.isTableNotEmpty()) {
+            val noneTrainingPlanFound = "Go to training plans section to create your first plan"
+            binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFound
+            spinner.visibility = View.GONE
+            spinner.isEnabled = true
+            buttonReturn.visibility = View.GONE
+            isUnsaved = false
+        } else {
+            val planFound = "Current training plan: "
+            binding.textViewCurrentTrainingPlan.text = planFound
+            spinner.visibility = View.VISIBLE
+        }
+        initSpinner()
     }
 
     override fun onDestroyView() {
@@ -202,14 +230,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun openTrainingPlansFragment() {
-        val fragmentTransaction: FragmentTransaction =
-            requireActivity().supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(
-            R.id.fragmentContainer,
-            TrainingPlansFragment(),
-            "TrainingPlansFragment"
-        )
-        fragmentTransaction.commit()
+        val viewPager = requireActivity().findViewById<ViewPager2>(R.id.viewPager)
+        val adapter = ViewPagerAdapter(requireActivity())
+        viewPager.adapter = adapter
+        viewPager.currentItem =  ViewPagerAdapter.TRAINING_PLANS_FRAGMENT
     }
 
     private fun openRoutinesActivity(planName: String) {
@@ -269,6 +293,19 @@ class HomeFragment : Fragment() {
         isUnsaved = sharedPreferences.getBoolean(keyBool, false)
         routineNameResult = sharedPreferences.getString(keyRoutineName, "")
     }
+
+    private fun observeViewModel(){
+        val sharedViewModel: SharedViewModel by activityViewModels()
+
+        sharedViewModel.activityResult.observe(viewLifecycleOwner) { resultData ->
+            isUnsaved = resultData.isUnsaved
+            routineNameResult = resultData.routineNameResult
+            buttonReturn.visibility = if (resultData.shouldShowButton) View.VISIBLE else View.GONE
+            spinner.isEnabled = !isUnsaved
+            routineNameResult?.let { saveResult(isUnsaved, it) }
+        }
+    }
+
 
     private fun showWarningDialog() {
         val builder = context?.let { AlertDialog.Builder(it) }
