@@ -1,25 +1,13 @@
 package com.example.gymapp.activity
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
-import androidx.fragment.app.FragmentTransaction
-import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.databinding.ActivityMainBinding
 import com.example.gymapp.R
 import com.example.gymapp.adapter.ViewPagerAdapter
-import com.example.gymapp.fragment.HomeFragment
-import com.example.gymapp.fragment.SettingsFragment
-import com.example.gymapp.fragment.TrainingHistoryFragment
-import com.example.gymapp.fragment.TrainingPlansFragment
+import com.example.gymapp.animation.FragmentAnimator
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
@@ -54,13 +42,20 @@ class MainActivity : AppCompatActivity() {
         })
 
         binding.bottomNavigationBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.buttonHome ->  viewPager.currentItem = 0
-                R.id.buttonTrainingPlans -> viewPager.currentItem = 1
-                R.id.buttonTrainingHistory -> viewPager.currentItem = 2
-
-                R.id.buttonSettings -> viewPager.currentItem = 3
+            val targetItem = when (item.itemId) {
+                R.id.buttonHome ->  ViewPagerAdapter.HOME_FRAGMENT
+                R.id.buttonTrainingPlans -> ViewPagerAdapter.TRAINING_PLANS_FRAGMENT
+                R.id.buttonTrainingHistory -> ViewPagerAdapter.TRAINING_HISTORY_FRAGMENT
+                R.id.buttonSettings -> ViewPagerAdapter.SETTINGS_FRAGMENT
+                else -> return@setOnItemSelectedListener false
             }
+            viewPager.setCurrentItem(targetItem, false)
+/*            viewPager.post {
+                val currentFragment = adapter.getFragmentAtPosition(viewPager.currentItem)
+                if(currentFragment is FragmentAnimator){
+                    currentFragment.triggerAnimation()
+                }
+            }*/
             true
         }
         planDataBase.onCreate(planDataBase.readableDatabase)

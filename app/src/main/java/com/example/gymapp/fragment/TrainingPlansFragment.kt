@@ -4,14 +4,12 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -23,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.adapter.TrainingPlansRecyclerViewAdapter
+import com.example.gymapp.animation.FragmentAnimator
 import com.example.gymapp.databinding.FragmentTrainingPlansBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.trainingPlans.TrainingPlan
@@ -30,7 +29,7 @@ import com.example.gymapp.persistence.PlansDataBaseHelper
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
 
-class TrainingPlansFragment : Fragment() {
+class TrainingPlansFragment : Fragment(), FragmentAnimator {
     private var _binding: FragmentTrainingPlansBinding? = null
     private val binding get() = _binding!!
 
@@ -39,6 +38,7 @@ class TrainingPlansFragment : Fragment() {
 
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlans: MutableList<TrainingPlan> = ArrayList()
+
 
     private val simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
         override fun onMove(
@@ -165,6 +165,7 @@ class TrainingPlansFragment : Fragment() {
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
 
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -221,5 +222,10 @@ class TrainingPlansFragment : Fragment() {
             }
             this?.show()
         }
+    }
+
+    override fun triggerAnimation() {
+        val slideIn = AnimationUtils.loadAnimation(context, R.anim.slide_in_left)
+        requireView().startAnimation(slideIn)
     }
 }

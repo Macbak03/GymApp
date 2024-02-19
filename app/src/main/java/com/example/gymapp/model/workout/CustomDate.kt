@@ -27,7 +27,7 @@ class CustomDate {
     }
 
     companion object{
-        const val rawPattern = "yyyy-MM-dd hh:mm:ss"
+        const val rawPattern = "yyyy-MM-dd HH:mm:ss"
         const val pattern = "dd.MM.yyyy"
     }
 }

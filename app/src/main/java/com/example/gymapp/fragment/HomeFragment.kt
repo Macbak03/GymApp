@@ -9,21 +9,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.activityViewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
-import com.example.gymapp.activity.MainActivity
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.activity.WorkoutActivity
 import com.example.gymapp.adapter.ViewPagerAdapter
+import com.example.gymapp.animation.FragmentAnimator
 import com.example.gymapp.databinding.FragmentHomeBinding
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.model.workout.CustomDate
@@ -33,7 +33,7 @@ import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.viewModel.SharedViewModel
 
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), FragmentAnimator {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -45,6 +45,7 @@ class HomeFragment : Fragment() {
 
     private var isUnsaved = false
     private var routineNameResult: String? = null
+
 
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
@@ -79,6 +80,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         spinner = binding.spinnerTrainingPlans
 
 
@@ -143,6 +145,7 @@ class HomeFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
         setLastTraining()
         val trainingPlanNamesString = plansDataBase.getColumn(
             PlansDataBaseHelper.TABLE_NAME,
@@ -177,7 +180,12 @@ class HomeFragment : Fragment() {
             bundle.putString("SELECTED_ITEM_KEY", selectedSpinnerItem.name)
             val startWorkoutMenuFragment = StartWorkoutMenuFragment()
             startWorkoutMenuFragment.arguments = bundle
-            requireActivity().supportFragmentManager.let { startWorkoutMenuFragment.show(it, "WorkoutMenu")}
+            requireActivity().supportFragmentManager.let {
+                startWorkoutMenuFragment.show(
+                    it,
+                    "WorkoutMenu"
+                )
+            }
         }
     }
 
@@ -233,7 +241,7 @@ class HomeFragment : Fragment() {
         val viewPager = requireActivity().findViewById<ViewPager2>(R.id.viewPager)
         val adapter = ViewPagerAdapter(requireActivity())
         viewPager.adapter = adapter
-        viewPager.currentItem =  ViewPagerAdapter.TRAINING_PLANS_FRAGMENT
+        viewPager.currentItem = ViewPagerAdapter.TRAINING_PLANS_FRAGMENT
     }
 
     private fun openRoutinesActivity(planName: String) {
@@ -294,7 +302,7 @@ class HomeFragment : Fragment() {
         routineNameResult = sharedPreferences.getString(keyRoutineName, "")
     }
 
-    private fun observeViewModel(){
+    private fun observeViewModel() {
         val sharedViewModel: SharedViewModel by activityViewModels()
 
         sharedViewModel.activityResult.observe(viewLifecycleOwner) { resultData ->
@@ -317,6 +325,11 @@ class HomeFragment : Fragment() {
             this?.setNegativeButton("No") { _, _ -> }
             this?.show()
         }
+    }
+
+    override fun triggerAnimation() {
+        val slideIn = AnimationUtils.loadAnimation(context, R.anim.slide_in_left)
+        requireView().startAnimation(slideIn)
     }
 
 }

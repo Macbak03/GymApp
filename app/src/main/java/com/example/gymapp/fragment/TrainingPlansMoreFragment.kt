@@ -13,8 +13,8 @@ import com.example.gymapp.R
 import com.example.gymapp.adapter.TrainingPlansRecyclerViewAdapter
 import com.example.gymapp.databinding.FragmentMoreBinding
 import com.example.gymapp.exception.ValidationException
-import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.persistence.PlansDataBaseHelper
+import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -117,11 +117,13 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
                     if (plansDataBase.doesPlanNameExist(editText.text.toString())) {
                         throw ValidationException("There is already a plan with this name")
                     }
-                    if(planId != null && position != null) {
+                    if (planId != null && position != null) {
                         val newPlanName = editText.text.toString()
                         plansDataBase.updatePlanName(planId, newPlanName)
                         trainingPlansRecyclerViewAdapter.getElement(position).name = newPlanName
                         trainingPlansRecyclerViewAdapter.notifyItemChanged(position)
+                        binding.moreTextViewName.text = newPlanName
+                        showUpdatePlanNameInHistoryQuery(name, newPlanName)
                         this@TrainingPlansMoreFragment.name = newPlanName
                     }
                 } catch (exception: ValidationException) {
@@ -134,7 +136,24 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
         }
     }
 
-    private fun endFragment(){
+    private fun showUpdatePlanNameInHistoryQuery(oldName: String?, newName: String?) {
+            val builder = context?.let { AlertDialog.Builder(it) }
+            with(builder) {
+                this?.setTitle("Do you want to also change plan's name in history")
+                this?.setPositiveButton("Yes") { _, _ ->
+                    val workoutHistoryDatabase =
+                        WorkoutHistoryDatabaseHelper(requireContext(), null)
+                    if (oldName != null && newName != null) {
+                        workoutHistoryDatabase.updatePlanName(oldName, newName)
+                    }
+                }
+                this?.setNegativeButton("No") { _, _ ->
+                }
+                this?.show()
+            }
+    }
+
+    private fun endFragment() {
         requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
     }
 }

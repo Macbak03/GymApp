@@ -8,21 +8,21 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.animation.AnimationUtils
 import android.widget.SearchView
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
 import com.example.gymapp.adapter.WorkoutHistoryRecyclerViewAdapter
+import com.example.gymapp.animation.FragmentAnimator
 import com.example.gymapp.databinding.FragmentTrainingHistoryBinding
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workoutHistory.WorkoutHistoryElement
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import java.util.Locale
 
-class TrainingHistoryFragment : Fragment() {
+class TrainingHistoryFragment : Fragment(), FragmentAnimator {
     private var _binding: FragmentTrainingHistoryBinding? = null
     private val binding get() = _binding!!
     private lateinit var recyclerView: RecyclerView
@@ -30,6 +30,7 @@ class TrainingHistoryFragment : Fragment() {
     private var workoutHistory: MutableList<WorkoutHistoryElement> = ArrayList()
     private lateinit var searchView: SearchView
     private var searchList: MutableList<WorkoutHistoryElement> = ArrayList()
+
 
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
@@ -46,16 +47,20 @@ class TrainingHistoryFragment : Fragment() {
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         return binding.root
     }
+
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         searchView = binding.searchViewHistory
+
+        setRecyclerViewContent()
 
         recyclerView = binding.recyclerViewWorkoutHistory
         workoutHistoryRecyclerViewAdapter = WorkoutHistoryRecyclerViewAdapter(searchList)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = workoutHistoryRecyclerViewAdapter
-        setRecyclerViewContent()
+
 
 
 
@@ -92,7 +97,7 @@ class TrainingHistoryFragment : Fragment() {
                         }
                     }
                     workoutHistoryRecyclerViewAdapter.notifyDataSetChanged()
-                }else{
+                } else {
                     searchList.clear()
                     searchList.addAll(workoutHistory)
                     workoutHistoryRecyclerViewAdapter.notifyDataSetChanged()
@@ -103,61 +108,33 @@ class TrainingHistoryFragment : Fragment() {
         })
     }
 
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onResume() {
+        super.onResume()
+        setRecyclerViewContent()
+        workoutHistoryRecyclerViewAdapter.notifyDataSetChanged()
+    }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent() {
         val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(requireContext(), null)
-        val cursor = workoutHistoryDatabase.getHistory()
-        val customDate = CustomDate()
-        if (cursor.moveToFirst()) {
-            val savedDate = cursor.getString(
-                cursor.getColumnIndexOrThrow(
-                    WorkoutHistoryDatabaseHelper.DATE_COLUMN
-                )
-            )
-            val date = customDate.getFormattedDate(savedDate)
-            val workoutHistoryElement = WorkoutHistoryElement(
-                cursor.getString(
-                    cursor.getColumnIndexOrThrow(
-                        WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN
-                    )
-                ), cursor.getString(
-                    cursor.getColumnIndexOrThrow(
-                        WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN
-                    )
-                ), date, savedDate
-            )
-            workoutHistory.add(workoutHistoryElement)
+        workoutHistory = workoutHistoryDatabase.getHistory()
+        searchList.clear()
+        for(workoutHistoryElement in workoutHistory)
+        {
             searchList.add(workoutHistoryElement)
-            workoutHistoryRecyclerViewAdapter.notifyItemInserted(workoutHistoryRecyclerViewAdapter.itemCount)
-            while (cursor.moveToNext()) {
-                val nextSavedDate = cursor.getString(
-                    cursor.getColumnIndexOrThrow(
-                        WorkoutHistoryDatabaseHelper.DATE_COLUMN
-                    )
-                )
-                val nextDate = customDate.getFormattedDate(nextSavedDate)
-                val nextWorkoutHistoryElement = WorkoutHistoryElement(
-                    cursor.getString(
-                        cursor.getColumnIndexOrThrow(
-                            WorkoutHistoryDatabaseHelper.PLAN_NAME_COLUMN
-                        )
-                    ), cursor.getString(
-                        cursor.getColumnIndexOrThrow(
-                            WorkoutHistoryDatabaseHelper.ROUTINE_NAME_COLUMN
-                        )
-                    ), nextDate, nextSavedDate
-                )
-                workoutHistory.add(nextWorkoutHistoryElement)
-                searchList.add(nextWorkoutHistoryElement)
-                workoutHistoryRecyclerViewAdapter.notifyItemInserted(
-                    workoutHistoryRecyclerViewAdapter.itemCount
-                )
-            }
         }
+    }
+
+    override fun triggerAnimation() {
+        val slideIn = AnimationUtils.loadAnimation(context, R.anim.slide_in_right)
+        requireView().startAnimation(slideIn)
     }
 
 }
