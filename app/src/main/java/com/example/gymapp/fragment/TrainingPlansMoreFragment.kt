@@ -139,7 +139,7 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
     private fun showUpdatePlanNameInHistoryQuery(oldName: String?, newName: String?) {
             val builder = context?.let { AlertDialog.Builder(it) }
             with(builder) {
-                this?.setTitle("Do you want to also change plan's name in history")
+                this?.setTitle("Do you want to also change plan's name in history?")
                 this?.setPositiveButton("Yes") { _, _ ->
                     val workoutHistoryDatabase =
                         WorkoutHistoryDatabaseHelper(requireContext(), null)
