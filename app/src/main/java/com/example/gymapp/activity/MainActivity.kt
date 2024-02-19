@@ -1,17 +1,13 @@
 package com.example.gymapp.activity
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
+import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.databinding.ActivityMainBinding
 import com.example.gymapp.R
-import com.example.gymapp.fragment.HomeFragment
-import com.example.gymapp.fragment.SettingsFragment
-import com.example.gymapp.fragment.TrainingHistoryFragment
-import com.example.gymapp.fragment.TrainingPlansFragment
+import com.example.gymapp.adapter.ViewPagerAdapter
+import com.example.gymapp.animation.FragmentAnimator
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
@@ -33,22 +29,35 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fragmentManager = supportFragmentManager
-        binding.bottomNavigationBar.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.buttonHome -> openFragment(HomeFragment(), "HomeFragment")
-                R.id.buttonTrainingPlans -> openFragment(
-                        TrainingPlansFragment(),
-                        "TrainingPlansFragment"
-                    )
-                R.id.buttonTrainingHistory -> openFragment(
-                        TrainingHistoryFragment(),
-                        "TrainingHistoryFragment"
-                    )
-                R.id.buttonSettings -> openFragment(SettingsFragment(), "SettingsFragment")
+
+        val viewPager = findViewById<ViewPager2>(R.id.viewPager)
+        val adapter = ViewPagerAdapter(this)
+        viewPager.adapter = adapter
+
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                binding.bottomNavigationBar.menu.getItem(position).isChecked = true
             }
+        })
+
+        binding.bottomNavigationBar.setOnItemSelectedListener { item ->
+            val targetItem = when (item.itemId) {
+                R.id.buttonHome ->  ViewPagerAdapter.HOME_FRAGMENT
+                R.id.buttonTrainingPlans -> ViewPagerAdapter.TRAINING_PLANS_FRAGMENT
+                R.id.buttonTrainingHistory -> ViewPagerAdapter.TRAINING_HISTORY_FRAGMENT
+                R.id.buttonSettings -> ViewPagerAdapter.SETTINGS_FRAGMENT
+                else -> return@setOnItemSelectedListener false
+            }
+            viewPager.setCurrentItem(targetItem, false)
+/*            viewPager.post {
+                val currentFragment = adapter.getFragmentAtPosition(viewPager.currentItem)
+                if(currentFragment is FragmentAnimator){
+                    currentFragment.triggerAnimation()
+                }
+            }*/
             true
         }
-        openFragment(HomeFragment(), "HomeFragment")
         planDataBase.onCreate(planDataBase.readableDatabase)
         routinesDataBase.onCreate(routinesDataBase.readableDatabase)
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
@@ -56,11 +65,8 @@ class MainActivity : AppCompatActivity() {
         workoutSeriesDataBase.onCreate(workoutSeriesDataBase.readableDatabase)
     }
 
-
-    private fun openFragment(fragment: Fragment, tag: String?) {
-        val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag)
-        fragmentTransaction.commit()
+    companion object {
+        const val NUM_PAGES = 4
     }
 }
 

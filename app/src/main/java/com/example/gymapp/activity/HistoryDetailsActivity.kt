@@ -8,6 +8,7 @@ import com.example.gymapp.databinding.ActivityHistoryDetailsBinding
 import com.example.gymapp.fragment.TrainingHistoryFragment
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
+import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 

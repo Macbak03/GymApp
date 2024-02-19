@@ -1,36 +1,31 @@
 package com.example.gymapp.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.TrainingPlansRecyclerViewItemLayoutBinding
+import com.example.gymapp.fragment.TrainingPlansFragment
+import com.example.gymapp.fragment.TrainingPlansMoreFragment
 import com.example.gymapp.model.trainingPlans.TrainingPlan
-import com.example.gymapp.persistence.PlansDataBaseHelper
 
-class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>, private val deleteButton: Button
-) :
+class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<TrainingPlan>, private val fragment: Fragment) :
     RecyclerView.Adapter<TrainingPlansRecyclerViewAdapter.TrainingPlansViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
-    private var onLongCLickListener: OnLongClickListener? = null
-    private val animations: Animations = Animations()
 
-    var isLongClickActivated = false
-
-    private var checkBoxTracker = 0
     private val deletedTrainingPlans: MutableList<String> = ArrayList()
 
     inner class TrainingPlansViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) :
         ViewHolder(binding.root) {
         val trainingPlanName = binding.textViewElement
-        val checkBox = binding.checkBoxElement
+        val moreButton = binding.moreButton
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrainingPlansViewHolder {
@@ -49,22 +44,6 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
     override fun onBindViewHolder(holder: TrainingPlansViewHolder, position: Int) {
         val trainingPlan = trainingPlans[position]
         holder.trainingPlanName.text = trainingPlan.name
-        holder.checkBox.isChecked = trainingPlan.isSelected
-
-        holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            if(isChecked) {
-                checkBoxTracker ++
-                trainingPlan.isSelected = true
-            } else {
-                checkBoxTracker --
-                trainingPlan.isSelected = false
-            }
-            if(checkBoxTracker == 0){
-                switchButtonAccessibility(false)
-            }else{
-                switchButtonAccessibility(true)
-            }
-        }
 
         holder.itemView.setOnClickListener {
             if (onClickListener != null) {
@@ -72,65 +51,28 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
             }
         }
 
-        holder.itemView.setOnLongClickListener {
-            if (onLongCLickListener != null) {
-                onLongCLickListener!!.onLongClick(position, trainingPlans[position])
-                isLongClickActivated = true
-                trainingPlan.isSelected = true
-                notifyDataSetChanged()
-            }
-            true
+        holder.moreButton.setOnClickListener {
+            openMoreDialog(holder, position)
         }
 
-        if (isLongClickActivated) {
-            showCheckBox(holder)
-        } else {
-            hideCheckBox(holder)
+        if(holder.trainingPlanName.text == TrainingPlansFragment.DEFAULT_ELEMENT) {
+            holder.moreButton.visibility = View.GONE
+        } else{
+            holder.moreButton.visibility = View.VISIBLE
         }
+
     }
 
-    private fun showCheckBox(holder: TrainingPlansViewHolder) {
-        holder.checkBox.visibility = View.VISIBLE
-        holder.checkBox.animate()
-            .alpha(1f)
-            .setDuration(200)
-            .withStartAction {
-                animations.translateX(
-                    holder.trainingPlanName.translationX,
-                    holder.checkBox.width.toFloat(),
-                    holder.trainingPlanName,
-                    300
-                )
-            }
-            .withEndAction(null)
-            .start()
-    }
-
-    private fun hideCheckBox(holder: TrainingPlansViewHolder) {
-        holder.checkBox.animate()
-            .alpha(0f)
-            .setDuration(200)
-            .withStartAction {
-                animations.translateX(
-                    holder.trainingPlanName.translationX,
-                    0f,
-                    holder.trainingPlanName,
-                    300
-                )
-            }
-            .withEndAction {
-                holder.checkBox.visibility = View.GONE
-                holder.checkBox.clearAnimation()
-            }
-            .start()
-    }
-
-    private fun switchButtonAccessibility(switch: Boolean)
+    private fun openMoreDialog(holder: TrainingPlansViewHolder, position: Int)
     {
-        deleteButton.isEnabled = switch
+        val bundle = Bundle()
+        bundle.putString(SELECTED_ITEM_KEY, holder.trainingPlanName.text.toString())
+        bundle.putString(BUTTON_TEXT, "EDIT PLAN'S NAME")
+        bundle.putInt(POSITION, position)
+        val trainingPlansMoreFragment = TrainingPlansMoreFragment(this)
+        trainingPlansMoreFragment.arguments = bundle
+        fragment.requireActivity().supportFragmentManager.let { trainingPlansMoreFragment.show(it, "WorkoutMenu")}
     }
-
-
 
     fun deleteSinglePlan(position: Int){
         deletedTrainingPlans.clear()
@@ -139,52 +81,27 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         notifyItemRemoved(position)
     }
 
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun deletePlansFromRecyclerView()
-    {
-        deletedTrainingPlans.clear()
-        trainingPlans.removeAll {
-            if(it.isSelected)
-            {
-                deletedTrainingPlans.add(it.name)
-                true
-            } else
-            {
-                false
-            }
-        }
-        notifyDataSetChanged()
-    }
-
     fun getDeletedPlans() : MutableList<String>
     {
         return deletedTrainingPlans
+    }
+
+    fun getElement(position: Int) : TrainingPlan{
+        return trainingPlans[position]
     }
 
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
     }
 
-    fun setOnLongClickListener(onLongClickListener: OnLongClickListener) {
-        this.onLongCLickListener = onLongClickListener
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun resetLongClickState() {
-        isLongClickActivated = false
-        for (trainingPlan in trainingPlans) {
-            trainingPlan.isSelected = false
-        }
-        checkBoxTracker = 0
-        notifyDataSetChanged()
-    }
-
     interface OnClickListener {
         fun onClick(position: Int, model: TrainingPlan)
     }
 
-    interface OnLongClickListener {
-        fun onLongClick(position: Int, model: TrainingPlan)
+
+    companion object{
+        const val SELECTED_ITEM_KEY = "SELECTED_ITEM_KEY"
+        const val BUTTON_TEXT = "EDIT_BUTTON_TEXT"
+        const val POSITION = "POSITION"
     }
 }

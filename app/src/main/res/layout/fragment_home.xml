@@ -58,8 +58,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:background="@color/white"
-            android:foreground="?attr/selectableItemBackground"
             app:cardCornerRadius="3dp"
             app:cardElevation="3dp"
             app:cardUseCompatPadding="true"
@@ -94,7 +92,8 @@
                         android:textSize="23sp"
                         android:textAlignment="textEnd"
                         android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp" />
+                        android:layout_marginStart="10dp"
+                        android:textStyle="bold"/>
                     <TextView
                         android:id="@+id/textViewLastTrainingRoutineName"
                         android:layout_width="0dp"
@@ -134,16 +133,6 @@
         app:layout_constraintBottom_toBottomOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/startWorkoutMenu"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/fragment_start_workout_menu" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
