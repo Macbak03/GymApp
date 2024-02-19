@@ -6,10 +6,6 @@ import android.graphics.Canvas
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -30,9 +26,6 @@ class TrainingPlanActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var trainingPlanRecyclerViewAdapter: TrainingPlanRecyclerViewAdapter
 
-    private lateinit var slideUpAnimation: Animation
-    private lateinit var slideDownAnimation: Animation
-
     private var planName: String? = null
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
     private val routinesDataBase = RoutinesDataBaseHelper(this, null)
@@ -51,17 +44,8 @@ class TrainingPlanActivity : AppCompatActivity() {
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.absoluteAdapterPosition
             if (direction == ItemTouchHelper.RIGHT) {
-                showSingleDeleteDialog(position)
+                showDeleteDialog(position)
             }
-        }
-        override fun getSwipeDirs(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder
-        ): Int {
-            if (trainingPlanRecyclerViewAdapter.isLongClickActivated) {
-                return 0
-            }
-            return super.getSwipeDirs(recyclerView, viewHolder)
         }
 
         /*Copyright {2024} {Maciej Bąk}
@@ -115,17 +99,6 @@ class TrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
-        override fun handleOnBackPressed() {
-            if (trainingPlanRecyclerViewAdapter.isLongClickActivated) {
-                trainingPlanRecyclerViewAdapter.resetLongClickState()
-                hideToolbar()
-            } else {
-                isEnabled = false
-                onBackPressedDispatcher.onBackPressed()
-            }
-        }
-    }
 
     companion object {
         const val PLAN_NAME = "com.example.gymapp.planname"
@@ -146,11 +119,6 @@ class TrainingPlanActivity : AppCompatActivity() {
         binding = ActivityTrainingPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        slideUpAnimation = AnimationUtils.loadAnimation(this, R.anim.toolbar_slide_up)
-        slideDownAnimation = AnimationUtils.loadAnimation(this, R.anim.toolbar_slide_down)
-
-        binding.toolbarDeleteRoutine.textViewToolbarText.setText(R.string.delete_routines_text)
-
         if (intent.hasExtra(TrainingPlansFragment.NEXT_SCREEN)) {
             binding.textViewTrainingPlanName.text =
                 intent.getStringExtra(TrainingPlansFragment.NEXT_SCREEN)
@@ -159,10 +127,7 @@ class TrainingPlanActivity : AppCompatActivity() {
         planName = binding.textViewTrainingPlanName.text.toString()
 
         recyclerView = binding.RecyclerViewTrainingPlan
-        trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(
-            routines,
-            binding.toolbarDeleteRoutine.buttonDeleteElements,
-        )
+        trainingPlanRecyclerViewAdapter = TrainingPlanRecyclerViewAdapter(routines)
 
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = trainingPlanRecyclerViewAdapter
@@ -190,24 +155,6 @@ class TrainingPlanActivity : AppCompatActivity() {
                 }
             }
         })
-
-        trainingPlanRecyclerViewAdapter.setOnLongClickListener(object :
-            TrainingPlanRecyclerViewAdapter.OnLongClickListener {
-            override fun onLongClick(position: Int, model: TrainingPlanElement) {
-                showToolbar()
-            }
-        })
-
-        binding.toolbarDeleteRoutine.buttonBackFromDeleteMode.setOnClickListener {
-            trainingPlanRecyclerViewAdapter.resetLongClickState()
-            hideToolbar()
-        }
-
-        binding.toolbarDeleteRoutine.buttonDeleteElements.setOnClickListener {
-            showDeleteDialog()
-        }
-
-        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
@@ -228,24 +175,8 @@ class TrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDeleteDialog() {
-        val builder = this.let { AlertDialog.Builder(it) }
-        with(builder) {
-            this.setTitle("Are you sure you want to delete?")
-            this.setPositiveButton("OK") { _, _ ->
-                val planId = plansDataBase.getPlanId(planName)
-                if (planId != null) {
-                    trainingPlanRecyclerViewAdapter.deleteRoutinesFromRecyclerView()
-                    val deletedRoutines = trainingPlanRecyclerViewAdapter.getDeletedRoutines()
-                    routinesDataBase.deleteRoutines(planId, deletedRoutines)
-                }
-            }
-            this.setNegativeButton("Cancel") { _, _ -> }
-            this.show()
-        }
-    }
 
-    private fun showSingleDeleteDialog(position: Int) {
+    private fun showDeleteDialog(position: Int) {
         val builder = this.let { AlertDialog.Builder(it) }
         with(builder) {
             this.setTitle("Are you sure you want to delete ${routines[position].routineName}?")
@@ -264,62 +195,4 @@ class TrainingPlanActivity : AppCompatActivity() {
         }
     }
 
-    private fun showToolbar() {
-        val toolbar = binding.toolbarDeleteRoutine.toolbar
-
-        slideUpAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(anim: Animation?) {
-                hidePlanName()
-            }
-
-            override fun onAnimationEnd(anim: Animation?) {
-
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {}
-        })
-        toolbar.visibility = View.VISIBLE
-        toolbar.startAnimation(slideUpAnimation)
-
-    }
-
-    private fun hideToolbar() {
-        val toolbar = binding.toolbarDeleteRoutine.toolbar
-
-        slideDownAnimation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(anim: Animation?) {
-            }
-
-            override fun onAnimationEnd(animation: Animation?) {
-                toolbar.visibility = View.GONE
-                showPlanName()
-            }
-
-            override fun onAnimationRepeat(animation: Animation?) {}
-        })
-
-        toolbar.startAnimation(slideDownAnimation)
-    }
-
-    private fun showPlanName() {
-        val planName = binding.textViewTrainingPlanName
-        planName.visibility = View.VISIBLE
-        planName.animate()
-            .alpha(1f)
-            .setDuration(200)
-            .withEndAction(null)
-            .start()
-    }
-
-    private fun hidePlanName() {
-        val planName = binding.textViewTrainingPlanName
-        planName.animate()
-            .alpha(0f)
-            .setDuration(200)
-            .withEndAction {
-                planName.visibility = View.INVISIBLE
-                planName.clearAnimation()
-            }
-            .start()
-    }
 }

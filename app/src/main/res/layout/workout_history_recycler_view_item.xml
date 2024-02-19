@@ -46,7 +46,8 @@
                     android:layout_weight="1"
                     android:text="Date"
                     android:textAlignment="textEnd"
-                    android:textSize="23sp" />
+                    android:textSize="23sp"
+                    android:textStyle="bold"/>
 
                 <TextView
                     android:id="@+id/textViewHistoryRoutineName"

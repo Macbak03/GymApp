@@ -12,14 +12,18 @@ import com.example.gymapp.model.routine.RangePause
 import com.example.gymapp.model.routine.RangeReps
 import com.example.gymapp.model.routine.RangeRpe
 import com.example.gymapp.model.routine.TimeUnit
+import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutExercise
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeries
+import com.example.gymapp.model.workoutHistory.WorkoutHistoryElement
 
-class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?
+class WorkoutHistoryDatabaseHelper(
+    context: Context, factory: SQLiteDatabase.CursorFactory?
 ) : Repository(
-        context, factory,
-    ) {
+    context, factory,
+) {
+
 
     override fun onCreate(db: SQLiteDatabase) {
         val query = ("CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " ("
@@ -62,11 +66,18 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
         values.put(ROUTINE_NAME_COLUMN, routineName)
         values.put(EXERCISE_ORDER_COLUMN, workoutExercise.exerciseCount)
         values.put(EXERCISE_NAME_COLUMN, workoutExercise.exercise.name)
-        when(workoutExercise.exercise.pause) {
+        when (workoutExercise.exercise.pause) {
             is ExactPause -> {
-                values.put(PAUSE_RANGE_FROM_COLUMN, (workoutExercise.exercise.pause as ExactPause).value)
-                values.put(PAUSE_RANGE_TO_COLUMN, (workoutExercise.exercise.pause as ExactPause).value)
+                values.put(
+                    PAUSE_RANGE_FROM_COLUMN,
+                    (workoutExercise.exercise.pause as ExactPause).value
+                )
+                values.put(
+                    PAUSE_RANGE_TO_COLUMN,
+                    (workoutExercise.exercise.pause as ExactPause).value
+                )
             }
+
             is RangePause -> {
                 values.put(
                     PAUSE_RANGE_FROM_COLUMN,
@@ -174,12 +185,54 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
         }
     }
 
-    fun getHistory(): Cursor {
+    private fun getHistoryCursor(): Cursor {
         val db = this.readableDatabase
         return db.rawQuery(
             "SELECT DISTINCT $PLAN_NAME_COLUMN, $DATE_COLUMN, $ROUTINE_NAME_COLUMN FROM $TABLE_NAME ORDER BY $DATE_COLUMN DESC",
             null
         )
+    }
+
+    fun getHistory(): MutableList<WorkoutHistoryElement> {
+        val workoutHistory: MutableList<WorkoutHistoryElement> = ArrayList()
+        val customDate = CustomDate()
+        val cursor = getHistoryCursor()
+        if (cursor.moveToFirst()) {
+            val savedDate = cursor.getString(
+                cursor.getColumnIndexOrThrow(
+                    DATE_COLUMN
+                )
+            )
+            val date = customDate.getFormattedDate(savedDate)
+            val workoutHistoryElement = WorkoutHistoryElement(
+                cursor.getString(cursor.getColumnIndexOrThrow(PLAN_NAME_COLUMN)), cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                        ROUTINE_NAME_COLUMN
+                    )
+                ), date, savedDate
+            )
+            workoutHistory.add(workoutHistoryElement)
+            while (cursor.moveToNext()) {
+                val nextSavedDate = cursor.getString(
+                    cursor.getColumnIndexOrThrow(
+                        DATE_COLUMN
+                    )
+                )
+                val nextDate = customDate.getFormattedDate(nextSavedDate)
+                val nextWorkoutHistoryElement = WorkoutHistoryElement(
+                    cursor.getString(cursor.getColumnIndexOrThrow(PLAN_NAME_COLUMN)),
+                    cursor.getString(
+                        cursor.getColumnIndexOrThrow(
+                            ROUTINE_NAME_COLUMN
+                        )
+                    ),
+                    nextDate,
+                    nextSavedDate
+                )
+                workoutHistory.add(nextWorkoutHistoryElement)
+            }
+        }
+        return workoutHistory
     }
 
     fun getExerciseID(date: String, exerciseName: String): Int? {
@@ -369,39 +422,47 @@ class WorkoutHistoryDatabaseHelper(context: Context, factory: SQLiteDatabase.Cur
         return workoutExercises
     }
 
-    fun isTableNotEmpty(): Boolean
-    {
+    fun isTableNotEmpty(): Boolean {
         val dataBaseRead = this.readableDatabase
         val cursor = dataBaseRead.rawQuery("SELECT COUNT(*) FROM $TABLE_NAME", null)
         var isEmpty = true
-        if(cursor.moveToFirst())
-        {
+        if (cursor.moveToFirst()) {
             val count = cursor.getInt(0)
-            isEmpty = count >0
+            isEmpty = count > 0
         }
         cursor.close()
         return isEmpty
     }
 
-    fun getLastWorkout() : List<String?>
-    {
+    fun getLastWorkout(): List<String?> {
         var planName: String? = null
         var date: String? = null
         var routineName: String? = null
         val dataBaseRead = this.readableDatabase
-        val cursor = dataBaseRead.rawQuery("SELECT $PLAN_NAME_COLUMN, $DATE_COLUMN, $ROUTINE_NAME_COLUMN " +
-                "FROM $TABLE_NAME " +
-                "WHERE $DATE_COLUMN = (" +
-                "   SELECT MAX($DATE_COLUMN)" +
-                "   FROM $TABLE_NAME)", null)
-        if(cursor.moveToFirst())
-        {
+        val cursor = dataBaseRead.rawQuery(
+            "SELECT $PLAN_NAME_COLUMN, $DATE_COLUMN, $ROUTINE_NAME_COLUMN " +
+                    "FROM $TABLE_NAME " +
+                    "WHERE $DATE_COLUMN = (" +
+                    "   SELECT MAX($DATE_COLUMN)" +
+                    "   FROM $TABLE_NAME)", null
+        )
+        if (cursor.moveToFirst()) {
             planName = cursor.getString(cursor.getColumnIndexOrThrow(PLAN_NAME_COLUMN))
             date = cursor.getString(cursor.getColumnIndexOrThrow(DATE_COLUMN))
             routineName = cursor.getString(cursor.getColumnIndexOrThrow(ROUTINE_NAME_COLUMN))
         }
         cursor.close()
         return listOf(planName, date, routineName)
+    }
+
+    fun updatePlanName(oldName: String, newName: String){
+        val values = ContentValues()
+        values.put(PLAN_NAME_COLUMN, newName)
+        val updateSelection = "$PLAN_NAME_COLUMN = ?"
+        val updateSelectionArgs = arrayOf(oldName)
+
+        val db = this.writableDatabase
+        db.update(TABLE_NAME, values, updateSelection, updateSelectionArgs)
     }
 
 

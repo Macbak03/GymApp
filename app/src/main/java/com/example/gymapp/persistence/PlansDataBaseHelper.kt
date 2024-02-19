@@ -49,6 +49,34 @@ class PlansDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactor
 
     }
 
+    fun updatePlanName(planId: Int, newName: String) {
+        val values = ContentValues()
+        values.put(PLAN_NAME_COLUMN, newName)
+        val updateSelection = "$PLAN_ID_COLUMN = ?"
+        val updateSelectionArgs = arrayOf(planId.toString())
+
+        val db = this.writableDatabase
+        db.update(TABLE_NAME, values, updateSelection, updateSelectionArgs)
+    }
+
+    fun doesPlanNameExist(planName: String): Boolean {
+        val db = this.readableDatabase
+        val selection = "$PLAN_NAME_COLUMN = ?"
+        val selectionArgs = arrayOf(planName)
+        val cursor = db.query(
+            TABLE_NAME,
+            null,
+            selection,
+            selectionArgs,
+            null,
+            null,
+            null
+        )
+        val planExists = cursor.count > 0
+        cursor.close()
+        return planExists
+    }
+
     fun getPlanId(planName: String?): Int? {
         return if(planName != null) {
             val selectionArgs = arrayOf(planName)
