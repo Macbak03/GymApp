@@ -57,7 +57,7 @@ class TrainingHistoryFragment : Fragment(), FragmentAnimator {
         setRecyclerViewContent()
 
         recyclerView = binding.recyclerViewWorkoutHistory
-        workoutHistoryRecyclerViewAdapter = WorkoutHistoryRecyclerViewAdapter(searchList)
+        workoutHistoryRecyclerViewAdapter = WorkoutHistoryRecyclerViewAdapter(searchList, this)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.adapter = workoutHistoryRecyclerViewAdapter
 

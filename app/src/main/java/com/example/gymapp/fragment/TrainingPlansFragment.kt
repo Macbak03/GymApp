@@ -145,14 +145,14 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
 
         binding.buttonCreateTrainingPlan.setOnClickListener()
         {
-            showEditTextDialog()
+            showCreatePlanDialog()
         }
 
         trainingPlansRecyclerViewAdapter.setOnClickListener(object :
             TrainingPlansRecyclerViewAdapter.OnClickListener {
             override fun onClick(position: Int, model: TrainingPlan) {
                 if (trainingPlans[0].name == DEFAULT_ELEMENT) {
-                    showEditTextDialog()
+                    showCreatePlanDialog()
                 } else {
                     val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
                     explicitIntent.putExtra(NEXT_SCREEN, model.name)
@@ -172,7 +172,7 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
     }
 
     @SuppressLint("InflateParams", "NotifyDataSetChanged")
-    private fun showEditTextDialog() {
+    private fun showCreatePlanDialog() {
         val builder = context?.let { AlertDialog.Builder(it) }
         val dialogLayout = layoutInflater.inflate(R.layout.enter_name_edit_text, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.editTextName)

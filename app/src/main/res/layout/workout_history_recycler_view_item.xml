@@ -10,12 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
-        android:background="@color/cardview_dark_background"
-        android:foreground="?attr/selectableItemBackground"
         app:cardCornerRadius="3dp"
         app:cardElevation="3dp"
         app:cardUseCompatPadding="true">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -26,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="55dp"
                 android:text="Plan name"
                 android:textAlignment="center"
                 android:textSize="16sp" />
@@ -35,7 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:padding="5dp"
+                android:layout_marginEnd="50dp">
 
                 <TextView
                     android:id="@+id/textViewHistoryDate"
@@ -59,6 +57,23 @@
                     android:textSize="23sp" />
             </LinearLayout>
         </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/moreButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="end"
+            android:clickable="true">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/baseline_dehaze_24"
+                android:contentDescription="More"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+
 
     </androidx.cardview.widget.CardView>
 
