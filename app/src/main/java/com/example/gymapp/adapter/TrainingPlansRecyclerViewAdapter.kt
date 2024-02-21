@@ -20,7 +20,7 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
 
     private var onClickListener: OnClickListener? = null
 
-    private val deletedTrainingPlans: MutableList<String> = ArrayList()
+    private var deletedTrainingPlan: String = ""
 
     inner class TrainingPlansViewHolder(binding: TrainingPlansRecyclerViewItemLayoutBinding) :
         ViewHolder(binding.root) {
@@ -52,7 +52,7 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         }
 
         holder.moreButton.setOnClickListener {
-            openMoreDialog(holder, position)
+            openMoreDialog(position)
         }
 
         if(holder.trainingPlanName.text == TrainingPlansFragment.DEFAULT_ELEMENT) {
@@ -63,27 +63,26 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
 
     }
 
-    private fun openMoreDialog(holder: TrainingPlansViewHolder, position: Int)
+    private fun openMoreDialog(position: Int)
     {
         val bundle = Bundle()
-        bundle.putString(SELECTED_ITEM_KEY, holder.trainingPlanName.text.toString())
+        bundle.putString(SELECTED_ITEM_KEY, trainingPlans[position].name)
         bundle.putString(BUTTON_TEXT, "EDIT PLAN'S NAME")
         bundle.putInt(POSITION, position)
         val trainingPlansMoreFragment = TrainingPlansMoreFragment(this)
         trainingPlansMoreFragment.arguments = bundle
-        fragment.requireActivity().supportFragmentManager.let { trainingPlansMoreFragment.show(it, "WorkoutMenu")}
+        fragment.requireActivity().supportFragmentManager.let { trainingPlansMoreFragment.show(it, "PlansMenu")}
     }
 
     fun deleteSinglePlan(position: Int){
-        deletedTrainingPlans.clear()
-        deletedTrainingPlans.add(trainingPlans[position].name)
+        deletedTrainingPlan = trainingPlans[position].name
         trainingPlans.removeAt(position)
         notifyItemRemoved(position)
     }
 
-    fun getDeletedPlans() : MutableList<String>
+    fun getDeletedPlans() : String
     {
-        return deletedTrainingPlans
+        return deletedTrainingPlan
     }
 
     fun getElement(position: Int) : TrainingPlan{

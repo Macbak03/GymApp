@@ -23,6 +23,7 @@ class HistoryDetailsActivity : AppCompatActivity() {
     private var routineName: String? = null
     private var planName: String? = null
     private var rawDate: String? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryDetailsBinding.inflate(layoutInflater)

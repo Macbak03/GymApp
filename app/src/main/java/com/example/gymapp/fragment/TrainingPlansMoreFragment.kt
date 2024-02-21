@@ -60,6 +60,8 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
         super.onViewCreated(view, savedInstanceState)
         plansDataBase = PlansDataBaseHelper(requireContext(), null)
 
+        binding.moreTextViewDate.visibility = View.GONE
+
         name = arguments?.getString(TrainingPlansRecyclerViewAdapter.SELECTED_ITEM_KEY)
         val position = arguments?.getInt(TrainingPlansRecyclerViewAdapter.POSITION)
         val editButtonText = arguments?.getString(TrainingPlansRecyclerViewAdapter.BUTTON_TEXT)
@@ -144,7 +146,7 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
                     val workoutHistoryDatabase =
                         WorkoutHistoryDatabaseHelper(requireContext(), null)
                     if (oldName != null && newName != null) {
-                        workoutHistoryDatabase.updatePlanName(oldName, newName)
+                        workoutHistoryDatabase.updatePlanNames(oldName, newName)
                     }
                 }
                 this?.setNegativeButton("No") { _, _ ->

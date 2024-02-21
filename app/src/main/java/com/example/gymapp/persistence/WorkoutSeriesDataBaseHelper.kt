@@ -64,7 +64,7 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
     fun getSeries(exerciseId: Int): List<WorkoutSeriesDraft> {
         val workoutSeries: MutableList<WorkoutSeriesDraft> = ArrayList()
         val cursor = getSeriesCursor(exerciseId)
-        if (cursor.moveToFirst()) {
+        while (cursor.moveToNext()) {
             val actualReps = cursor.getString(cursor.getColumnIndexOrThrow(ACTUAL_REPS_COLUMN))
             val loadValue = cursor.getString(cursor.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
             val loadUnit = getLoadUnit(exerciseId)
@@ -72,22 +72,29 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
             {
                 workoutSeries.add(WorkoutSeriesDraft(actualReps, loadValue, loadUnit, false))
             }
-            while (cursor.moveToNext())
-            {
-                val nextActualReps = cursor.getString(cursor.getColumnIndexOrThrow(ACTUAL_REPS_COLUMN))
-                val nextLoadValue = cursor.getString(cursor.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
-                val nextLoadUnit = getLoadUnit(exerciseId)
-                if(nextLoadUnit != null)
-                {
-                    workoutSeries.add(WorkoutSeriesDraft(nextActualReps, nextLoadValue, nextLoadUnit, false))
-                }
-            }
         }
         return workoutSeries
     }
 
+    fun updateSeriesValues(exerciseId: Int, setOrder: Int, actualReps: Float, loadValue: Float) {
+        val db = this.writableDatabase
 
-    companion object {
+        val values = ContentValues()
+        values.put(ACTUAL_REPS_COLUMN, actualReps)
+        values.put(LOAD_VALUE_COLUMN, loadValue)
+
+        val selection = "$EXERCISE_ID_COLUMN = ? AND $SERIES_ORDER_COLUMN = ?"
+        val selectionArgs = arrayOf(exerciseId.toString(), setOrder.toString())
+
+        db.update(TABLE_NAME, values, selection, selectionArgs)
+
+        db.close()
+    }
+
+
+
+
+        companion object {
         const val TABLE_NAME = "workoutSeries"
         const val EXERCISE_ID_COLUMN = "ExerciseID"
         const val SERIES_ORDER_COLUMN = "SeriesOrder"

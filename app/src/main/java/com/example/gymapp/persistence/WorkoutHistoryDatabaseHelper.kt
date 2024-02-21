@@ -185,6 +185,17 @@ class WorkoutHistoryDatabaseHelper(
         }
     }
 
+    fun deleteFromHistory(rawDate: String?) {
+        if (rawDate != null) {
+            val db = this.writableDatabase
+            val deleteSelection =
+                "$DATE_COLUMN = ?"
+            val deleteSelectionArgs =
+                arrayOf(rawDate)
+            db.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
+        }
+    }
+
     private fun getHistoryCursor(): Cursor {
         val db = this.readableDatabase
         return db.rawQuery(
@@ -197,7 +208,7 @@ class WorkoutHistoryDatabaseHelper(
         val workoutHistory: MutableList<WorkoutHistoryElement> = ArrayList()
         val customDate = CustomDate()
         val cursor = getHistoryCursor()
-        if (cursor.moveToFirst()) {
+        while (cursor.moveToNext()) {
             val savedDate = cursor.getString(
                 cursor.getColumnIndexOrThrow(
                     DATE_COLUMN
@@ -212,25 +223,6 @@ class WorkoutHistoryDatabaseHelper(
                 ), date, savedDate
             )
             workoutHistory.add(workoutHistoryElement)
-            while (cursor.moveToNext()) {
-                val nextSavedDate = cursor.getString(
-                    cursor.getColumnIndexOrThrow(
-                        DATE_COLUMN
-                    )
-                )
-                val nextDate = customDate.getFormattedDate(nextSavedDate)
-                val nextWorkoutHistoryElement = WorkoutHistoryElement(
-                    cursor.getString(cursor.getColumnIndexOrThrow(PLAN_NAME_COLUMN)),
-                    cursor.getString(
-                        cursor.getColumnIndexOrThrow(
-                            ROUTINE_NAME_COLUMN
-                        )
-                    ),
-                    nextDate,
-                    nextSavedDate
-                )
-                workoutHistory.add(nextWorkoutHistoryElement)
-            }
         }
         return workoutHistory
     }
@@ -243,6 +235,22 @@ class WorkoutHistoryDatabaseHelper(
             EXERCISE_ID_COLUMN,
             selectBy, selectionArgs
         )?.toInt()
+    }
+
+    fun getExerciseIdsByDate(date: String?): List<Int> {
+        val exerciseIds = mutableListOf<Int>()
+        if (date != null) {
+            val db = this.readableDatabase
+            val selectQuery = "SELECT $EXERCISE_ID_COLUMN FROM $TABLE_NAME WHERE $DATE_COLUMN = ?"
+
+            db.rawQuery(selectQuery, arrayOf(date)).use { cursor ->
+                while (cursor.moveToNext()) {
+                    val exerciseId = cursor.getInt(cursor.getColumnIndexOrThrow(EXERCISE_ID_COLUMN))
+                    exerciseIds.add(exerciseId)
+                }
+            }
+        }
+        return exerciseIds
     }
 
     private fun getLastID(): Int? {
@@ -303,7 +311,7 @@ class WorkoutHistoryDatabaseHelper(
         val workoutExercises: MutableList<WorkoutExerciseDraft> = ArrayList()
         val cursor = getWorkoutExercisesCursor(rawDate, routineName, planName)
         val seconds = 60
-        if (cursor.moveToFirst()) {
+        while (cursor.moveToNext()) {
             val exerciseName =
                 cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
 
@@ -355,69 +363,6 @@ class WorkoutHistoryDatabaseHelper(
             val workoutExercise =
                 WorkoutExerciseDraft(exerciseName, pause, pauseUnit, reps, series, rpe, pace, note)
             workoutExercises.add(workoutExercise)
-
-            while (cursor.moveToNext()) {
-                val nextExerciseName =
-                    cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
-
-                var nextPauseRangeFromInt =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PAUSE_RANGE_FROM_COLUMN))
-                var nextPauseRangeToInt =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(ExercisesDataBaseHelper.PAUSE_RANGE_TO_COLUMN))
-                val nextPauseUnit: TimeUnit
-                if ((nextPauseRangeFromInt % seconds) == 0 && (nextPauseRangeToInt % seconds) == 0) {
-                    nextPauseRangeFromInt /= seconds
-                    nextPauseRangeToInt /= seconds
-                    nextPauseUnit = TimeUnit.min
-                } else {
-                    nextPauseUnit = TimeUnit.s
-                }
-                val nextPause: String = if (nextPauseRangeFromInt == nextPauseRangeToInt) {
-                    ExactPause(nextPauseRangeFromInt, nextPauseUnit).toString()
-                } else {
-                    RangePause(nextPauseRangeFromInt, nextPauseRangeToInt, nextPauseUnit).toString()
-                }
-
-                val nextRepsRangeFrom =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_FROM_COLUMN))
-                val nextRepsRangeTo =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_TO_COLUMN))
-                val nextReps: String = if (nextRepsRangeFrom == nextRepsRangeTo) {
-                    ExactReps(nextRepsRangeFrom).toString()
-                } else {
-                    RangeReps(nextRepsRangeFrom, nextRepsRangeTo).toString()
-                }
-
-                val nextSeries =
-                    cursor.getString(cursor.getColumnIndexOrThrow(SERIES_COLUMN))
-
-                val nextRpeRangeFrom =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_FROM_COLUMN))
-                val nextRpeRangeTo =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_TO_COLUMN))
-                val nextRpe: String = if (nextRpeRangeFrom == nextRpeRangeTo) {
-                    ExactReps(nextRpeRangeFrom).toString()
-                } else {
-                    RangeReps(nextRpeRangeFrom, nextRpeRangeTo).toString()
-                }
-
-                val nextPace =
-                    cursor.getString(cursor.getColumnIndexOrThrow(PACE_COLUMN))
-                val nextNote = cursor.getString(cursor.getColumnIndexOrThrow(NOTES_COLUMN))
-
-                val nextWorkoutExercise =
-                    WorkoutExerciseDraft(
-                        nextExerciseName,
-                        nextPause,
-                        nextPauseUnit,
-                        nextReps,
-                        nextSeries,
-                        nextRpe,
-                        nextPace,
-                        nextNote
-                    )
-                workoutExercises.add(nextWorkoutExercise)
-            }
         }
         return workoutExercises
     }
@@ -455,7 +400,7 @@ class WorkoutHistoryDatabaseHelper(
         return listOf(planName, date, routineName)
     }
 
-    fun updatePlanName(oldName: String, newName: String){
+    fun updatePlanNames(oldName: String, newName: String) {
         val values = ContentValues()
         values.put(PLAN_NAME_COLUMN, newName)
         val updateSelection = "$PLAN_NAME_COLUMN = ?"
@@ -463,6 +408,18 @@ class WorkoutHistoryDatabaseHelper(
 
         val db = this.writableDatabase
         db.update(TABLE_NAME, values, updateSelection, updateSelectionArgs)
+    }
+
+    fun updateNotes(date: String?, exerciseId: Int, newNote: String) {
+        if (date != null) {
+            val values = ContentValues()
+            values.put(NOTES_COLUMN, newNote)
+            val updateSelection = "$DATE_COLUMN = ? AND $EXERCISE_ID_COLUMN = ?"
+            val updateSelectionArgs = arrayOf(date, exerciseId.toString())
+
+            val db = this.writableDatabase
+            db.update(TABLE_NAME, values, updateSelection, updateSelectionArgs)
+        }
     }
 
 

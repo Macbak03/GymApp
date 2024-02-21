@@ -203,7 +203,7 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         val exercises: MutableList<ExerciseDraft> = ArrayList()
         val cursor = getRoutineCursor(routineName, planId)
         val seconds = 60
-        if (cursor.moveToFirst())
+        while (cursor.moveToNext())
         {
             val exerciseName =
                 cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
@@ -272,69 +272,6 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
             )
             exercises.add(exercise)
 
-            while (cursor.moveToNext()) {
-                val nextExerciseName =
-                    cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
-
-                var nextPauseRangeFromInt =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_RANGE_FROM_COLUMN))
-                var nextPauseRangeToInt =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(PAUSE_RANGE_TO_COLUMN))
-                val nextPauseUnit: TimeUnit
-                if ((nextPauseRangeFromInt % seconds) == 0 && (nextPauseRangeToInt % seconds) == 0) {
-                    nextPauseRangeFromInt /= seconds
-                    nextPauseRangeToInt /= seconds
-                    nextPauseUnit = TimeUnit.min
-                } else {
-                    nextPauseUnit = TimeUnit.s
-                }
-                val nextPause: String = if (nextPauseRangeFromInt == nextPauseRangeToInt) {
-                    ExactPause(nextPauseRangeFromInt, nextPauseUnit).toString()
-                } else {
-                    RangePause(nextPauseRangeFromInt, nextPauseRangeToInt, nextPauseUnit).toString()
-                }
-
-                val nextLoadValue =
-                    cursor.getString(cursor.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
-                val nextLoadUnit =
-                    cursor.getString(cursor.getColumnIndexOrThrow(LOAD_UNIT_COLUMN))
-                val nextRepsRangeFrom =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_FROM_COLUMN))
-                val nextRepsRangeTo =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(REPS_RANGE_TO_COLUMN))
-                val nextReps: String = if (nextRepsRangeFrom == nextRepsRangeTo) {
-                    ExactReps(nextRepsRangeFrom).toString()
-                } else {
-                    RangeReps(nextRepsRangeFrom, nextRepsRangeTo).toString()
-                }
-                val nextSeries =
-                    cursor.getString(cursor.getColumnIndexOrThrow(SERIES_COLUMN))
-                val nextRpeRangeFrom =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_FROM_COLUMN))
-                val nextRpeRangeTo =
-                    cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_TO_COLUMN))
-                val nextRpe: String = if (nextRpeRangeFrom == nextRpeRangeTo) {
-                    ExactReps(nextRpeRangeFrom).toString()
-                } else {
-                    RangeReps(nextRpeRangeFrom, nextRpeRangeTo).toString()
-                }
-                val nextPace =
-                    cursor.getString(cursor.getColumnIndexOrThrow(PACE_COLUMN))
-
-                val nextExercise = ExerciseDraft(
-                    nextExerciseName,
-                    nextPause,
-                    nextPauseUnit,
-                    nextLoadValue,
-                    WeightUnit.valueOf(nextLoadUnit),
-                    nextSeries,
-                    nextReps,
-                    nextRpe,
-                    nextPace,
-                    false
-                )
-                exercises.add(nextExercise)
-            }
         }
         return exercises
     }

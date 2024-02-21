@@ -13,6 +13,23 @@
         android:background="@drawable/baseline_call_to_action_24"
         android:contentDescription="SwipeButton"
         android:layout_gravity="center" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:layout_marginHorizontal="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/moreTextViewDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="Date"
+        android:textSize="25sp"
+        android:textAlignment="center"
+        android:textColor="#D7D7D7"
+        />
 
     <TextView
         android:id="@+id/moreTextViewName"
@@ -21,10 +38,9 @@
         android:text="Name"
         android:textSize="25sp"
         android:textAlignment="center"
-        android:layout_marginTop="15dp"
         android:textColor="#D7D7D7"
         android:textStyle="bold"/>
-
+</LinearLayout>
     <Button
         android:id="@+id/moreButtonEdit"
         android:layout_width="match_parent"
