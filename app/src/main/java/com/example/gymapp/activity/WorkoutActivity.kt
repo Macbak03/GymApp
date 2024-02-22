@@ -88,6 +88,13 @@ class WorkoutActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        saveSeries()
+        val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
+        prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString()).apply()
+    }
+
     private fun loadRoutine(planId: Int?) {
         workout.clear()
         val exercisesDataBase = ExercisesDataBaseHelper(this, null)

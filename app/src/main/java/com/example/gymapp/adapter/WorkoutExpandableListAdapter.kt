@@ -109,6 +109,7 @@ class WorkoutExpandableListAdapter(
             val note = workoutExpandableLayout?.getNote()
             if (workoutExerciseDraft != null && workoutSeriesDraft != null) {
                 val exerciseDraft = ExerciseDraft(
+                    (i+1).toLong(),
                     workoutExerciseDraft.exerciseName,
                     workoutExerciseDraft.pause,
                     workoutExerciseDraft.pauseUnit,

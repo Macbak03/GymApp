@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,12 +24,15 @@ import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.persistence.PlansDataBaseHelper
+import com.example.gymapp.viewModel.RoutineRecyclerViewViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import java.util.Collections
 
 
 class CreateRoutineActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
+
+    private lateinit var viewModel: RoutineRecyclerViewViewModel
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var routineRecyclerViewAdapter: RoutineRecyclerViewAdapter
@@ -156,12 +160,13 @@ class CreateRoutineActivity : AppCompatActivity() {
             }
         }
 
+        viewModel = ViewModelProvider(this)[RoutineRecyclerViewViewModel::class.java]
 
 
         recyclerView = binding.recyclerViewRoutineItems
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
-        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper, this, layoutInflater)
+        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper, this, layoutInflater, viewModel)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = routineRecyclerViewAdapter
 
@@ -204,7 +209,8 @@ class CreateRoutineActivity : AppCompatActivity() {
         val adapter = routineRecyclerViewAdapter
         ++exerciseCount
         val exercise = ExerciseDraft(
-            "exercise$exerciseCount",
+            exerciseCount.toLong(),
+            "",
             "",
             TimeUnit.min,
             "",

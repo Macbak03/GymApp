@@ -3,10 +3,15 @@ package com.example.gymapp.adapter
 import android.animation.Animator
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -15,30 +20,62 @@ import com.example.gymapp.R
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.CreateRoutineRecyclerViewItemBinding
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.viewModel.RoutineRecyclerViewViewModel
 
 class RoutineRecyclerViewAdapter(
     private val exercises: MutableList<ExerciseDraft>,
     private val touchHelper: ItemTouchHelper,
     private val context: Context,
-    private val layoutInflater: LayoutInflater
+    private val layoutInflater: LayoutInflater,
+    private val viewModel: RoutineRecyclerViewViewModel
 ) : RecyclerView.Adapter<RoutineRecyclerViewAdapter.RoutineViewHolder>() {
 
     private val animations = Animations()
 
+    private var editTextValues: HashMap<Int, String> = HashMap()
+
     inner class RoutineViewHolder(binding: CreateRoutineRecyclerViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val exerciseName = binding.editTextExerciseName
-        val expandImage = binding.buttonExpand
         val exerciseDetails = binding.exerciseDetails
-        val exerciseTitleElement = binding.linearLayoutExerciseTitleElement
-        val moveButton = binding.imageButtonMove
+        val exerciseTitle = binding.exerciseTitle
+        val exerciseTitleElement: LinearLayout = exerciseTitle.findViewById(R.id.expandableLayoutTitle)
+        //val exerciseName = binding.editTextExerciseName
+        val exerciseName: EditText = exerciseTitle.findViewById(R.id.editTextExerciseName)
+        //val expandImage = binding.buttonExpand
+        val expandImage: ImageView = exerciseTitle.findViewById(R.id.buttonExpand)
+
+        //val moveButton = binding.imageButtonMove
+        val moveButton: ImageView = exerciseTitle.findViewById(R.id.imageButtonMove)
         val wholeItem = binding.wholeExerciseElement
+
         val pauseDescription = exerciseDetails.getPauseDescription()
         val loadDescription = exerciseDetails.getLoadDescription()
         val repsDescription = exerciseDetails.getRepsDescription()
         val seriesDescription = exerciseDetails.getSeriesDescription()
         val rpeDescription = exerciseDetails.getRpeDescription()
         val paceDescription = exerciseDetails.getPaceDescription()
+
+        init {
+
+            exerciseName.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+                    if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                        editTextValues[absoluteAdapterPosition] = s.toString()
+                    }
+                }
+
+            })
+        }
+    }
+
+    init {
+        setHasStableIds(true)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoutineViewHolder {
@@ -53,14 +90,48 @@ class RoutineRecyclerViewAdapter(
         return exercises.size
     }
 
+    override fun getItemId(position: Int): Long {
+        return exercises[position].id
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: RoutineViewHolder, position: Int) {
         val exercise = exercises[position]
-        val exerciseName = holder.exerciseName
+        //val exerciseName = holder.exerciseName
         val exerciseTitleElement = holder.exerciseTitleElement
+
+        val exerciseTitle = holder.exerciseTitle
         val exerciseDetails = holder.exerciseDetails
+        val exerciseName = holder.exerciseName
         val moveButton = holder.moveButton
-        exerciseName.setText(exercise.name)
+        //val moveButton = holder.moveButton
+
+        val itemId = getItemId(position)
+        //Toast.makeText(context, itemId.toString(), Toast.LENGTH_SHORT).show()
+
+/*        exerciseName.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val content = s.toString()
+                //viewModel.saveEditTextContent(itemId, content)
+                exercise.name = content
+            }
+
+        })*/
+
+/*        if(!viewModel.isViewModelEmpty() && viewModel.hasId(itemId)){
+            exerciseName.setText(viewModel.getEditTextContent(itemId))
+        }else{
+            exerciseName.setText(exercise.name)
+        }*/
+
+        //exerciseTitle.setExerciseName(exercise.name)
+        exerciseName.setText(editTextValues[position]?: exercise.name)
         exerciseDetails.setExercise(exercise)
 
         exerciseTitleElement.setOnClickListener{
@@ -121,6 +192,7 @@ class RoutineRecyclerViewAdapter(
                     "For example pace 21x0 in bench press means you go down for 2 seconds, 1 second pause " +
                     "at the bottom, push as fast as you can to the top and immediately start to go down again.")
         }
+
 
     }
 
@@ -202,13 +274,13 @@ class RoutineRecyclerViewAdapter(
             .alpha(1f)
             .setDuration(300)
             .withStartAction{
-                holder.exerciseTitleElement.isClickable = false
+                holder.exerciseTitle.isClickable = false
                 holder.exerciseName.isClickable = false
                 rotateExpandButtonLeft(holder)
                 moveItemsDown(holder)
             }
             .withEndAction {
-                holder.exerciseTitleElement.isClickable = true
+                holder.exerciseTitle.isClickable = true
                 holder.exerciseName.isClickable = true
             }
             .start()
@@ -220,13 +292,13 @@ class RoutineRecyclerViewAdapter(
             .alpha(0f)
             .setDuration(300)
             .withStartAction {
-                holder.exerciseTitleElement.isClickable = false
+                holder.exerciseTitle.isClickable = false
                 holder.exerciseName.isClickable = false
                 rotateExpandButtonRight(holder)
                 moveItemsUp(holder)
             }
             .withEndAction {
-                holder.exerciseTitleElement.isClickable = true
+                holder.exerciseTitle.isClickable = true
                 holder.exerciseName.isClickable = true
                 exerciseDetails.visibility = View.GONE
                 exerciseDetails.clearAnimation()
@@ -241,7 +313,7 @@ class RoutineRecyclerViewAdapter(
             View.MeasureSpec.UNSPECIFIED,
             View.MeasureSpec.UNSPECIFIED
         )
-        val initialHeight = holder.exerciseTitleElement.height
+        val initialHeight = holder.exerciseTitle.height
         val targetHeight = wholeItem.measuredHeight
        animations.moveItemsY(initialHeight, targetHeight, holder.itemView, 300)
     }
@@ -249,7 +321,7 @@ class RoutineRecyclerViewAdapter(
     private fun moveItemsUp(holder: RoutineViewHolder)
     {
         val initialHeight = holder.wholeItem.height
-        val targetHeight = holder.exerciseTitleElement.height
+        val targetHeight = holder.exerciseTitle.height
 
        animations.moveItemsY(initialHeight, targetHeight, holder.itemView, 300)
     }

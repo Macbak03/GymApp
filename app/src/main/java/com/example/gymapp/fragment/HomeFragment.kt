@@ -114,6 +114,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
             buttonReturn.visibility = View.GONE
         }
 
+        checkOnWorkoutTerminatePreferences()
+
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         binding.buttonStartWorkout.setOnClickListener {
             if (!plansDataBase.isTableNotEmpty()) {
@@ -171,6 +173,17 @@ class HomeFragment : Fragment(), FragmentAnimator {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun checkOnWorkoutTerminatePreferences(){
+        val prefs = activity?.getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
+        routineNameResult = prefs?.getString("ROUTINE_NAME", "")
+        if(!routineNameResult.isNullOrBlank())
+        {
+            isUnsaved = true
+            spinner.isEnabled = false
+            buttonReturn.visibility = View.VISIBLE
+        }
     }
 
     private fun openStartWorkoutMenuFragment() {

@@ -5,27 +5,38 @@
     android:id="@+id/expandableLayoutTitle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/windowBackground"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:clickable="true">
 
+        <ImageView
+            android:id="@+id/buttonExpand"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/baseline_expand_more_24"
+            android:rotation="-90"/>
 
-    <TextView
-        android:id="@+id/textViewExercise"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="6dp"
-        android:layout_weight="1"
-        android:paddingStart="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:text="@string/exercise_name"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        tools:ignore="RtlSymmetry" />
+        <EditText
+            android:id="@+id/editTextExerciseName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="45dp"
+            android:layout_weight="1"
+            android:hint="Exercise name"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-<!--    <Button
-        android:id="@+id/buttonDrag"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="20dp"
-        android:background="@drawable/baseline_drag_indicator_24"
-        android:contentDescription="More" />-->
+        <ImageButton
+            android:id="@+id/imageButtonMove"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="10dp"
+            android:background="@drawable/baseline_drag_indicator_24"
+            android:contentDescription="move" />
 </LinearLayout>
