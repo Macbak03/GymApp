@@ -10,7 +10,7 @@
         android:layout_height="30dp"
         android:text="@string/exercise"
         android:textSize="24sp"
-        android:layout_marginStart="30dp"
+        android:layout_marginStart="35dp"
         android:textAlignment="viewStart"
         android:textStyle="bold"/>
 

@@ -4,6 +4,7 @@ import com.example.gymapp.exception.ValidationException
 import kotlin.time.Duration
 
 data class ExerciseDraft (
+    val id: Long,
     var name: String?,
     //val progression: EnumSet<ProgressionType>,
     var pause: String?,

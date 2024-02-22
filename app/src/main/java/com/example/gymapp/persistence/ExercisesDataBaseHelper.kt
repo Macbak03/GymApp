@@ -203,6 +203,7 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         val exercises: MutableList<ExerciseDraft> = ArrayList()
         val cursor = getRoutineCursor(routineName, planId)
         val seconds = 60
+        var count: Long = 0
         while (cursor.moveToNext())
         {
             val exerciseName =
@@ -259,6 +260,7 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 cursor.getString(cursor.getColumnIndexOrThrow(PACE_COLUMN))
 
             val exercise = ExerciseDraft(
+                ++count,
                 exerciseName,
                 pause,
                 pauseUnit,
