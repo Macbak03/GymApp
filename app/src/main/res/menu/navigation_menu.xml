@@ -4,21 +4,20 @@
     <item
         android:id="@+id/buttonHome"
         android:title="Workout"
-        android:icon="@drawable/baseline_fitness_center_24"/>
+        android:icon="@drawable/home_icon_png"/>
 
     <item
         android:id="@+id/buttonTrainingPlans"
-        android:title="Training Plans"
-        android:icon="@drawable/plans_icon"/>
+        android:title="Plans"
+        android:icon="@drawable/plans_icon_png"/>
 
     <item
         android:id="@+id/buttonTrainingHistory"
-        android:title="Training History"
-        android:icon="@drawable/history_icon"/>
+        android:title="History"
+        android:icon="@drawable/history_icon_png"/>
 
     <item
         android:id="@+id/buttonSettings"
         android:title="Settings"
-        android:icon="@drawable/settings_icon"/>
-
+        android:icon="@drawable/settings_icon_png"/>
 </menu>

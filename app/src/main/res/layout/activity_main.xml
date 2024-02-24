@@ -19,9 +19,11 @@
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationBar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="75dp"
             android:layout_gravity="bottom"
-            app:itemBackground="?android:attr/windowBackground"
+            app:itemBackground="@drawable/background_color"
+            app:itemIconSize="35dp"
+            app:itemIconTint="@color/white"
             app:labelVisibilityMode="labeled"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

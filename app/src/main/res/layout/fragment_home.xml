@@ -24,6 +24,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:text="Current plan: "
+            android:textStyle="bold"
             android:textSize="25sp" />
 
         <Spinner
@@ -33,7 +34,6 @@
             android:layout_marginStart="15dp"
             android:layout_gravity="center"
             android:spinnerMode="dropdown"
-
             />
 
     </LinearLayout>
@@ -52,6 +52,7 @@
             android:layout_height="wrap_content"
             android:text="Last workout:"
             android:textSize="25sp"
+            android:textStyle="bold"
             android:layout_gravity="center"/>
 
         <androidx.cardview.widget.CardView
@@ -59,14 +60,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            app:cardCornerRadius="3dp"
+            android:clickable="true"
             app:cardElevation="3dp"
-            app:cardUseCompatPadding="true"
-            android:clickable="true">
+            app:cardUseCompatPadding="true">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/button_color">
 
                 <TextView
                     android:id="@+id/textViewLastTrainingPlanName"
@@ -74,35 +76,36 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:textSize="16sp"
                     android:text="Plan name"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textSize="16sp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="5dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="5dp">
 
                     <TextView
                         android:id="@+id/textViewLastTrainingDate"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         android:layout_weight="1"
                         android:text="Date"
-                        android:textSize="23sp"
                         android:textAlignment="textEnd"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="10dp"
-                        android:textStyle="bold"/>
+                        android:textSize="23sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/textViewLastTrainingRoutineName"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="10dp"
                         android:layout_weight="1"
-                        android:textSize="23sp"
                         android:text="Routine Name"
-                        android:layout_marginEnd="10dp"/>
+                        android:textSize="23sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -115,19 +118,20 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
         android:text="Return to workout"
-        android:textSize="23sp"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/buttonStartWorkout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayoutLastWorkout" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/buttonStartWorkout"
-        android:layout_width="350dp"
+        android:layout_width="match_parent"
+        android:layout_marginHorizontal="10dp"
         android:layout_height="70dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="100dp"
         android:text="Start Workout"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="@id/guideline"

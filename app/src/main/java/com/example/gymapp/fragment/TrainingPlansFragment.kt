@@ -173,7 +173,7 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
 
     @SuppressLint("InflateParams", "NotifyDataSetChanged")
     private fun showCreatePlanDialog() {
-        val builder = context?.let { AlertDialog.Builder(it) }
+        val builder = context?.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
         val dialogLayout = layoutInflater.inflate(R.layout.enter_name_edit_text, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.editTextName)
         editText.hint = "Plan name"

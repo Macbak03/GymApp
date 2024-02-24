@@ -34,6 +34,7 @@
         android:layout_height="0dp"
         android:background="@drawable/baseline_add_circle_24"
         android:contentDescription="add"
+        style="@style/CustomAddButtonColor"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"

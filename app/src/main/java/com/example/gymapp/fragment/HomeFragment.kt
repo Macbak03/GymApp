@@ -106,6 +106,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         observeViewModel()
 
         loadResult()
+        checkOnWorkoutTerminatePreferences()
         if (isUnsaved) {
             spinner.isEnabled = false
             buttonReturn.visibility = View.VISIBLE
@@ -114,7 +115,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
             buttonReturn.visibility = View.GONE
         }
 
-        checkOnWorkoutTerminatePreferences()
+
 
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         binding.buttonStartWorkout.setOnClickListener {
@@ -163,7 +164,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
             buttonReturn.visibility = View.GONE
             isUnsaved = false
         } else {
-            val planFound = "Current training plan: "
+            val planFound = "Current plan: "
             binding.textViewCurrentTrainingPlan.text = planFound
             spinner.visibility = View.VISIBLE
         }
@@ -181,8 +182,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
         if(!routineNameResult.isNullOrBlank())
         {
             isUnsaved = true
-            spinner.isEnabled = false
-            buttonReturn.visibility = View.VISIBLE
+            /*spinner.isEnabled = false
+            buttonReturn.visibility = View.VISIBLE*/
         }
     }
 
