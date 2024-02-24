@@ -35,6 +35,8 @@ class WorkoutActivity : AppCompatActivity() {
     private var routineName: String? = null
     private var planName: String? = null
 
+    private var isCorrectlyClosed = false
+
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             saveSeries()
@@ -93,6 +95,9 @@ class WorkoutActivity : AppCompatActivity() {
         saveSeries()
         val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
         prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString()).apply()
+        if(isCorrectlyClosed) {
+            prefs.edit().clear().apply()
+        }
     }
 
     private fun loadRoutine(planId: Int?) {
@@ -146,6 +151,7 @@ class WorkoutActivity : AppCompatActivity() {
                     )
                     Toast.makeText(this, "Workout Saved!", Toast.LENGTH_SHORT).show()
                     setResult(RESULT_OK)
+                    isCorrectlyClosed = true
                     finish()
                 } catch (exception: ValidationException) {
                     Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
@@ -215,6 +221,7 @@ class WorkoutActivity : AppCompatActivity() {
             this.setTitle("Are you sure you want to cancel this training? It won't be saved.")
             this.setPositiveButton("Yes") { _, _ ->
                 setResult(RESULT_OK)
+                isCorrectlyClosed = true
                 finish()
             }
             this.setNegativeButton("No") { _, _ -> }

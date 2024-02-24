@@ -8,4 +8,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="red">#913535</color>
+
+<!--    <color name="app_background">#180A0A</color>
+    <color name="button_color">#8F5050</color>
+    <color name="item_background">#AD3E3E</color>
+    <color name="dialog_background">#453434</color>-->
+
+    <color name="app_background">#333333</color>
+    <color name="button_color">#EF0000 </color>
+    <color name="item_background">#AD3E3E</color>
+    <color name="dialog_background">#453434</color>
 </resources>

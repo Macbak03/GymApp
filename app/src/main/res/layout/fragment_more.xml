@@ -49,9 +49,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:text="Edit"
-        android:textSize="20sp"
-        android:background="@drawable/button_background"
-        android:textColor="#D7D7D7"/>
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/moreButtonDelete"
@@ -62,8 +60,7 @@
         android:layout_marginTop="5dp"
         android:textSize="20sp"
         android:text="Delete"
-        android:textColor="@color/red"
-        android:background="@drawable/button_background"/>
+        android:textColor="@color/white" />
 
     <Button
         android:id="@+id/moreButtonCancel"
@@ -74,7 +71,5 @@
         android:layout_marginTop="15dp"
         android:text="Cancel"
         android:textSize="20sp"
-        android:background="@drawable/button_background"
-        android:layout_marginBottom="15dp"
-        android:textColor="#D7D7D7"/>
+        android:layout_marginBottom="15dp" />
 </LinearLayout>

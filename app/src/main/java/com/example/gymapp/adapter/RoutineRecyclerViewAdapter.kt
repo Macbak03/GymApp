@@ -181,13 +181,10 @@ class RoutineRecyclerViewAdapter(
         }
 
         holder.paceDescription.setOnClickListener{
-            showDescriptionDialog("Pace", "Pace refers to the speed at which an exercise or workout is performed. " +
-                    "It can vary depending on the type of exercise and the goals of the individual. " +
-                    "Maintaining a consistent pace can help regulate intensity and improve performance. \n" +
-                    "First number is eccentric phase - muscle stretching phase. \n" +
-                    "Second number is pause after eccentric phase. \n" +
-                    "Third number is concentric phase - the muscle shortens as it contracts. \n" +
-                    "The fourth number is pause after concentric phase. \n" +
+            showDescriptionDialog("Pace", "First number is eccentric phase - muscle stretching phase. \n\n" +
+                    "Second number is pause after eccentric phase. \n\n" +
+                    "Third number is concentric phase - the muscle shortens as it contracts. \n\n" +
+                    "The fourth number is pause after concentric phase. \n\n" +
                     "Everything is measured in seconds, \"x\" means as fast as you can \n" +
                     "For example pace 21x0 in bench press means you go down for 2 seconds, 1 second pause " +
                     "at the bottom, push as fast as you can to the top and immediately start to go down again.")
@@ -198,7 +195,7 @@ class RoutineRecyclerViewAdapter(
 
     private fun showDescriptionDialog(title: String, description: String)
     {
-        val builder = context.let { AlertDialog.Builder(it) }
+        val builder = context.let { AlertDialog.Builder(it,  R.style.YourAlertDialogTheme) }
         val dialogLayout = layoutInflater.inflate(R.layout.description_text_view, null)
         val descriptionTextView = dialogLayout.findViewById<TextView>(R.id.textViewDescription)
         descriptionTextView.text = description
