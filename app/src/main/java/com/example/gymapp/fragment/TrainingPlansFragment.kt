@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -177,7 +178,7 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
     @SuppressLint("InflateParams", "NotifyDataSetChanged")
     private fun showCreatePlanDialog() {
         val builder = context?.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
-        val dialogLayout = layoutInflater.inflate(R.layout.enter_name_edit_text, null)
+        val dialogLayout = layoutInflater.inflate(R.layout.edit_text_dialog_layout, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.editTextName)
         editText.hint = "Plan name"
 
@@ -212,10 +213,15 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun showDeleteDialog(position: Int) {
-        val builder = context?.let { AlertDialog.Builder(it) }
+        val builder = context?.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
+        val dialogLayout = layoutInflater.inflate(R.layout.text_view_dialog_layout, null)
+        val textView = dialogLayout.findViewById<TextView>(R.id.textViewDialog)
+        val message = "${trainingPlans[position].name}?"
+        textView.text = message
         with(builder) {
-            this?.setTitle("Are you sure you want to delete ${trainingPlans[position].name}?")
+            this?.setTitle("Are you sure you want to delete")
             this?.setPositiveButton("Yes") { _, _ ->
                 trainingPlansRecyclerViewAdapter.deleteSinglePlan(position)
                 plansDataBase.deletePlans(trainingPlansRecyclerViewAdapter.getDeletedPlans())
@@ -223,6 +229,7 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
             this?.setNegativeButton("Cancel") { _, _ ->
                 trainingPlansRecyclerViewAdapter.notifyItemChanged(position)
             }
+            this?.setView(dialogLayout)
             this?.show()
         }
     }
