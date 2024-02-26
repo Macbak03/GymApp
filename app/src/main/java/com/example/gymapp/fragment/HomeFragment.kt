@@ -22,9 +22,11 @@ import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.activity.WorkoutActivity
+import com.example.gymapp.adapter.SpinnerArrayAdapter
 import com.example.gymapp.adapter.ViewPagerAdapter
 import com.example.gymapp.animation.FragmentAnimator
 import com.example.gymapp.databinding.FragmentHomeBinding
+import com.example.gymapp.layout.DynamicSizeSpinner
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.persistence.PlansDataBaseHelper
@@ -39,7 +41,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
-    private lateinit var spinner: Spinner
+    private lateinit var spinner: DynamicSizeSpinner
     private lateinit var buttonReturn: Button
     private val SPINNER_PREF_KEY = "selectedSpinnerItem"
 
@@ -182,8 +184,6 @@ class HomeFragment : Fragment(), FragmentAnimator {
         if(!routineNameResult.isNullOrBlank())
         {
             isUnsaved = true
-            /*spinner.isEnabled = false
-            buttonReturn.visibility = View.VISIBLE*/
         }
     }
 
@@ -204,8 +204,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
     }
 
     private fun initSpinner() {
-        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_header, trainingPlansNames)
-        adapter.setDropDownViewResource(R.layout.spinner_item)
+        val adapter = SpinnerArrayAdapter(requireContext(), R.layout.spinner_header, trainingPlansNames)
+        //adapter.setDropDownViewResource(R.layout.spinner_item)
         spinner.adapter = adapter
 
         val savedSelection = loadSpinnerSelection()

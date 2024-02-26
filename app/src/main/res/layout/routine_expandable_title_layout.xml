@@ -35,8 +35,8 @@
             android:id="@+id/imageButtonMove"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/baseline_drag_indicator_24"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/drag_icon4"
             android:contentDescription="move" />
 </LinearLayout>

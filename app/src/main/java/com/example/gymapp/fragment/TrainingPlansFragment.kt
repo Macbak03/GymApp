@@ -143,8 +143,11 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.adapter = trainingPlansRecyclerViewAdapter
 
+        val scaleAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.add_button_animation)
+
         binding.buttonCreateTrainingPlan.setOnClickListener()
         {
+            it.startAnimation(scaleAnimation)
             showCreatePlanDialog()
         }
 

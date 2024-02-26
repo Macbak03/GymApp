@@ -9,7 +9,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:orientation="vertical"
@@ -19,22 +19,23 @@
 
         <TextView
             android:id="@+id/textViewCurrentTrainingPlan"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:textAlignment="center"
             android:text="Current plan: "
             android:textStyle="bold"
             android:textSize="25sp" />
 
-        <Spinner
+        <com.example.gymapp.layout.DynamicSizeSpinner
             android:id="@+id/spinnerTrainingPlans"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:layout_marginStart="15dp"
+            android:layout_marginStart="25dp"
             android:layout_gravity="center"
             android:spinnerMode="dropdown"
-            />
+            android:contentDescription="trainingPlansSpinner"/>
 
     </LinearLayout>
 
@@ -119,9 +120,10 @@
         android:layout_height="70dp"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginHorizontal="70dp"
         android:layout_marginBottom="20dp"
         android:text="Return to workout"
-        android:textSize="30sp"
+        android:textSize="23sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonStartWorkout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -129,11 +131,11 @@
     <Button
         android:id="@+id/buttonStartWorkout"
         android:layout_width="match_parent"
-        android:layout_marginHorizontal="10dp"
+        android:layout_marginHorizontal="70dp"
         android:layout_height="70dp"
         android:layout_marginBottom="100dp"
         android:text="Start Workout"
-        android:textSize="30sp"
+        android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

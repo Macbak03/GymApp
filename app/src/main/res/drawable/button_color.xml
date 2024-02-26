@@ -1,13 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <gradient
-        android:startColor="#d40101"
-        android:centerColor="#ef0000"
-        android:endColor="#ff6f67"
-        android:angle="90"
-        android:centerX="0.75"
-        android:centerY="0.5" />
-    <corners
-        android:radius="5dp"/>
-</shape>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#00CCCCCC" /> <!-- Shadow color -->
+            <corners android:radius="5dp" /> <!-- Corner radius of button -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#565b60"
+                android:centerColor="#000f18"
+                android:endColor="#283840"
+                android:angle="90"
+                android:centerX="0.008"
+                android:centerY="0.5" />
+            <corners android:radius="5dp" /> <!-- Corner radius of button -->
+        </shape>
+    </item>
+    <!-- ... add more items if you want more layers to shadow for depth effect ... -->
+
+    <!-- Button Foreground -->
+    <item android:bottom="5dp" android:right="2dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#283840"
+                android:centerColor="#022134"
+                android:endColor="#283840"
+                android:angle="90"
+                android:centerX="0.7"
+                android:centerY="0.5" />
+            <corners
+                android:radius="5dp"/>
+            <corners android:radius="3dp" /> <!-- Corner radius of button -->
+        </shape>
+    </item>
+</layer-list>
