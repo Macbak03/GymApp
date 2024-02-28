@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.example.gymapp.R
@@ -84,9 +85,13 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
 
     private fun showDeleteDialog(name: String?, position: Int?) {
         if (position != null) {
-            val builder = context?.let { AlertDialog.Builder(it) }
+            val builder = context?.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
+            val dialogLayout = layoutInflater.inflate(R.layout.text_view_dialog_layout, null)
+            val textView = dialogLayout.findViewById<TextView>(R.id.textViewDialog)
+            val message = "$name?"
+            textView.text = message
             with(builder) {
-                this?.setTitle("Are you sure you want to delete $name?")
+                this?.setTitle("Are you sure you want to delete")
                 this?.setPositiveButton("Yes") { _, _ ->
                     trainingPlansRecyclerViewAdapter.deleteSinglePlan(position)
                     plansDataBase.deletePlans(trainingPlansRecyclerViewAdapter.getDeletedPlans())
@@ -94,6 +99,7 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
                 }
                 this?.setNegativeButton("Cancel") { _, _ ->
                 }
+                this?.setView(dialogLayout)
                 this?.show()
             }
         }
@@ -104,8 +110,8 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
     private fun showEditDialog(name: String?, position: Int?) {
         val planId = plansDataBase.getPlanId(name)
 
-        val builder = context?.let { AlertDialog.Builder(it) }
-        val dialogLayout = layoutInflater.inflate(R.layout.enter_name_edit_text, null)
+        val builder = context?.let { AlertDialog.Builder(it,R.style.YourAlertDialogTheme) }
+        val dialogLayout = layoutInflater.inflate(R.layout.edit_text_dialog_layout, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.editTextName)
         editText.hint = "Plan name"
         editText.setText(name)
@@ -139,7 +145,7 @@ class TrainingPlansMoreFragment(private val trainingPlansRecyclerViewAdapter: Tr
     }
 
     private fun showUpdatePlanNameInHistoryQuery(oldName: String?, newName: String?) {
-            val builder = context?.let { AlertDialog.Builder(it) }
+            val builder = context?.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
             with(builder) {
                 this?.setTitle("Do you want to also change plan's name in history?")
                 this?.setPositiveButton("Yes") { _, _ ->

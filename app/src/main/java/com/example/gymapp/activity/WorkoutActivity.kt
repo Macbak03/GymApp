@@ -11,6 +11,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.Worker
+import androidx.work.WorkerParameters
+import com.example.gymapp.R
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
 import com.example.gymapp.databinding.ActivityWorkoutBinding
 import com.example.gymapp.exception.ValidationException
@@ -19,9 +24,14 @@ import com.example.gymapp.fragment.StartWorkoutMenuFragment
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
+import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.io.File
+import java.io.FileWriter
 
 class WorkoutActivity : AppCompatActivity() {
 
@@ -36,12 +46,20 @@ class WorkoutActivity : AppCompatActivity() {
     private var planName: String? = null
 
     private var isCorrectlyClosed = false
+    private var isTerminated = true
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            saveSeries()
+           /* val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
+            WorkManager.getInstance(this@WorkoutActivity).enqueue(workRequest)*/
+            //saveSeries()
+            save()
+            isTerminated = false
             val resultIntent = Intent()
             resultIntent.putExtra(HomeFragment.ROUTINE_NAME, binding.textViewCurrentWorkout.text)
+            val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
+            prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
+                .apply()
             setResult(RESULT_CANCELED, resultIntent)
             isEnabled = false
             onBackPressedDispatcher.onBackPressed()
@@ -83,7 +101,7 @@ class WorkoutActivity : AppCompatActivity() {
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
-       ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             view.updatePadding(bottom = bottom)
             insets
@@ -92,11 +110,16 @@ class WorkoutActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        saveSeries()
         val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
-        prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString()).apply()
-        if(isCorrectlyClosed) {
+        if (isCorrectlyClosed) {
             prefs.edit().clear().apply()
+        } else if (isTerminated) {
+            prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
+                .apply()
+/*            val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
+            WorkManager.getInstance(this).enqueue(workRequest)*/
+            //saveSeries()
+            save()
         }
     }
 
@@ -130,9 +153,9 @@ class WorkoutActivity : AppCompatActivity() {
             }
         }
         val isUnsaved = intent.getBooleanExtra(HomeFragment.IS_UNSAVED, false)
-        if(isUnsaved)
-        {
-            restoreSeries()
+        if (isUnsaved) {
+            //restoreSeries()
+            restore()
         }
 
     }
@@ -152,6 +175,7 @@ class WorkoutActivity : AppCompatActivity() {
                     Toast.makeText(this, "Workout Saved!", Toast.LENGTH_SHORT).show()
                     setResult(RESULT_OK)
                     isCorrectlyClosed = true
+                    isTerminated = false
                     finish()
                 } catch (exception: ValidationException) {
                     Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
@@ -172,13 +196,11 @@ class WorkoutActivity : AppCompatActivity() {
                 val keyReps = "child_${groupPosition}_${childPosition}_reps"
                 val keyLoad = "child_${groupPosition}_${childPosition}_load"
 
-                // Retrieve the values for each child
                 val reps =
                     workoutExpandableListAdapter.getRepsFromEditText(groupPosition, childPosition)
                 val load =
                     workoutExpandableListAdapter.getWeightFromEditText(groupPosition, childPosition)
 
-                // Save the values to SharedPreferences
                 editor.putString(keyReps, reps)
                 editor.putString(keyLoad, load)
             }
@@ -189,23 +211,62 @@ class WorkoutActivity : AppCompatActivity() {
         editor.apply()
     }
 
+    private fun save() {
+        val workoutSession = mutableListOf<WorkoutSessionSet>()
+        for (groupPosition in 0 until workoutExpandableListAdapter.groupCount) {
+            val note = workoutExpandableListAdapter.getNoteFromEditText(groupPosition)
+            for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(
+                groupPosition
+            )) {
+                val reps =
+                    workoutExpandableListAdapter.getRepsFromEditText(groupPosition, childPosition)
+                val load =
+                    workoutExpandableListAdapter.getWeightFromEditText(groupPosition, childPosition)
+
+                workoutSession.add(
+                    WorkoutSessionSet(
+                        groupPosition,
+                        childPosition,
+                        reps,
+                        load,
+                        note
+                    )
+                )
+            }
+        }
+        if (workoutSession.isNotEmpty()) {
+            val gson = Gson()
+            val jsonData = gson.toJson(workoutSession)
+
+            try {
+                val file = File(applicationContext.filesDir, "workout_session.json")
+                val writer = FileWriter(file, false)
+                writer.write(jsonData)
+                writer.close()
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+            }
+        }
+
+
+    }
+
     private fun restoreSeries() {
         val sharedPreferences = getPreferences(Context.MODE_PRIVATE)
 
         for (groupPosition in 0 until workoutExpandableListAdapter.groupCount) {
             val keyNote = "child_${groupPosition}_note"
-            for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(groupPosition)) {
+            for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(
+                groupPosition
+            )) {
                 val keyReps = "child_${groupPosition}_${childPosition}_reps"
                 val keyLoad = "child_${groupPosition}_${childPosition}_load"
 
-                // Retrieve the saved values from SharedPreferences
                 val reps = sharedPreferences.getString(keyReps, "")
                 val load = sharedPreferences.getString(keyLoad, "")
 
-                // Update the corresponding WorkoutSeriesDraft values
                 workout[groupPosition].second[childPosition].actualReps = reps
-                if(load != "")
-                {
+                if (load != "") {
                     workout[groupPosition].second[childPosition].load = load
                 }
             }
@@ -215,13 +276,39 @@ class WorkoutActivity : AppCompatActivity() {
         }
     }
 
+    private fun restore() {
+        try {
+            val file = File(applicationContext.filesDir, "workout_session.json")
+            val jsonContent = file.readText()
+
+            val gson = Gson()
+            val type = object : TypeToken<List<WorkoutSessionSet>>() {}.type
+            val workoutSession: List<WorkoutSessionSet> = gson.fromJson(jsonContent, type)
+
+            if (workoutSession.isNotEmpty()) {
+                for (workoutSessionSet in workoutSession) {
+                    val groupPosition = workoutSessionSet.groupId
+                    val childPosition = workoutSessionSet.childId
+                    workout[groupPosition].first.note = workoutSessionSet.note
+                    workout[groupPosition].second[childPosition].actualReps =
+                        workoutSessionSet.actualReps
+                    workout[groupPosition].second[childPosition].load = workoutSessionSet.load
+                }
+                workoutExpandableListAdapter.notifyDataSetChanged()
+            }
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+        }
+    }
+
     private fun showCancelDialog() {
-        val builder = this.let { AlertDialog.Builder(it) }
+        val builder = this.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
         with(builder) {
             this.setTitle("Are you sure you want to cancel this training? It won't be saved.")
             this.setPositiveButton("Yes") { _, _ ->
                 setResult(RESULT_OK)
                 isCorrectlyClosed = true
+                isTerminated = false
                 finish()
             }
             this.setNegativeButton("No") { _, _ -> }
@@ -229,6 +316,12 @@ class WorkoutActivity : AppCompatActivity() {
         }
     }
 
-
+    inner class SaveSeriesWorker(appContext: Context, workerParams: WorkerParameters) :
+        Worker(appContext, workerParams) {
+        override fun doWork(): Result {
+            //saveSeries()
+            return Result.success()
+        }
+    }
 
 }

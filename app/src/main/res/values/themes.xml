@@ -70,10 +70,10 @@
     <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
-
     <style name="CustomCardView" parent="CardView">
-        <item name="cardBackgroundColor">@color/red</item>
+        <item name="cardBackgroundColor">#00CCCCCC</item>
         <item name="cardCornerRadius">5dp</item>
+        <item name="android:elevation">200dp</item>
     </style>
 
 <!--    <style name="CustomRecyclerViewItem">
@@ -83,7 +83,7 @@
     </style>-->
 
     <style name="CustomAddButtonColor">
-        <item name="android:backgroundTint">#ef0000</item>
+        <item name="android:backgroundTint">#8B8B8B</item>
     </style>
 
     <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">

@@ -3,6 +3,7 @@ package com.example.gymapp.activity
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
@@ -170,7 +171,10 @@ class CreateRoutineActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = routineRecyclerViewAdapter
 
+        val scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.add_button_animation)
+
         binding.buttonAddExercise.setOnClickListener {
+            it.startAnimation(scaleAnimation)
             addExercise()
         }
         binding.buttonSaveRoutine.setOnClickListener()
