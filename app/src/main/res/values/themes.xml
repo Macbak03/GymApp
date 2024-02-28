@@ -1,17 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.GymApp" parent="@style/Theme.AppCompat.NoActionBar">
+    <!--Dark blue theme-->
+
+    <style name="Theme.DarkBlue" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="android:alertDialogTheme">@style/YourAlertDialogTheme</item>
 
         <item name="android:windowBackground">@drawable/background_color</item>
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/app_background</item>
 
-        <item name="cardViewStyle">@style/CustomCardView</item>
-        <item name="buttonStyle">@style/CustomButtonStyle</item>
-        <item name="android:textViewStyle">@style/CustomTextViewStyle</item>
+        <item name="bottomNavigationStyle">@style/DarkBlueCustomBottomNavigationStyle</item>
+        <item name="cardViewStyle">@style/DarkBlueCustomCardView</item>
+        <item name="buttonStyle">@style/DarkBlueCustomButtonStyle</item>
+        <item name="android:textViewStyle">@style/DarkBlueCustomTextViewStyle</item>
+
     </style>
+
+    <style name="DarkBlueCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
+        <item name="android:buttonStyle">@style/DarkBlueCustomButtonStyle</item>
+    </style>
+
+    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="DarkBlueCustomCardView" parent="CardView">
+        <item name="cardBackgroundColor">@color/cardBackgroundColor</item>
+        <item name="cardCornerRadius">5dp</item>
+        <item name="android:elevation">200dp</item>
+    </style>
+
+    <style name="DarkBlueCustomAddButtonColor">
+        <item name="android:backgroundTint">@color/addButtonColor</item>
+    </style>
+
+    <style name="DarkBlueCustomButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_color</item>
+    </style>
+
+    <style name="DarkBlueCustomTextViewStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="DarkBlueYourAlertDialogTheme">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+    </style>
+
+    <style name="DarkBlueCustomBottomNavigationStyle">
+        <item name="itemBackground">@drawable/background_color</item>
+    </style>
+
+    <!--Dark blue theme-->
+
+
+    <!--Dark theme-->
+
+    <style name="Theme.Dark" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="android:alertDialogTheme">@style/YourAlertDialogTheme</item>
+
+        <item name="android:windowBackground">@drawable/dark_background_color</item>
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/app_background</item>
+
+        <item name="bottomNavigationStyle">@style/DarkCustomBottomNavigationStyle</item>
+        <item name="cardViewStyle">@style/DarkCustomCardView</item>
+        <item name="buttonStyle">@style/DarkCustomButtonStyle</item>
+        <item name="android:textViewStyle">@style/DarkCustomTextViewStyle</item>
+    </style>
+
+    <style name="DarkCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/DarkCustomBottomSheetStyle</item>
+        <item name="android:buttonStyle">@style/DarkCustomButtonStyle</item>
+    </style>
+
+    <style name="DarkCustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+    <style name="DarkCustomCardView" parent="CardView">
+        <item name="cardBackgroundColor">@color/cardBackgroundColor</item>
+        <item name="cardCornerRadius">5dp</item>
+        <item name="android:elevation">200dp</item>
+    </style>
+
+    <style name="DarkCustomAddButtonColor">
+        <item name="android:backgroundTint">#8B8B8B</item>
+    </style>
+
+    <style name="DarkCustomButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/dark_button_color</item>
+    </style>
+
+    <style name="DarkCustomTextViewStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="DarkCustomBottomNavigationStyle">
+        <item name="itemBackground">@color/bottomNavigationBarColor</item>
+    </style>
+
+    <!--Dark theme-->
+
+
+    <style name="YourAlertDialogTheme">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+    </style>
+
 
     <style name="routine_text_view_item" parent="@android:style/TextAppearance.Small">
         <item name="android:textSize">20sp</item>
@@ -62,46 +169,5 @@
         <item name="android:layout_weight">1</item>
     </style>
 
-    <style name="CustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/CustomBottomSheetStyle</item>
-        <item name="android:buttonStyle">@style/CustomButtonStyle</item>
-    </style>
-
-    <style name="CustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@android:color/transparent</item>
-    </style>
-    <style name="CustomCardView" parent="CardView">
-        <item name="cardBackgroundColor">#00CCCCCC</item>
-        <item name="cardCornerRadius">5dp</item>
-        <item name="android:elevation">200dp</item>
-    </style>
-
-<!--    <style name="CustomRecyclerViewItem">
-        <item name="android:background">@drawable/button_color</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_width">match_parent</item>
-    </style>-->
-
-    <style name="CustomAddButtonColor">
-        <item name="android:backgroundTint">#8B8B8B</item>
-    </style>
-
-    <style name="CustomButtonStyle" parent="Widget.AppCompat.Button">
-        <item name="android:background">@drawable/button_color</item>
-    </style>
-
-    <style name="CustomTextViewStyle" parent="Widget.AppCompat.TextView">
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="YourAlertDialogTheme">
-        <item name="android:windowFrame">@null</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
-        <item name="android:windowBackground">@drawable/dialog_background</item>
-        <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
-        <item name="android:colorBackgroundCacheHint">@null</item>
-    </style>
 
 </resources>

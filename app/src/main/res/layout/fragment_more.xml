@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bottom_dialog_sheet_background">
+    android:background="@drawable/dark_bottom_dialog_sheet_background">
 
     <ImageView
         android:layout_width="60dp"
@@ -50,7 +50,7 @@
         android:layout_marginTop="10dp"
         android:text="Edit"
         android:textSize="20sp"
-        android:background="@drawable/button_color"
+        android:background="@drawable/dark_button_color"
         android:textColor="#D7D7D7"/>
 
     <Button
@@ -63,7 +63,7 @@
         android:textSize="20sp"
         android:text="Delete"
         android:textColor="@color/red"
-        android:background="@drawable/button_color"/>
+        android:background="@drawable/dark_button_color"/>
 
     <Button
         android:id="@+id/moreButtonCancel"
@@ -74,7 +74,7 @@
         android:layout_marginTop="15dp"
         android:text="Cancel"
         android:textSize="20sp"
-        android:background="@drawable/button_color"
+        android:background="@drawable/dark_button_color"
         android:layout_marginBottom="15dp"
         android:textColor="#D7D7D7"/>
 </LinearLayout>
