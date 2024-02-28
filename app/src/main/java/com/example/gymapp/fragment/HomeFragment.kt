@@ -93,7 +93,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         )
         trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
         if (!plansDataBase.isTableNotEmpty()) {
-            val noneTrainingPlanFound = "Go to training plans section to create your first plan"
+            val noneTrainingPlanFound = "Create your first plan"
             binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFound
             spinner.visibility = View.GONE
         } else {
@@ -115,6 +115,11 @@ class HomeFragment : Fragment(), FragmentAnimator {
         } else {
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE
+        }
+
+        binding.textViewCurrentTrainingPlan.isClickable = true
+        binding.textViewCurrentTrainingPlan.setOnClickListener {
+            openTrainingPlansFragment()
         }
 
 
@@ -157,18 +162,20 @@ class HomeFragment : Fragment(), FragmentAnimator {
             PlansDataBaseHelper.PLAN_NAME_COLUMN,
             PlansDataBaseHelper.PLAN_ID_COLUMN
         )
+        val textView = binding.textViewCurrentTrainingPlan
         trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
         if (!plansDataBase.isTableNotEmpty()) {
-            val noneTrainingPlanFound = "Go to training plans section to create your first plan"
-            binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFound
-            binding.textViewCurrentTrainingPlan.background = ContextCompat.getDrawable(requireContext(), R.drawable.button_color)
+            val noneTrainingPlanFound = "Create your first plan"
+
+            textView.text = noneTrainingPlanFound
+            //textView.background = ContextCompat.getDrawable(requireContext(), R.drawable.button_color)
             spinner.visibility = View.GONE
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE
             isUnsaved = false
         } else {
-            val planFound = "Current plan: "
-            binding.textViewCurrentTrainingPlan.text = planFound
+            val planFound = "Current plan:"
+            textView.text = planFound
             spinner.visibility = View.VISIBLE
         }
         initSpinner()
@@ -256,6 +263,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
     }
 
     private fun openTrainingPlansFragment() {
+
         val viewPager = requireActivity().findViewById<ViewPager2>(R.id.viewPager)
         val adapter = ViewPagerAdapter(requireActivity())
         viewPager.adapter = adapter
