@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,7 +31,7 @@ import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import java.util.Collections
 
 
-class CreateRoutineActivity : AppCompatActivity() {
+class CreateRoutineActivity : BaseActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
 
     private lateinit var viewModel: RoutineRecyclerViewViewModel
@@ -42,6 +43,7 @@ class CreateRoutineActivity : AppCompatActivity() {
     private val plansDataBase = PlansDataBaseHelper(this, null)
     private var exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 0
+    private var defaultWeightUnit =  WeightUnit.kg
 
     private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,ItemTouchHelper.RIGHT ) {
         override fun onMove(
@@ -144,6 +146,8 @@ class CreateRoutineActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
+        loadUnitSettings()
         super.onCreate(savedInstanceState)
         binding = ActivityCreateRoutineBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -218,7 +222,7 @@ class CreateRoutineActivity : AppCompatActivity() {
             "",
             TimeUnit.min,
             "",
-            WeightUnit.kg,
+            defaultWeightUnit,
             "",
             "",
             "",
@@ -274,6 +278,16 @@ class CreateRoutineActivity : AppCompatActivity() {
                 Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun loadUnitSettings(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        when(sharedPreferences.getString("unit", ""))
+        {
+            "kg" -> defaultWeightUnit = WeightUnit.kg
+            "lbs" -> defaultWeightUnit = WeightUnit.lbs
+        }
+
     }
 
 }

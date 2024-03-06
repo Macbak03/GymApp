@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import com.example.gymapp.R
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
+import com.example.gymapp.model.workout.WorkoutSessionSet
 
 class WorkoutExpandableLayout(
     private val context: Context,
@@ -22,6 +23,8 @@ class WorkoutExpandableLayout(
     private val noteEditText: EditText
     private var workoutSeriesDraft: WorkoutSeriesDraft? = null
     private var workoutExerciseDraft: WorkoutExerciseDraft? = null
+    private val workoutSessionSet = WorkoutSessionSet(-1,-1,"","","")
+    private var workoutSession = ArrayList<Pair<Int, List<WorkoutSessionSet>>>()
 
     init {
         inflate(context, R.layout.workout_expandable_layout, this)
@@ -32,6 +35,10 @@ class WorkoutExpandableLayout(
         repsEditText = findViewById(R.id.editTextWorkoutReps)
         weightEditText = findViewById(R.id.editTextWorkoutWeight)
         noteEditText = findViewById(R.id.editTextNote)
+
+        val groupId = workoutSessionSet.groupId
+        val childId = workoutSessionSet.childId
+
         repsEditText.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int){
             }
@@ -40,6 +47,9 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
+                //workoutSession[groupId].second[childId].actualReps = s.toString()
+                workoutSessionSet.actualReps = s.toString()
+
                 workoutSeriesDraft?.actualReps = s.toString()
                 workoutSeriesDraft?.wasModified = true
             }
@@ -53,6 +63,9 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
+                //workoutSession[groupId].second[childId].load = s.toString()
+                workoutSessionSet.load = s.toString()
+
                 workoutSeriesDraft?.load = s.toString()
                 workoutSeriesDraft?.wasModified = true
             }
@@ -65,6 +78,9 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
+                //workoutSession[groupId].second[childId].note = s.toString()
+                workoutSessionSet.note = s.toString()
+
                 workoutExerciseDraft?.note = s.toString()
             }
 
@@ -96,6 +112,23 @@ class WorkoutExpandableLayout(
 
     fun getWorkoutSeriesDraft(): WorkoutSeriesDraft?{
         return this.workoutSeriesDraft
+    }
+
+    fun getWorkoutSessionSet(): WorkoutSessionSet{
+        return this.workoutSessionSet
+    }
+
+    fun setWorkoutSessionSetIds(groupId: Int, childId: Int){
+        workoutSessionSet.groupId = groupId
+        workoutSessionSet.childId = childId
+    }
+
+    fun setWorkoutSession(workoutSession : ArrayList<Pair<Int, List<WorkoutSessionSet>>>){
+        this.workoutSession = workoutSession
+    }
+
+    fun getWorkoutSession(): List<Pair<Int, List<WorkoutSessionSet>>>{
+        return workoutSession
     }
 
     fun getNoteEditText(): EditText{
