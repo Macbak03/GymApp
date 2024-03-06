@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity

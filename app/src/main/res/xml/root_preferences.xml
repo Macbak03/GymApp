@@ -1,14 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <SwitchPreferenceCompat
-        app:key="notifications"
-        app:title="Enable message notifications"/>
+    <PreferenceCategory app:title="App settings" app:icon="@drawable/baseline_settings_24">
+        <ListPreference
+            app:defaultValue="Dark"
+            app:key="theme"
+            app:title="App theme"
+            app:useSimpleSummaryProvider="true"
+            android:defaultValue="Dark"
+            app:entries="@array/themes_entries"
+            app:entryValues="@array/themes_values" />
+    </PreferenceCategory>
+
+    <ListPreference
+        app:key="unit"
+        app:title="Weight unit"
+        app:defaultValue="kg"
+        app:useSimpleSummaryProvider="true"
+        app:entries="@array/units_entries"
+        app:entryValues="@array/units_values"/>
+
+<PreferenceCategory app:title="Feedback" app:icon="@drawable/baseline_feedback_24">
 
     <Preference
         app:key="feedback"
-        app:title="Send feedback"
-        app:summary="Report technical issues or suggest new features"/>
+        app:summary="Report technical issues or suggest new features"
+        app:title="Send feedback" />
+
+</PreferenceCategory>
 
 </PreferenceScreen>

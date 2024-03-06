@@ -68,7 +68,8 @@
 
         <item name="android:windowBackground">@drawable/dark_background_color</item>
         <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/app_background</item>
+        <item name="colorPrimaryDark">@color/bottomNavigationBarColor</item>
+        <item name="colorAccent">#3A539E</item>
 
         <item name="bottomNavigationStyle">@style/DarkCustomBottomNavigationStyle</item>
         <item name="cardViewStyle">@style/DarkCustomCardView</item>

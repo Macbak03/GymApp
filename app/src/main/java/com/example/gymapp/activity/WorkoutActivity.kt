@@ -2,7 +2,6 @@ package com.example.gymapp.activity
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ExpandableListView
 import android.widget.Toast
@@ -11,8 +10,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.example.gymapp.R
@@ -21,6 +18,8 @@ import com.example.gymapp.databinding.ActivityWorkoutBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.fragment.HomeFragment
 import com.example.gymapp.fragment.StartWorkoutMenuFragment
+import com.example.gymapp.model.CustomPairDeserializer
+import com.example.gymapp.model.WorkoutSessionSetDeserializer
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
@@ -29,11 +28,12 @@ import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.io.FileWriter
 
-class WorkoutActivity : AppCompatActivity() {
+class WorkoutActivity : BaseActivity() {
 
     private lateinit var binding: ActivityWorkoutBinding
 
@@ -50,10 +50,11 @@ class WorkoutActivity : AppCompatActivity() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-           /* val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
-            WorkManager.getInstance(this@WorkoutActivity).enqueue(workRequest)*/
+            /* val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
+             WorkManager.getInstance(this@WorkoutActivity).enqueue(workRequest)*/
             //saveSeries()
-            save()
+            //save()
+            workoutExpandableListAdapter.saveToFile()
             isTerminated = false
             val resultIntent = Intent()
             resultIntent.putExtra(HomeFragment.ROUTINE_NAME, binding.textViewCurrentWorkout.text)
@@ -67,14 +68,10 @@ class WorkoutActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityWorkoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        expandableListView = binding.expandableListViewWorkout
-        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout)
-        expandableListView.setAdapter(workoutExpandableListAdapter)
-
 
         if (intent.hasExtra(StartWorkoutMenuFragment.ROUTINE_NAME) && intent.hasExtra(
                 StartWorkoutMenuFragment.PLAN_NAME
@@ -89,6 +86,13 @@ class WorkoutActivity : AppCompatActivity() {
                 loadRoutine(planId)
             }
         }
+
+
+        expandableListView = binding.expandableListViewWorkout
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout)
+        expandableListView.setAdapter(workoutExpandableListAdapter)
+
+
         binding.buttonSaveWorkout.setOnClickListener {
             val customDate = CustomDate()
             val date = customDate.getDate()
@@ -108,6 +112,7 @@ class WorkoutActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onStop() {
         super.onStop()
         val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
@@ -116,10 +121,11 @@ class WorkoutActivity : AppCompatActivity() {
         } else if (isTerminated) {
             prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
                 .apply()
-/*            val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
-            WorkManager.getInstance(this).enqueue(workRequest)*/
+            /*            val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
+                        WorkManager.getInstance(this).enqueue(workRequest)*/
             //saveSeries()
-            save()
+            //save()
+            workoutExpandableListAdapter.saveToFile()
         }
     }
 
@@ -148,16 +154,13 @@ class WorkoutActivity : AppCompatActivity() {
                         false
                     )
                 }
-                workout.add(workoutExpandableListAdapter.groupCount, Pair(exercise, seriesList))
-                workoutExpandableListAdapter.notifyDataSetChanged()
+                workout.add(workout.size, Pair(exercise, seriesList))
             }
         }
         val isUnsaved = intent.getBooleanExtra(HomeFragment.IS_UNSAVED, false)
         if (isUnsaved) {
-            //restoreSeries()
             restore()
         }
-
     }
 
     private fun saveWorkoutToHistory(date: String) {
@@ -184,56 +187,8 @@ class WorkoutActivity : AppCompatActivity() {
         }
     }
 
-    private fun saveSeries() {
-        val sharedPreferences = getPreferences(Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-
-        for (groupPosition in 0 until workoutExpandableListAdapter.groupCount) {
-            val keyNote = "child_${groupPosition}_note"
-            for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(
-                groupPosition
-            )) {
-                val keyReps = "child_${groupPosition}_${childPosition}_reps"
-                val keyLoad = "child_${groupPosition}_${childPosition}_load"
-
-                val reps =
-                    workoutExpandableListAdapter.getRepsFromEditText(groupPosition, childPosition)
-                val load =
-                    workoutExpandableListAdapter.getWeightFromEditText(groupPosition, childPosition)
-
-                editor.putString(keyReps, reps)
-                editor.putString(keyLoad, load)
-            }
-            val note = workoutExpandableListAdapter.getNoteFromEditText(groupPosition)
-            editor.putString(keyNote, note)
-        }
-
-        editor.apply()
-    }
-
     private fun save() {
-        val workoutSession = mutableListOf<WorkoutSessionSet>()
-        for (groupPosition in 0 until workoutExpandableListAdapter.groupCount) {
-            val note = workoutExpandableListAdapter.getNoteFromEditText(groupPosition)
-            for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(
-                groupPosition
-            )) {
-                val reps =
-                    workoutExpandableListAdapter.getRepsFromEditText(groupPosition, childPosition)
-                val load =
-                    workoutExpandableListAdapter.getWeightFromEditText(groupPosition, childPosition)
-
-                workoutSession.add(
-                    WorkoutSessionSet(
-                        groupPosition,
-                        childPosition,
-                        reps,
-                        load,
-                        note
-                    )
-                )
-            }
-        }
+        val workoutSession = workoutExpandableListAdapter.getWorkoutSession()
         if (workoutSession.isNotEmpty()) {
             val gson = Gson()
             val jsonData = gson.toJson(workoutSession)
@@ -247,46 +202,26 @@ class WorkoutActivity : AppCompatActivity() {
                 exception.printStackTrace()
             }
         }
-
-
     }
 
-    private fun restoreSeries() {
-        val sharedPreferences = getPreferences(Context.MODE_PRIVATE)
-
-        for (groupPosition in 0 until workoutExpandableListAdapter.groupCount) {
-            val keyNote = "child_${groupPosition}_note"
-            for (childPosition in 0 until workoutExpandableListAdapter.getChildrenCount(
-                groupPosition
-            )) {
-                val keyReps = "child_${groupPosition}_${childPosition}_reps"
-                val keyLoad = "child_${groupPosition}_${childPosition}_load"
-
-                val reps = sharedPreferences.getString(keyReps, "")
-                val load = sharedPreferences.getString(keyLoad, "")
-
-                workout[groupPosition].second[childPosition].actualReps = reps
-                if (load != "") {
-                    workout[groupPosition].second[childPosition].load = load
-                }
-            }
-            val note = sharedPreferences.getString(keyNote, "")
-            workout[groupPosition].first.note = note
-            workoutExpandableListAdapter.notifyDataSetChanged()
-        }
-    }
 
     private fun restore() {
         try {
             val file = File(applicationContext.filesDir, "workout_session.json")
             val jsonContent = file.readText()
 
-            val gson = Gson()
-            val type = object : TypeToken<List<WorkoutSessionSet>>() {}.type
-            val workoutSession: List<WorkoutSessionSet> = gson.fromJson(jsonContent, type)
+            val gson = GsonBuilder()
+                .registerTypeAdapter(WorkoutSessionSet::class.java, WorkoutSessionSetDeserializer())
+                .registerTypeAdapter(object : TypeToken<List<Pair<Int, List<WorkoutSessionSet>>>>() {}.type, CustomPairDeserializer())
+                .create()
 
-            if (workoutSession.isNotEmpty()) {
-                for (workoutSessionSet in workoutSession) {
+            val type = object : TypeToken<List<Pair<Int, List<WorkoutSessionSet>>>>() {}.type
+            val workoutSession: List<Pair<Int, List<WorkoutSessionSet>>> =
+                gson.fromJson(jsonContent, type)
+
+            workoutSession.forEach { pair ->
+                val workoutSessionSets = pair.second
+                for (workoutSessionSet in workoutSessionSets) {
                     val groupPosition = workoutSessionSet.groupId
                     val childPosition = workoutSessionSet.childId
                     workout[groupPosition].first.note = workoutSessionSet.note
@@ -294,7 +229,6 @@ class WorkoutActivity : AppCompatActivity() {
                         workoutSessionSet.actualReps
                     workout[groupPosition].second[childPosition].load = workoutSessionSet.load
                 }
-                workoutExpandableListAdapter.notifyDataSetChanged()
             }
         } catch (exception: Exception) {
             exception.printStackTrace()
