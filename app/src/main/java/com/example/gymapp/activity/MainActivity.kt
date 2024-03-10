@@ -3,6 +3,7 @@ package com.example.gymapp.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.databinding.ActivityMainBinding
 import com.example.gymapp.R
@@ -15,7 +16,7 @@ import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var fragmentManager: FragmentManager
 
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
     private val workoutHistoryDataBase = WorkoutHistoryDatabaseHelper(this, null)
     private val workoutSeriesDataBase = WorkoutSeriesDataBaseHelper(this, null)
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -63,6 +65,11 @@ class MainActivity : AppCompatActivity() {
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
         workoutHistoryDataBase.onCreate(workoutHistoryDataBase.readableDatabase)
         workoutSeriesDataBase.onCreate(workoutSeriesDataBase.readableDatabase)
+    }
+
+    override fun onResume() {
+        loadTheme()
+        super.onResume()
     }
 
     companion object {

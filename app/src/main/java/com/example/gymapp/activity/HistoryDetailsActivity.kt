@@ -12,7 +12,7 @@ import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 
-class HistoryDetailsActivity : AppCompatActivity() {
+class HistoryDetailsActivity : BaseActivity() {
     private lateinit var binding: ActivityHistoryDetailsBinding
 
     private lateinit var expandableListView: ExpandableListView
@@ -25,6 +25,7 @@ class HistoryDetailsActivity : AppCompatActivity() {
     private var rawDate: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityHistoryDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)

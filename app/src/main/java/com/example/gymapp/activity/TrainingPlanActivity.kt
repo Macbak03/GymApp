@@ -23,7 +23,7 @@ import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
-class TrainingPlanActivity : AppCompatActivity() {
+class TrainingPlanActivity : BaseActivity() {
     private lateinit var binding: ActivityTrainingPlanBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var trainingPlanRecyclerViewAdapter: TrainingPlanRecyclerViewAdapter
@@ -117,6 +117,7 @@ class TrainingPlanActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityTrainingPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -163,6 +164,7 @@ class TrainingPlanActivity : AppCompatActivity() {
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
+
 
 
     @SuppressLint("NotifyDataSetChanged")
