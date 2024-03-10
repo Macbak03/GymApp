@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.EditText
 import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
@@ -33,7 +34,7 @@ class WorkoutExpandableListAdapter(
         initWorkoutSession()
     }
 
-    private fun initWorkoutSession(){
+    private fun initWorkoutSession() {
         workout.forEachIndexed { index, pair ->
             val series = pair.second
             val workoutSessionSets = ArrayList<WorkoutSessionSet>()
@@ -78,62 +79,46 @@ class WorkoutExpandableListAdapter(
         val workoutExpandableLayout = view as WorkoutExpandableLayout?
         workoutExpandableLayout?.setSeries(series, workoutExerciseDraft, expandedListPosition + 1)
         val noteEditText = workoutExpandableLayout?.getNoteEditText()
-        if (!isLastChild) {
-            noteEditText?.visibility = View.GONE
-        } else {
-            noteEditText?.visibility = View.VISIBLE
-        }
 
-        workoutExpandableLayout?.setWorkoutSessionSetIds(listPosition, expandedListPosition)
+        noteEditText?.visibility = if (isLastChild) View.VISIBLE else View.GONE
 
-        val repsEditText = workoutExpandableLayout?.getRepsEditText()
-        val weightEditText = workoutExpandableLayout?.getWeightEditText()
 
-        repsEditText?.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
+         val repsEditText = workoutExpandableLayout?.getRepsEditText()
+         val weightEditText = workoutExpandableLayout?.getWeightEditText()
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
+         repsEditText?.addTextChangedListener(object: TextWatcher{
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+             override fun afterTextChanged(s: Editable?) {
+                 workoutSession[listPosition].second[expandedListPosition].actualReps =
+                     workout[listPosition].second[expandedListPosition].actualReps
+             }
+         })
 
-            override fun afterTextChanged(s: Editable?) {
-                workoutSession[listPosition].second[expandedListPosition].actualReps = s.toString()
-            }
-        })
+         weightEditText?.addTextChangedListener(object: TextWatcher{
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+             override fun afterTextChanged(s: Editable?) {
+                 workoutSession[listPosition].second[expandedListPosition].load =
+                     workout[listPosition].second[expandedListPosition].load
+             }
+         })
 
-        weightEditText?.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                workoutSession[listPosition].second[expandedListPosition].load = s.toString()
-            }
-        })
-
-        noteEditText?.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                workoutSession[listPosition].second[expandedListPosition].note = s.toString()
-            }
-        })
+         noteEditText?.addTextChangedListener(object: TextWatcher{
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+             override fun afterTextChanged(s: Editable?) {
+                 workoutSession[listPosition].second[expandedListPosition].note =
+                     workout[listPosition].first.note
+             }
+         })
 
 
         return view
     }
 
-    private fun retrieveWorkoutSession(){
 
-    }
-
-    fun saveToFile(){
+    fun saveToFile() {
         val gson = Gson()
         val jsonData = gson.toJson(workoutSession)
 
@@ -200,7 +185,7 @@ class WorkoutExpandableListAdapter(
             val note = workoutExpandableLayout?.getNote()
             if (workoutExerciseDraft != null && workoutSeriesDraft != null) {
                 val exerciseDraft = ExerciseDraft(
-                    (i+1).toLong(),
+                    (i + 1).toLong(),
                     workoutExerciseDraft.exerciseName,
                     workoutExerciseDraft.pause,
                     workoutExerciseDraft.pauseUnit,
@@ -231,24 +216,6 @@ class WorkoutExpandableListAdapter(
             }
         }
         return series
-    }
-
-    fun getWorkoutSession(): ArrayList<WorkoutSessionSet> {
-        val session = ArrayList<WorkoutSessionSet>()
-        for (groupPosition in 0 until groupCount) {
-            for (childPosition in 0 until getChildrenCount(groupPosition)) {
-                (getChildView(groupPosition, childPosition, false, null, null) as? WorkoutExpandableLayout)
-                    ?.getWorkoutSessionSet()
-                    ?.apply {
-                        groupId = groupPosition
-                        childId = childPosition
-                    }
-                    ?.also { workoutSession ->
-                        session.add(workoutSession)
-                    }
-            }
-        }
-        return session
     }
 
     override fun hasStableIds(): Boolean {

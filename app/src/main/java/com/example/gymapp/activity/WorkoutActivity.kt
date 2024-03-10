@@ -27,11 +27,9 @@ import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
-import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.io.File
-import java.io.FileWriter
 
 class WorkoutActivity : BaseActivity() {
 
@@ -50,10 +48,6 @@ class WorkoutActivity : BaseActivity() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            /* val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
-             WorkManager.getInstance(this@WorkoutActivity).enqueue(workRequest)*/
-            //saveSeries()
-            //save()
             workoutExpandableListAdapter.saveToFile()
             isTerminated = false
             val resultIntent = Intent()
@@ -121,10 +115,6 @@ class WorkoutActivity : BaseActivity() {
         } else if (isTerminated) {
             prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
                 .apply()
-            /*            val workRequest = OneTimeWorkRequestBuilder<SaveSeriesWorker>().build()
-                        WorkManager.getInstance(this).enqueue(workRequest)*/
-            //saveSeries()
-            //save()
             workoutExpandableListAdapter.saveToFile()
         }
     }
@@ -159,7 +149,7 @@ class WorkoutActivity : BaseActivity() {
         }
         val isUnsaved = intent.getBooleanExtra(HomeFragment.IS_UNSAVED, false)
         if (isUnsaved) {
-            restore()
+            restoreFromFile()
         }
     }
 
@@ -187,25 +177,7 @@ class WorkoutActivity : BaseActivity() {
         }
     }
 
-    private fun save() {
-        val workoutSession = workoutExpandableListAdapter.getWorkoutSession()
-        if (workoutSession.isNotEmpty()) {
-            val gson = Gson()
-            val jsonData = gson.toJson(workoutSession)
-
-            try {
-                val file = File(applicationContext.filesDir, "workout_session.json")
-                val writer = FileWriter(file, false)
-                writer.write(jsonData)
-                writer.close()
-            } catch (exception: Exception) {
-                exception.printStackTrace()
-            }
-        }
-    }
-
-
-    private fun restore() {
+    private fun restoreFromFile() {
         try {
             val file = File(applicationContext.filesDir, "workout_session.json")
             val jsonContent = file.readText()
@@ -247,14 +219,6 @@ class WorkoutActivity : BaseActivity() {
             }
             this.setNegativeButton("No") { _, _ -> }
             this.show()
-        }
-    }
-
-    inner class SaveSeriesWorker(appContext: Context, workerParams: WorkerParameters) :
-        Worker(appContext, workerParams) {
-        override fun doWork(): Result {
-            //saveSeries()
-            return Result.success()
         }
     }
 
