@@ -70,7 +70,7 @@ class RoutineExpandableLayout(
         paceDescription = findViewById(R.id.imageViewPaceDescription)
 
 
-        pauseEditText.addTextChangedListener(object : TextWatcher {
+       /* pauseEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
@@ -141,7 +141,7 @@ class RoutineExpandableLayout(
                 exercise?.pace = paceEditText.text.toString()
                 exercise?.wasModified = true
             }
-        })
+        })*/
 
         initTimeUnitSpinner()
         initWeightUnitSpinner()
@@ -178,9 +178,9 @@ class RoutineExpandableLayout(
         paceEditText.setText(exercise?.pace.toString())
     }
 
-    fun getExerciseDraft(): ExerciseDraft? {
+/*    fun getExerciseDraft(): ExerciseDraft? {
         return this.exercise
-    }
+    }*/
 
     private fun initTimeUnitSpinner() {
         val adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, timeUnits)
@@ -189,7 +189,7 @@ class RoutineExpandableLayout(
         with(pauseSpinner)
         {
             setSelection(0, false)
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+           /* onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
                     view: View?,
@@ -200,12 +200,11 @@ class RoutineExpandableLayout(
                     if (item != null) {
                         exercise?.pauseUnit = item
                     }
-                    //item?.let { exercise?.pauseUnit = it } - to to samo co 180-183 linijka
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
-            }
+            }*/
         }
     }
 
@@ -225,7 +224,7 @@ class RoutineExpandableLayout(
         with(loadSpinner)
         {
             setSelection(0, false)
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+           /* onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
                     parent: AdapterView<*>?,
                     view: View?,
@@ -240,7 +239,7 @@ class RoutineExpandableLayout(
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
-            }
+            }*/
         }
     }
 

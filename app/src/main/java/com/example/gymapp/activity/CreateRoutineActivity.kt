@@ -6,12 +6,10 @@ import android.util.TypedValue
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,15 +24,12 @@ import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.persistence.PlansDataBaseHelper
-import com.example.gymapp.viewModel.RoutineRecyclerViewViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import java.util.Collections
 
 
 class CreateRoutineActivity : BaseActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
-
-    private lateinit var viewModel: RoutineRecyclerViewViewModel
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var routineRecyclerViewAdapter: RoutineRecyclerViewAdapter
@@ -165,13 +160,12 @@ class CreateRoutineActivity : BaseActivity() {
             }
         }
 
-        viewModel = ViewModelProvider(this)[RoutineRecyclerViewViewModel::class.java]
 
 
         recyclerView = binding.recyclerViewRoutineItems
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
-        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper, this, layoutInflater, viewModel)
+        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper, this, layoutInflater)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = routineRecyclerViewAdapter
 
@@ -239,20 +233,12 @@ class CreateRoutineActivity : BaseActivity() {
     }
 
     private fun getRoutine(): ArrayList<Exercise>{
-        val adapter = routineRecyclerViewAdapter
+        val routineDraft = routineRecyclerViewAdapter.getRoutine()
         val routine = ArrayList<Exercise>()
-        for(i in 0 until adapter.itemCount)
+        for(exerciseDraft in routineDraft)
         {
-            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? RoutineRecyclerViewAdapter.RoutineViewHolder
-            viewHolder?.let {
-                val exerciseDraft = it.exerciseDetails.getExerciseDraft()
-                val exerciseName =it.exerciseName.text.toString()
-                exerciseDraft?.name = exerciseName
-                val exercise = exerciseDraft?.toExercise()
-                if (exercise != null) {
-                    routine.add(exercise)
-                }
-            }
+            val exercise = exerciseDraft.toExercise()
+            routine.add(exercise)
         }
         return routine
     }
