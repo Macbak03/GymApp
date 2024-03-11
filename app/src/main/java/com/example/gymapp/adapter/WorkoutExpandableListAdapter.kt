@@ -2,10 +2,13 @@ package com.example.gymapp.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.EditText
 import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
@@ -14,12 +17,40 @@ import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutExercise
 import com.example.gymapp.model.workout.WorkoutSeries
+import com.example.gymapp.model.workout.WorkoutSessionSet
+import com.google.gson.Gson
+import java.io.File
+import java.io.FileWriter
 
 class WorkoutExpandableListAdapter(
     private val context: Context,
     private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>
 
 ) : BaseExpandableListAdapter() {
+
+    private val workoutSession = ArrayList<Pair<Int, List<WorkoutSessionSet>>>()
+
+    init {
+        initWorkoutSession()
+    }
+
+    private fun initWorkoutSession() {
+        workout.forEachIndexed { index, pair ->
+            val series = pair.second
+            val workoutSessionSets = ArrayList<WorkoutSessionSet>()
+            series.forEachIndexed { seriesIndex, workoutSeriesDraft ->
+                val actualReps = workoutSeriesDraft.actualReps
+                val load = workoutSeriesDraft.load
+                val note = pair.first.note
+                if (actualReps != null && load != null && note != null) {
+                    val workoutSessionSet =
+                        WorkoutSessionSet(index, seriesIndex, actualReps, load, note)
+                    workoutSessionSets.add(workoutSessionSet)
+                }
+            }
+            workoutSession.add(Pair(index, workoutSessionSets))
+        }
+    }
 
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
         return workout[listPosition].second[expandedListPosition]
@@ -48,12 +79,57 @@ class WorkoutExpandableListAdapter(
         val workoutExpandableLayout = view as WorkoutExpandableLayout?
         workoutExpandableLayout?.setSeries(series, workoutExerciseDraft, expandedListPosition + 1)
         val noteEditText = workoutExpandableLayout?.getNoteEditText()
-        if (!isLastChild) {
-            noteEditText?.visibility = View.GONE
-        } else {
-            noteEditText?.visibility = View.VISIBLE
-        }
+
+        noteEditText?.visibility = if (isLastChild) View.VISIBLE else View.GONE
+
+
+         val repsEditText = workoutExpandableLayout?.getRepsEditText()
+         val weightEditText = workoutExpandableLayout?.getWeightEditText()
+
+         repsEditText?.addTextChangedListener(object: TextWatcher{
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+             override fun afterTextChanged(s: Editable?) {
+                 workoutSession[listPosition].second[expandedListPosition].actualReps =
+                     workout[listPosition].second[expandedListPosition].actualReps
+             }
+         })
+
+         weightEditText?.addTextChangedListener(object: TextWatcher{
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+             override fun afterTextChanged(s: Editable?) {
+                 workoutSession[listPosition].second[expandedListPosition].load =
+                     workout[listPosition].second[expandedListPosition].load
+             }
+         })
+
+         noteEditText?.addTextChangedListener(object: TextWatcher{
+             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+             override fun afterTextChanged(s: Editable?) {
+                 workoutSession[listPosition].second[expandedListPosition].note =
+                     workout[listPosition].first.note
+             }
+         })
+
+
         return view
+    }
+
+
+    fun saveToFile() {
+        val gson = Gson()
+        val jsonData = gson.toJson(workoutSession)
+
+        try {
+            val file = File(context.filesDir, "workout_session.json")
+            val writer = FileWriter(file, false)
+            writer.write(jsonData)
+            writer.close()
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+        }
     }
 
     override fun getChildrenCount(listPosition: Int): Int {
@@ -109,7 +185,7 @@ class WorkoutExpandableListAdapter(
             val note = workoutExpandableLayout?.getNote()
             if (workoutExerciseDraft != null && workoutSeriesDraft != null) {
                 val exerciseDraft = ExerciseDraft(
-                    (i+1).toLong(),
+                    (i + 1).toLong(),
                     workoutExerciseDraft.exerciseName,
                     workoutExerciseDraft.pause,
                     workoutExerciseDraft.pauseUnit,
@@ -130,7 +206,6 @@ class WorkoutExpandableListAdapter(
 
     fun getWorkoutSeries(exerciseIndex: Int): ArrayList<WorkoutSeries> {
         val series = ArrayList<WorkoutSeries>()
-        series.clear()
         for (i: Int in 0 until getChildrenCount(exerciseIndex)) {
             val workoutExpandableLayout =
                 getChildView(exerciseIndex, i, false, null, null) as WorkoutExpandableLayout?
@@ -142,54 +217,6 @@ class WorkoutExpandableListAdapter(
         }
         return series
     }
-
-    fun getRepsFromEditText(listPosition: Int, expandedListPosition: Int): String {
-        var reps = ""
-        val workoutExpandableLayout =
-            getChildView(
-                listPosition,
-                expandedListPosition,
-                false,
-                null,
-                null
-            ) as WorkoutExpandableLayout?
-        if (workoutExpandableLayout != null) {
-            reps = workoutExpandableLayout.getRepsEditText().text.toString()
-        }
-        return reps
-    }
-
-    fun getWeightFromEditText(listPosition: Int, expandedListPosition: Int): String {
-        var weight = ""
-        val workoutExpandableLayout =
-            getChildView(
-                listPosition,
-                expandedListPosition,
-                false,
-                null,
-                null
-            ) as WorkoutExpandableLayout?
-        if (workoutExpandableLayout != null) {
-            weight = workoutExpandableLayout.getWeightEditText().text.toString()
-        }
-        return weight
-    }
-
-    fun getNoteFromEditText(listPosition: Int): String {
-        var note = ""
-        val workoutExpandableLayout = getChildView(
-            listPosition,
-            getChildrenCount(listPosition) -1,
-            true,
-            null,
-            null
-        ) as WorkoutExpandableLayout?
-        if(workoutExpandableLayout != null){
-            note = workoutExpandableLayout.getNoteEditText().text.toString()
-        }
-        return note
-    }
-
 
     override fun hasStableIds(): Boolean {
         return true

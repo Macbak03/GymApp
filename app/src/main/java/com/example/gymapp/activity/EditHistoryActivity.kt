@@ -13,7 +13,7 @@ import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
 
-class EditHistoryActivity : AppCompatActivity() {
+class EditHistoryActivity : BaseActivity() {
 
     private lateinit var binding: ActivityEditHistoryBinding
     private lateinit var expandableListView: ExpandableListView
@@ -29,6 +29,7 @@ class EditHistoryActivity : AppCompatActivity() {
     private var planName: String? = null
     private var rawDate: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
         super.onCreate(savedInstanceState)
 
         binding = ActivityEditHistoryBinding.inflate(layoutInflater)

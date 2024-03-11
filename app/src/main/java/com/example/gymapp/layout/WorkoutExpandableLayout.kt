@@ -11,10 +11,11 @@ import androidx.core.content.ContextCompat
 import com.example.gymapp.R
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
+import com.example.gymapp.model.workout.WorkoutSessionSet
 
 class WorkoutExpandableLayout(
     private val context: Context,
-    private val attributes: AttributeSet,
+    private val attributes: AttributeSet
 ): LinearLayout(context, attributes) {
 
     private val repsEditText: EditText
@@ -32,6 +33,7 @@ class WorkoutExpandableLayout(
         repsEditText = findViewById(R.id.editTextWorkoutReps)
         weightEditText = findViewById(R.id.editTextWorkoutWeight)
         noteEditText = findViewById(R.id.editTextNote)
+
         repsEditText.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int){
             }
@@ -40,6 +42,7 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
+
                 workoutSeriesDraft?.actualReps = s.toString()
                 workoutSeriesDraft?.wasModified = true
             }
@@ -53,6 +56,7 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
+
                 workoutSeriesDraft?.load = s.toString()
                 workoutSeriesDraft?.wasModified = true
             }
@@ -65,6 +69,7 @@ class WorkoutExpandableLayout(
             }
 
             override fun afterTextChanged(s: Editable?) {
+
                 workoutExerciseDraft?.note = s.toString()
             }
 
@@ -97,6 +102,7 @@ class WorkoutExpandableLayout(
     fun getWorkoutSeriesDraft(): WorkoutSeriesDraft?{
         return this.workoutSeriesDraft
     }
+
 
     fun getNoteEditText(): EditText{
         return this.noteEditText

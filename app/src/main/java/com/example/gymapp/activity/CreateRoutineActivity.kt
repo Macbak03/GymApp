@@ -3,14 +3,14 @@ package com.example.gymapp.activity
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,15 +24,12 @@ import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.persistence.PlansDataBaseHelper
-import com.example.gymapp.viewModel.RoutineRecyclerViewViewModel
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import java.util.Collections
 
 
-class CreateRoutineActivity : AppCompatActivity() {
+class CreateRoutineActivity : BaseActivity() {
     private lateinit var binding: ActivityCreateRoutineBinding
-
-    private lateinit var viewModel: RoutineRecyclerViewViewModel
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var routineRecyclerViewAdapter: RoutineRecyclerViewAdapter
@@ -41,6 +38,7 @@ class CreateRoutineActivity : AppCompatActivity() {
     private val plansDataBase = PlansDataBaseHelper(this, null)
     private var exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 0
+    private var defaultWeightUnit =  WeightUnit.kg
 
     private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,ItemTouchHelper.RIGHT ) {
         override fun onMove(
@@ -143,6 +141,8 @@ class CreateRoutineActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
+        loadUnitSettings()
         super.onCreate(savedInstanceState)
         binding = ActivityCreateRoutineBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -160,17 +160,19 @@ class CreateRoutineActivity : AppCompatActivity() {
             }
         }
 
-        viewModel = ViewModelProvider(this)[RoutineRecyclerViewViewModel::class.java]
 
 
         recyclerView = binding.recyclerViewRoutineItems
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
-        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper, this, layoutInflater, viewModel)
+        routineRecyclerViewAdapter = RoutineRecyclerViewAdapter(exercises, itemTouchHelper, this, layoutInflater)
         recyclerView.layoutManager = LinearLayoutManager(applicationContext)
         recyclerView.adapter = routineRecyclerViewAdapter
 
+        val scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.add_button_animation)
+
         binding.buttonAddExercise.setOnClickListener {
+            it.startAnimation(scaleAnimation)
             addExercise()
         }
         binding.buttonSaveRoutine.setOnClickListener()
@@ -214,7 +216,7 @@ class CreateRoutineActivity : AppCompatActivity() {
             "",
             TimeUnit.min,
             "",
-            WeightUnit.kg,
+            defaultWeightUnit,
             "",
             "",
             "",
@@ -231,20 +233,12 @@ class CreateRoutineActivity : AppCompatActivity() {
     }
 
     private fun getRoutine(): ArrayList<Exercise>{
-        val adapter = routineRecyclerViewAdapter
+        val routineDraft = routineRecyclerViewAdapter.getRoutine()
         val routine = ArrayList<Exercise>()
-        for(i in 0 until adapter.itemCount)
+        for(exerciseDraft in routineDraft)
         {
-            val viewHolder = recyclerView.findViewHolderForAdapterPosition(i) as? RoutineRecyclerViewAdapter.RoutineViewHolder
-            viewHolder?.let {
-                val exerciseDraft = it.exerciseDetails.getExerciseDraft()
-                val exerciseName =it.exerciseName.text.toString()
-                exerciseDraft?.name = exerciseName
-                val exercise = exerciseDraft?.toExercise()
-                if (exercise != null) {
-                    routine.add(exercise)
-                }
-            }
+            val exercise = exerciseDraft.toExercise()
+            routine.add(exercise)
         }
         return routine
     }
@@ -270,6 +264,16 @@ class CreateRoutineActivity : AppCompatActivity() {
                 Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun loadUnitSettings(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        when(sharedPreferences.getString("unit", ""))
+        {
+            "kg" -> defaultWeightUnit = WeightUnit.kg
+            "lbs" -> defaultWeightUnit = WeightUnit.lbs
+        }
+
     }
 
 }

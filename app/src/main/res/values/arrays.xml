@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Themes -->
+    <string-array name="themes_entries">
+        <item>Dark</item>
+        <item>Dark blue</item>
+    </string-array>
+
+    <string-array name="themes_values">
+        <item>Dark</item>
+        <item>DarkBlue</item>
+    </string-array>
+
+    <string-array name="units_entries">
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+
+    <string-array name="units_values">
+        <item>kg</item>
+        <item>lbs</item>
+    </string-array>
+</resources>

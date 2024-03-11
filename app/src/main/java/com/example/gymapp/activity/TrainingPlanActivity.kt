@@ -6,6 +6,8 @@ import android.graphics.Canvas
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
+import android.view.animation.AnimationUtils
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -21,7 +23,7 @@ import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 
-class TrainingPlanActivity : AppCompatActivity() {
+class TrainingPlanActivity : BaseActivity() {
     private lateinit var binding: ActivityTrainingPlanBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var trainingPlanRecyclerViewAdapter: TrainingPlanRecyclerViewAdapter
@@ -115,6 +117,7 @@ class TrainingPlanActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadTheme()
         super.onCreate(savedInstanceState)
         binding = ActivityTrainingPlanBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -134,8 +137,11 @@ class TrainingPlanActivity : AppCompatActivity() {
 
         setRecyclerViewContent()
 
+        val scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.add_button_animation)
+
         binding.buttonAddRoutine.setOnClickListener()
         {
+            it.startAnimation(scaleAnimation)
             val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
             explicitIntent.putExtra(PLAN_NAME, planName)
             startCreateRoutineActivityForResult.launch(explicitIntent)
@@ -160,6 +166,7 @@ class TrainingPlanActivity : AppCompatActivity() {
     }
 
 
+
     @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent() {
         val planId = plansDataBase.getPlanId(planName)
@@ -177,9 +184,13 @@ class TrainingPlanActivity : AppCompatActivity() {
 
 
     private fun showDeleteDialog(position: Int) {
-        val builder = this.let { AlertDialog.Builder(it) }
+        val builder = this.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
+        val dialogLayout = layoutInflater.inflate(R.layout.text_view_dialog_layout, null)
+        val textView = dialogLayout.findViewById<TextView>(R.id.textViewDialog)
+        val message = "${routines[position].routineName}?"
+        textView.text = message
         with(builder) {
-            this.setTitle("Are you sure you want to delete ${routines[position].routineName}?")
+            this.setTitle("Are you sure you want to delete")
             this.setPositiveButton("Yes") { _, _ ->
                 val planId = plansDataBase.getPlanId(planName)
                 if(planId != null)
@@ -191,6 +202,7 @@ class TrainingPlanActivity : AppCompatActivity() {
             this.setNegativeButton("Cancel") { _, _ ->
                 trainingPlanRecyclerViewAdapter.notifyItemChanged(position)
             }
+            this.setView(dialogLayout)
             this.show()
         }
     }

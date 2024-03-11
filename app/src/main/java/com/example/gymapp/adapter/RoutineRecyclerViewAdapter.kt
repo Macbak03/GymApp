@@ -9,9 +9,11 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -20,19 +22,18 @@ import com.example.gymapp.R
 import com.example.gymapp.animation.Animations
 import com.example.gymapp.databinding.CreateRoutineRecyclerViewItemBinding
 import com.example.gymapp.model.routine.ExerciseDraft
-import com.example.gymapp.viewModel.RoutineRecyclerViewViewModel
+import com.example.gymapp.model.routine.TimeUnit
+import com.example.gymapp.model.routine.WeightUnit
 
 class RoutineRecyclerViewAdapter(
     private val exercises: MutableList<ExerciseDraft>,
     private val touchHelper: ItemTouchHelper,
     private val context: Context,
     private val layoutInflater: LayoutInflater,
-    private val viewModel: RoutineRecyclerViewViewModel
 ) : RecyclerView.Adapter<RoutineRecyclerViewAdapter.RoutineViewHolder>() {
 
     private val animations = Animations()
 
-    private var editTextValues: HashMap<Int, String> = HashMap()
 
     inner class RoutineViewHolder(binding: CreateRoutineRecyclerViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -40,12 +41,22 @@ class RoutineRecyclerViewAdapter(
         val exerciseTitle = binding.exerciseTitle
         val exerciseTitleElement: LinearLayout = exerciseTitle.findViewById(R.id.expandableLayoutTitle)
         //val exerciseName = binding.editTextExerciseName
-        val exerciseName: EditText = exerciseTitle.findViewById(R.id.editTextExerciseName)
+        val exerciseNameEditText: EditText = exerciseTitle.findViewById(R.id.editTextExerciseName)
+        private val pauseEditText: EditText = exerciseDetails.findViewById(R.id.editTextPause)
+        private val loadEditText: EditText = exerciseDetails.findViewById(R.id.editTextLoad)
+        private val repsEditText: EditText = exerciseDetails.findViewById(R.id.editTextReps)
+        private val seriesEditText: EditText = exerciseDetails.findViewById(R.id.editTextSeries)
+        private val rpeEditText: EditText = exerciseDetails.findViewById(R.id.editTextRpe)
+        private val paceEditText: EditText = exerciseDetails.findViewById(R.id.editTextPace)
+
+        private val pauseUnitSpinner: Spinner = exerciseDetails.findViewById(R.id.spinnerPause)
+        private val loadUnitSpinner: Spinner = exerciseDetails.findViewById(R.id.spinnerLoad)
+
         //val expandImage = binding.buttonExpand
         val expandImage: ImageView = exerciseTitle.findViewById(R.id.buttonExpand)
-
         //val moveButton = binding.imageButtonMove
         val moveButton: ImageView = exerciseTitle.findViewById(R.id.imageButtonMove)
+
         val wholeItem = binding.wholeExerciseElement
 
         val pauseDescription = exerciseDetails.getPauseDescription()
@@ -57,20 +68,95 @@ class RoutineRecyclerViewAdapter(
 
         init {
 
-            exerciseName.addTextChangedListener(object : TextWatcher{
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                }
-
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                }
-
+            exerciseNameEditText.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable?) {
                     if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
-                        editTextValues[absoluteAdapterPosition] = s.toString()
+                        exercises[absoluteAdapterPosition].name = s.toString()
                     }
                 }
-
             })
+            pauseEditText.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                        exercises[absoluteAdapterPosition].pause = s.toString()
+                    }
+                }
+            })
+            loadEditText.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                        exercises[absoluteAdapterPosition].load = s.toString()
+                    }
+                }
+            })
+            repsEditText.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                        exercises[absoluteAdapterPosition].reps = s.toString()
+                    }
+                }
+            })
+            seriesEditText.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                        exercises[absoluteAdapterPosition].series = s.toString()
+                    }
+                }
+            })
+            rpeEditText.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                        exercises[absoluteAdapterPosition].rpe = s.toString()
+                    }
+                }
+            })
+            paceEditText.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
+                        exercises[absoluteAdapterPosition].pace = s.toString()
+                    }
+                }
+            })
+
+            pauseUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val item = parent?.getItemAtPosition(position) as TimeUnit?
+                    if (item != null) { exercises[absoluteAdapterPosition].pauseUnit = item }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
+
+            loadUnitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val item = parent?.getItemAtPosition(position) as WeightUnit?
+                    if (item != null) { exercises[absoluteAdapterPosition].loadUnit = item }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
+            }
         }
     }
 
@@ -97,41 +183,12 @@ class RoutineRecyclerViewAdapter(
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: RoutineViewHolder, position: Int) {
         val exercise = exercises[position]
-        //val exerciseName = holder.exerciseName
         val exerciseTitleElement = holder.exerciseTitleElement
 
         val exerciseTitle = holder.exerciseTitle
         val exerciseDetails = holder.exerciseDetails
-        val exerciseName = holder.exerciseName
         val moveButton = holder.moveButton
-        //val moveButton = holder.moveButton
-
-        val itemId = getItemId(position)
-        //Toast.makeText(context, itemId.toString(), Toast.LENGTH_SHORT).show()
-
-/*        exerciseName.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                val content = s.toString()
-                //viewModel.saveEditTextContent(itemId, content)
-                exercise.name = content
-            }
-
-        })*/
-
-/*        if(!viewModel.isViewModelEmpty() && viewModel.hasId(itemId)){
-            exerciseName.setText(viewModel.getEditTextContent(itemId))
-        }else{
-            exerciseName.setText(exercise.name)
-        }*/
-
-        //exerciseTitle.setExerciseName(exercise.name)
-        exerciseName.setText(editTextValues[position]?: exercise.name)
+        exerciseTitle.setExerciseName(exercise.name)
         exerciseDetails.setExercise(exercise)
 
         exerciseTitleElement.setOnClickListener{
@@ -193,6 +250,10 @@ class RoutineRecyclerViewAdapter(
 
     }
 
+    fun getRoutine() : List<ExerciseDraft>{
+        return exercises
+    }
+
     private fun showDescriptionDialog(title: String, description: String)
     {
         val builder = context.let { AlertDialog.Builder(it,  R.style.YourAlertDialogTheme) }
@@ -215,20 +276,12 @@ class RoutineRecyclerViewAdapter(
             val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
 
             animator.addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {
-                }
-
+                override fun onAnimationStart(animation: Animator) {}
                 override fun onAnimationEnd(animation: Animator) {
                     animator.removeAllUpdateListeners()
-
                 }
-
-                override fun onAnimationCancel(animation: Animator) {
-                }
-
-                override fun onAnimationRepeat(animation: Animator) {
-                }
-
+                override fun onAnimationCancel(animation: Animator) {}
+                override fun onAnimationRepeat(animation: Animator) {}
             })
             animator.start()
         }
@@ -243,22 +296,13 @@ class RoutineRecyclerViewAdapter(
             val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
 
             animator.addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {
-
-                }
-
+                override fun onAnimationStart(animation: Animator) {}
                 override fun onAnimationEnd(animation: Animator) {
-
                     animator.removeAllUpdateListeners()
                 }
-
-                override fun onAnimationCancel(animation: Animator) {
-                }
-
-                override fun onAnimationRepeat(animation: Animator) {
-                }
+                override fun onAnimationCancel(animation: Animator) {}
+                override fun onAnimationRepeat(animation: Animator) {}
             })
-
             animator.start()
         }
     }
@@ -272,13 +316,13 @@ class RoutineRecyclerViewAdapter(
             .setDuration(300)
             .withStartAction{
                 holder.exerciseTitle.isClickable = false
-                holder.exerciseName.isClickable = false
+                holder.exerciseNameEditText.isClickable = false
                 rotateExpandButtonLeft(holder)
                 moveItemsDown(holder)
             }
             .withEndAction {
                 holder.exerciseTitle.isClickable = true
-                holder.exerciseName.isClickable = true
+                holder.exerciseNameEditText.isClickable = true
             }
             .start()
     }
@@ -290,13 +334,13 @@ class RoutineRecyclerViewAdapter(
             .setDuration(300)
             .withStartAction {
                 holder.exerciseTitle.isClickable = false
-                holder.exerciseName.isClickable = false
+                holder.exerciseNameEditText.isClickable = false
                 rotateExpandButtonRight(holder)
                 moveItemsUp(holder)
             }
             .withEndAction {
                 holder.exerciseTitle.isClickable = true
-                holder.exerciseName.isClickable = true
+                holder.exerciseNameEditText.isClickable = true
                 exerciseDetails.visibility = View.GONE
                 exerciseDetails.clearAnimation()
             }

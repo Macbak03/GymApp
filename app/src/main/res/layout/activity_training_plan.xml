@@ -33,7 +33,7 @@
         android:layout_height="0dp"
         android:background="@drawable/baseline_add_circle_24"
         android:contentDescription="Add Routine"
-        style="@style/CustomAddButtonColor"
+        style="@style/DarkBlueCustomAddButtonColor"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.75" />
+        app:layout_constraintGuide_percent="0.76" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline2"

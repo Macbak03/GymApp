@@ -11,20 +11,22 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.Spinner
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.R
 import com.example.gymapp.activity.HistoryDetailsActivity
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.activity.WorkoutActivity
+import com.example.gymapp.adapter.SpinnerArrayAdapter
 import com.example.gymapp.adapter.ViewPagerAdapter
 import com.example.gymapp.animation.FragmentAnimator
 import com.example.gymapp.databinding.FragmentHomeBinding
+import com.example.gymapp.layout.DynamicSizeSpinner
 import com.example.gymapp.model.trainingPlans.TrainingPlan
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.persistence.PlansDataBaseHelper
@@ -39,7 +41,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
-    private lateinit var spinner: Spinner
+    private lateinit var spinner: DynamicSizeSpinner
     private lateinit var buttonReturn: Button
     private val SPINNER_PREF_KEY = "selectedSpinnerItem"
 
@@ -66,7 +68,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
                 buttonReturn.visibility = View.GONE
             }
             spinner.isEnabled = !isUnsaved
-            routineNameResult?.let { saveResult(isUnsaved, it) }
+            saveResult(isUnsaved)
         }
 
 
@@ -92,7 +94,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         )
         trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
         if (!plansDataBase.isTableNotEmpty()) {
-            val noneTrainingPlanFound = "Go to training plans section to create your first plan"
+            val noneTrainingPlanFound = "Create your first plan"
             binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFound
             spinner.visibility = View.GONE
         } else {
@@ -105,6 +107,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
         observeViewModel()
 
+        getSavedRoutineName()
         loadResult()
         checkOnWorkoutTerminatePreferences()
         if (isUnsaved) {
@@ -113,6 +116,11 @@ class HomeFragment : Fragment(), FragmentAnimator {
         } else {
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE
+        }
+
+        binding.textViewCurrentTrainingPlan.isClickable = true
+        binding.textViewCurrentTrainingPlan.setOnClickListener {
+            openTrainingPlansFragment()
         }
 
 
@@ -155,17 +163,20 @@ class HomeFragment : Fragment(), FragmentAnimator {
             PlansDataBaseHelper.PLAN_NAME_COLUMN,
             PlansDataBaseHelper.PLAN_ID_COLUMN
         )
+        val textView = binding.textViewCurrentTrainingPlan
         trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
         if (!plansDataBase.isTableNotEmpty()) {
-            val noneTrainingPlanFound = "Go to training plans section to create your first plan"
-            binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFound
+            val noneTrainingPlanFound = "Create your first plan"
+
+            textView.text = noneTrainingPlanFound
+            //textView.background = ContextCompat.getDrawable(requireContext(), R.drawable.button_color)
             spinner.visibility = View.GONE
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE
             isUnsaved = false
         } else {
-            val planFound = "Current plan: "
-            binding.textViewCurrentTrainingPlan.text = planFound
+            val planFound = "Current plan:"
+            textView.text = planFound
             spinner.visibility = View.VISIBLE
         }
         initSpinner()
@@ -177,14 +188,15 @@ class HomeFragment : Fragment(), FragmentAnimator {
     }
 
     private fun checkOnWorkoutTerminatePreferences(){
-        val prefs = activity?.getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
-        routineNameResult = prefs?.getString("ROUTINE_NAME", "")
         if(!routineNameResult.isNullOrBlank())
         {
             isUnsaved = true
-            /*spinner.isEnabled = false
-            buttonReturn.visibility = View.VISIBLE*/
         }
+    }
+
+    private fun getSavedRoutineName(){
+        val prefs = activity?.getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
+        routineNameResult = prefs?.getString("ROUTINE_NAME", "")
     }
 
     private fun openStartWorkoutMenuFragment() {
@@ -204,8 +216,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
     }
 
     private fun initSpinner() {
-        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_header, trainingPlansNames)
-        adapter.setDropDownViewResource(R.layout.spinner_item)
+        val adapter = SpinnerArrayAdapter(requireContext(), R.layout.spinner_header, trainingPlansNames)
+        //adapter.setDropDownViewResource(R.layout.spinner_item)
         spinner.adapter = adapter
 
         val savedSelection = loadSpinnerSelection()
@@ -252,6 +264,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
     }
 
     private fun openTrainingPlansFragment() {
+
         val viewPager = requireActivity().findViewById<ViewPager2>(R.id.viewPager)
         val adapter = ViewPagerAdapter(requireActivity())
         viewPager.adapter = adapter
@@ -293,15 +306,13 @@ class HomeFragment : Fragment(), FragmentAnimator {
         }
     }
 
-    private fun saveResult(boolValue: Boolean, stringValue: String) {
+    private fun saveResult(boolValue: Boolean) {
         val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
         val keyBool = "is_unsaved"
-        val keyRoutineName = "routine_name"
 
         editor.putBoolean(keyBool, boolValue)
-        editor.putString(keyRoutineName, stringValue)
 
         editor.apply()
     }
@@ -310,10 +321,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
         val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
 
         val keyBool = "is_unsaved"
-        val keyRoutineName = "routine_name"
 
         isUnsaved = sharedPreferences.getBoolean(keyBool, false)
-        routineNameResult = sharedPreferences.getString(keyRoutineName, "")
     }
 
     private fun observeViewModel() {
@@ -324,13 +333,13 @@ class HomeFragment : Fragment(), FragmentAnimator {
             routineNameResult = resultData.routineNameResult
             buttonReturn.visibility = if (resultData.shouldShowButton) View.VISIBLE else View.GONE
             spinner.isEnabled = !isUnsaved
-            routineNameResult?.let { saveResult(isUnsaved, it) }
+            saveResult(isUnsaved)
         }
     }
 
 
     private fun showWarningDialog() {
-        val builder = context?.let { AlertDialog.Builder(it) }
+        val builder = context?.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
         with(builder) {
             this?.setTitle("You have unsaved workout that will be lost. Do you want to start new one?")
             this?.setPositiveButton("Yes") { _, _ ->

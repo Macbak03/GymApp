@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.GymApp"
+        android:theme="@style/Theme.Dark"
         tools:targetApi="31"
         tools:ignore="LockedOrientationActivity">
         <activity

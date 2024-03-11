@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import com.example.gymapp.R
 import com.example.gymapp.activity.EditHistoryActivity
@@ -36,7 +37,7 @@ class TrainingHistoryMoreFragment(private val workoutHistoryRecyclerViewAdapter:
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setStyle(STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme)
+        setStyle(STYLE_NORMAL, R.style.DarkBlueCustomBottomSheetDialogTheme)
     }
 
     override fun onCreateView(
@@ -98,9 +99,13 @@ class TrainingHistoryMoreFragment(private val workoutHistoryRecyclerViewAdapter:
 
     private fun showDeleteDialog(name: String?, date: String?, position: Int?) {
         if (position != null) {
-            val builder = context?.let { AlertDialog.Builder(it) }
+            val builder = context?.let { AlertDialog.Builder(it,R.style.YourAlertDialogTheme) }
+            val dialogLayout = layoutInflater.inflate(R.layout.text_view_dialog_layout, null)
+            val textView = dialogLayout.findViewById<TextView>(R.id.textViewDialog)
+            val message = "$name\nfrom\n$date?"
+            textView.text = message
             with(builder) {
-                this?.setTitle("Are you sure you want to delete $name from $date?")
+                this?.setTitle("Are you sure you want to delete")
                 this?.setPositiveButton("Yes") { _, _ ->
                     workoutHistoryRecyclerViewAdapter.deleteSingleHistory(position)
                     workoutHistoryDatabase.deleteFromHistory(workoutHistoryRecyclerViewAdapter.getRemovedHistoryDate())
@@ -108,6 +113,7 @@ class TrainingHistoryMoreFragment(private val workoutHistoryRecyclerViewAdapter:
                 }
                 this?.setNegativeButton("Cancel") { _, _ ->
                 }
+                this?.setView(dialogLayout)
                 this?.show()
             }
         }
