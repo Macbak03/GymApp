@@ -27,12 +27,10 @@ class RoutineRecyclerViewAdapter(
     private val touchHelper: ItemTouchHelper,
     private val context: Context,
     private val layoutInflater: LayoutInflater,
-    private val viewModel: RoutineRecyclerViewViewModel
 ) : RecyclerView.Adapter<RoutineRecyclerViewAdapter.RoutineViewHolder>() {
 
     private val animations = Animations()
 
-    private var editTextValues: HashMap<Int, String> = HashMap()
 
     inner class RoutineViewHolder(binding: CreateRoutineRecyclerViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -43,9 +41,9 @@ class RoutineRecyclerViewAdapter(
         val exerciseName: EditText = exerciseTitle.findViewById(R.id.editTextExerciseName)
         //val expandImage = binding.buttonExpand
         val expandImage: ImageView = exerciseTitle.findViewById(R.id.buttonExpand)
-
         //val moveButton = binding.imageButtonMove
         val moveButton: ImageView = exerciseTitle.findViewById(R.id.imageButtonMove)
+
         val wholeItem = binding.wholeExerciseElement
 
         val pauseDescription = exerciseDetails.getPauseDescription()
@@ -66,7 +64,7 @@ class RoutineRecyclerViewAdapter(
 
                 override fun afterTextChanged(s: Editable?) {
                     if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
-                        editTextValues[absoluteAdapterPosition] = s.toString()
+                        exercises[absoluteAdapterPosition].name = s.toString()
                     }
                 }
 
@@ -97,41 +95,12 @@ class RoutineRecyclerViewAdapter(
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: RoutineViewHolder, position: Int) {
         val exercise = exercises[position]
-        //val exerciseName = holder.exerciseName
         val exerciseTitleElement = holder.exerciseTitleElement
 
         val exerciseTitle = holder.exerciseTitle
         val exerciseDetails = holder.exerciseDetails
-        val exerciseName = holder.exerciseName
         val moveButton = holder.moveButton
-        //val moveButton = holder.moveButton
-
-        val itemId = getItemId(position)
-        //Toast.makeText(context, itemId.toString(), Toast.LENGTH_SHORT).show()
-
-/*        exerciseName.addTextChangedListener(object: TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                val content = s.toString()
-                //viewModel.saveEditTextContent(itemId, content)
-                exercise.name = content
-            }
-
-        })*/
-
-/*        if(!viewModel.isViewModelEmpty() && viewModel.hasId(itemId)){
-            exerciseName.setText(viewModel.getEditTextContent(itemId))
-        }else{
-            exerciseName.setText(exercise.name)
-        }*/
-
-        //exerciseTitle.setExerciseName(exercise.name)
-        exerciseName.setText(editTextValues[position]?: exercise.name)
+        exerciseTitle.setExerciseName(exercise.name)
         exerciseDetails.setExercise(exercise)
 
         exerciseTitleElement.setOnClickListener{
@@ -215,20 +184,12 @@ class RoutineRecyclerViewAdapter(
             val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
 
             animator.addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {
-                }
-
+                override fun onAnimationStart(animation: Animator) {}
                 override fun onAnimationEnd(animation: Animator) {
                     animator.removeAllUpdateListeners()
-
                 }
-
-                override fun onAnimationCancel(animation: Animator) {
-                }
-
-                override fun onAnimationRepeat(animation: Animator) {
-                }
-
+                override fun onAnimationCancel(animation: Animator) {}
+                override fun onAnimationRepeat(animation: Animator) {}
             })
             animator.start()
         }
@@ -243,22 +204,13 @@ class RoutineRecyclerViewAdapter(
             val animator = animations.rotate(currentRotation, targetRotation, expandImage, 200)
 
             animator.addListener(object : Animator.AnimatorListener {
-                override fun onAnimationStart(animation: Animator) {
-
-                }
-
+                override fun onAnimationStart(animation: Animator) {}
                 override fun onAnimationEnd(animation: Animator) {
-
                     animator.removeAllUpdateListeners()
                 }
-
-                override fun onAnimationCancel(animation: Animator) {
-                }
-
-                override fun onAnimationRepeat(animation: Animator) {
-                }
+                override fun onAnimationCancel(animation: Animator) {}
+                override fun onAnimationRepeat(animation: Animator) {}
             })
-
             animator.start()
         }
     }
