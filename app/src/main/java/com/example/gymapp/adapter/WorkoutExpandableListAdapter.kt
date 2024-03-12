@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.ExpandableListView
 import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
@@ -113,6 +115,13 @@ class WorkoutExpandableListAdapter(
              }
          })
 
+        val childCheckBox = view?.findViewById<CheckBox>(R.id.checkBoxSetDone)
+        val groupView = getGroupView(listPosition, true, null, null) as WorkoutExpandableTitleLayout
+        val groupCheckBox = groupView.findViewById<CheckBox>(R.id.checkBoxExerciseDone)
+
+        groupCheckBox.setOnClickListener{
+            childCheckBox?.isChecked = groupCheckBox.isChecked
+        }
 
         return view
     }
@@ -164,6 +173,17 @@ class WorkoutExpandableListAdapter(
         val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
+
+        val groupCheckBox = view?.findViewById<CheckBox>(R.id.checkBoxExerciseDone)
+
+        view?.setOnClickListener{
+            if(isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
+            else (parent as ExpandableListView).expandGroup(listPosition, true)
+        }
+
+        groupCheckBox?.isFocusable = false
+        groupCheckBox?.isClickable = true
+
         return view
     }
 
