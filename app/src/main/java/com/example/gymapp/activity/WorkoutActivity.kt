@@ -134,14 +134,16 @@ class WorkoutActivity : BaseActivity() {
                     savedExercise.series,
                     savedExercise.rpe,
                     savedExercise.pace,
-                    ""
+                    "",
+                    false
                 )
                 val seriesList = List(savedExercise.series!!.toInt()) {
                     WorkoutSeriesDraft(
                         "",
                         savedExercise.load,
                         savedExercise.loadUnit,
-                        false
+                        isChecked = false,
+                        wasModified = false
                     )
                 }
                 workout.add(workout.size, Pair(exercise, seriesList))

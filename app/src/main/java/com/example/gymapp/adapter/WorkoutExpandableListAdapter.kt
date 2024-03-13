@@ -31,7 +31,7 @@ class WorkoutExpandableListAdapter(
 ) : BaseExpandableListAdapter() {
 
     private val workoutSession = ArrayList<Pair<Int, List<WorkoutSessionSet>>>()
-
+    private var isGroupCheckBoxClicked = false
     init {
         initWorkoutSession()
     }
@@ -115,12 +115,14 @@ class WorkoutExpandableListAdapter(
              }
          })
 
-        val childCheckBox = view?.findViewById<CheckBox>(R.id.checkBoxSetDone)
-        val groupView = getGroupView(listPosition, true, null, null) as WorkoutExpandableTitleLayout
-        val groupCheckBox = groupView.findViewById<CheckBox>(R.id.checkBoxExerciseDone)
-
-        groupCheckBox.setOnClickListener{
-            childCheckBox?.isChecked = groupCheckBox.isChecked
+        val childCheckBox = workoutExpandableLayout?.getSetCheckBox()
+        childCheckBox?.isChecked = series.isChecked
+        childCheckBox?.setOnCheckedChangeListener { _, isChecked ->
+            series.isChecked = isChecked
+            isGroupCheckBoxClicked = false
+            val allChildrenChecked = workout[listPosition].second.all { it.isChecked }
+            (getGroup(listPosition) as WorkoutExerciseDraft).isChecked = allChildrenChecked
+            notifyDataSetChanged()
         }
 
         return view
@@ -174,8 +176,18 @@ class WorkoutExpandableListAdapter(
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
 
-        val groupCheckBox = view?.findViewById<CheckBox>(R.id.checkBoxExerciseDone)
-
+        val groupCheckBox = workoutExpandableTitleLayout?.getExerciseCheckBox()
+        groupCheckBox?.setOnClickListener {
+            isGroupCheckBoxClicked = true
+            exercise.isChecked = groupCheckBox.isChecked
+            if(isGroupCheckBoxClicked) {
+                for (childIndex in 0 until getChildrenCount(listPosition)) {
+                    (getChild(listPosition, childIndex) as WorkoutSeriesDraft).isChecked = groupCheckBox.isChecked
+                }
+            }
+            notifyDataSetChanged()
+            isGroupCheckBoxClicked = false
+        }
         view?.setOnClickListener{
             if(isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
             else (parent as ExpandableListView).expandGroup(listPosition, true)

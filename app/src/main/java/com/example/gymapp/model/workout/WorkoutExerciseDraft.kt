@@ -10,5 +10,6 @@ data class WorkoutExerciseDraft(
     var series: String?,
     var rpe: String?,
     var pace: String?,
-    var note: String?
+    var note: String?,
+    var isChecked: Boolean
 )

@@ -2,6 +2,7 @@ package com.example.gymapp.layout
 
 import android.content.Context
 import android.util.AttributeSet
+import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.example.gymapp.R
@@ -12,6 +13,7 @@ class WorkoutExpandableTitleLayout(
     private val attributes: AttributeSet
 ) : LinearLayout(context, attributes) {
     private var workoutExerciseDraft: WorkoutExerciseDraft? = null
+    private val checkBox: CheckBox
 
     init {
         inflate(context, R.layout.workout_expandable_title_layout, this)
@@ -21,6 +23,8 @@ class WorkoutExpandableTitleLayout(
             0,
             0
         )
+        checkBox = findViewById(R.id.checkBoxExerciseDone)
+
         customAttributesStyle.recycle()
     }
 
@@ -39,14 +43,15 @@ class WorkoutExpandableTitleLayout(
         val rpe = findViewById<TextView>(R.id.textViewRpeValue)
         val pace = findViewById<TextView>(R.id.textViewPaceValue)
         try {
-            exerciseName.text = exerciseAttributes?.exerciseName
-            pause.text = exerciseAttributes?.pause
-            pauseUnit.text = exerciseAttributes?.pauseUnit.toString()
-            reps.text = exerciseAttributes?.reps
-            series.text = exerciseAttributes?.series
-            rpe.text = exerciseAttributes?.rpe
-            pace.text = exerciseAttributes?.pace
             if (exerciseAttributes != null) {
+            exerciseName.text = exerciseAttributes.exerciseName
+            pause.text = exerciseAttributes.pause
+            pauseUnit.text = exerciseAttributes.pauseUnit.toString()
+            reps.text = exerciseAttributes.reps
+            series.text = exerciseAttributes.series
+            rpe.text = exerciseAttributes.rpe
+            pace.text = exerciseAttributes.pace
+            checkBox.isChecked = exerciseAttributes.isChecked
                 workoutExerciseDraft =
                     WorkoutExerciseDraft(
                         exerciseAttributes.exerciseName,
@@ -56,7 +61,8 @@ class WorkoutExpandableTitleLayout(
                         exerciseAttributes.series,
                         exerciseAttributes.rpe,
                         exerciseAttributes.pace,
-                        null
+                        null,
+                        exerciseAttributes.isChecked
                     )
             }
         } finally {
@@ -66,5 +72,9 @@ class WorkoutExpandableTitleLayout(
 
     fun getWorkoutExerciseDraft(): WorkoutExerciseDraft? {
         return this.workoutExerciseDraft
+    }
+
+    fun getExerciseCheckBox(): CheckBox{
+        return this.checkBox
     }
 }

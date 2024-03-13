@@ -70,7 +70,7 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
             val loadUnit = getLoadUnit(exerciseId)
             if(loadUnit != null)
             {
-                workoutSeries.add(WorkoutSeriesDraft(actualReps, loadValue, loadUnit, false))
+                workoutSeries.add(WorkoutSeriesDraft(actualReps, loadValue, loadUnit, isChecked = false, wasModified = false))
             }
         }
         return workoutSeries

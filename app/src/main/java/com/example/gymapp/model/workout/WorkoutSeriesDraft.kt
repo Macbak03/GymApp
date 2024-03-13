@@ -8,6 +8,7 @@ data class WorkoutSeriesDraft (
     var actualReps: String?,
     var load: String?,
     var loadUnit: WeightUnit,
+    var isChecked: Boolean,
     var wasModified: Boolean
 ) {
 

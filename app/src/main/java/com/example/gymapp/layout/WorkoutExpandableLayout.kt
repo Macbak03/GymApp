@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -24,6 +25,8 @@ class WorkoutExpandableLayout(
     private var workoutSeriesDraft: WorkoutSeriesDraft? = null
     private var workoutExerciseDraft: WorkoutExerciseDraft? = null
 
+    private val checkBox: CheckBox
+
     init {
         inflate(context, R.layout.workout_expandable_layout, this)
         val customAttributesStyle =
@@ -33,6 +36,7 @@ class WorkoutExpandableLayout(
         repsEditText = findViewById(R.id.editTextWorkoutReps)
         weightEditText = findViewById(R.id.editTextWorkoutWeight)
         noteEditText = findViewById(R.id.editTextNote)
+        checkBox = findViewById(R.id.checkBoxSetDone)
 
         repsEditText.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int){
@@ -120,4 +124,7 @@ class WorkoutExpandableLayout(
         return this.weightEditText
     }
 
+    fun getSetCheckBox(): CheckBox{
+        return this.checkBox
+    }
 }
