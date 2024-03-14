@@ -38,7 +38,7 @@ class WorkoutExpandableTitleLayout(
         val exerciseName = findViewById<TextView>(R.id.textViewExerciseName)
         val pause = findViewById<TextView>(R.id.textViewPauseValue)
         val pauseUnit = findViewById<TextView>(R.id.textViewPauseUnitValue)
-        val reps = findViewById<TextView>(R.id.textViewRepsValue)
+        //val reps = findViewById<TextView>(R.id.textViewRepsValue)
         val series = findViewById<TextView>(R.id.textViewSeriesValue)
         val rpe = findViewById<TextView>(R.id.textViewRpeValue)
         val pace = findViewById<TextView>(R.id.textViewPaceValue)
@@ -47,7 +47,7 @@ class WorkoutExpandableTitleLayout(
             exerciseName.text = exerciseAttributes.exerciseName
             pause.text = exerciseAttributes.pause
             pauseUnit.text = exerciseAttributes.pauseUnit.toString()
-            reps.text = exerciseAttributes.reps
+            //reps.text = exerciseAttributes.reps
             series.text = exerciseAttributes.series
             rpe.text = exerciseAttributes.rpe
             pace.text = exerciseAttributes.pace
@@ -62,7 +62,8 @@ class WorkoutExpandableTitleLayout(
                         exerciseAttributes.rpe,
                         exerciseAttributes.pace,
                         null,
-                        exerciseAttributes.isChecked
+                        exerciseAttributes.isChecked,
+                        exerciseAttributes.isNoteEmpty
                     )
             }
         } finally {

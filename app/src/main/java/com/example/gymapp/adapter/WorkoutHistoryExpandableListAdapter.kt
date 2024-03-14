@@ -46,11 +46,13 @@ class WorkoutHistoryExpandableListAdapter (
         val workoutHistoryExpandableLayout = view as WorkoutHistoryExpandableLayout?
         workoutHistoryExpandableLayout?.setSeries(series, workoutExerciseDraft, expandedListPosition + 1)
         val noteEditText = workoutHistoryExpandableLayout?.getNoteTextView()
-        if (!isLastChild) {
+        if (!isLastChild || noteEditText?.text.isNullOrEmpty()) {
             noteEditText?.visibility = View.GONE
         } else {
             noteEditText?.visibility = View.VISIBLE
         }
+
+
         return view
     }
 
@@ -86,6 +88,7 @@ class WorkoutHistoryExpandableListAdapter (
         val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
+        workoutExpandableTitleLayout?.getExerciseCheckBox()?.visibility = View.GONE
         return view
     }
 

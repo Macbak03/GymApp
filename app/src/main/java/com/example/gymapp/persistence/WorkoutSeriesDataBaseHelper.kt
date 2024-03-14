@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.example.gymapp.model.routine.WeightUnit
-import com.example.gymapp.model.workout.WorkoutSeries
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 
 class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFactory?) :
@@ -70,7 +69,10 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
             val loadUnit = getLoadUnit(exerciseId)
             if(loadUnit != null)
             {
-                workoutSeries.add(WorkoutSeriesDraft(actualReps, loadValue, loadUnit, isChecked = false, wasModified = false))
+                workoutSeries.add(WorkoutSeriesDraft(actualReps, loadValue, loadUnit,
+                    isChecked = false,
+                    isRepsEmpty = false,
+                    isWeightEmpty = false))
             }
         }
         return workoutSeries

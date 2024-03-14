@@ -361,7 +361,7 @@ class WorkoutHistoryDatabaseHelper(
             val note = cursor.getString(cursor.getColumnIndexOrThrow(NOTES_COLUMN))
 
             val workoutExercise =
-                WorkoutExerciseDraft(exerciseName, pause, pauseUnit, reps, series, rpe, pace, note, false)
+                WorkoutExerciseDraft(exerciseName, pause, pauseUnit, reps, series, rpe, pace, note, isChecked = false, isNoteEmpty = true)
             workoutExercises.add(workoutExercise)
         }
         return workoutExercises

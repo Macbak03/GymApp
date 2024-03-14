@@ -53,7 +53,8 @@
         android:id="@+id/checkBoxSetDone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="25dp"/>
+        android:layout_marginEnd="25dp"
+        android:clickable="false"/>
 </LinearLayout>
 
     <EditText
