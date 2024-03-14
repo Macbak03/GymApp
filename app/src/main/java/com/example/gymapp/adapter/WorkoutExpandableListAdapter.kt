@@ -102,10 +102,6 @@ class WorkoutExpandableListAdapter(
         val childCheckBox = workoutExpandableLayout?.getSetCheckBox()
 
 
-        var isRepsEmpty = repsEditText?.text.isNullOrBlank()
-        var isWeightEmpty = weightEditText?.text.isNullOrBlank()
-
-
          repsEditText?.addTextChangedListener(object: TextWatcher{
              override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
              override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -114,11 +110,8 @@ class WorkoutExpandableListAdapter(
                  workoutSession[listPosition].second[expandedListPosition].actualReps = reps
                  workoutSession[listPosition].second[expandedListPosition].isRepsEmpty = reps.isNullOrBlank()
 
-                 isRepsEmpty = s.isNullOrBlank()
-                 childCheckBox?.isChecked = !isRepsEmpty && !isWeightEmpty
              }
          })
-
          weightEditText?.addTextChangedListener(object: TextWatcher{
              override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
              override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
@@ -126,8 +119,6 @@ class WorkoutExpandableListAdapter(
                  val weight = workout[listPosition].second[expandedListPosition].load
                  workoutSession[listPosition].second[expandedListPosition].load = weight
                  workoutSession[listPosition].second[expandedListPosition].isWeightEmpty = weight.isNullOrBlank()
-                 isWeightEmpty = s.isNullOrBlank()
-                 childCheckBox?.isChecked = !isRepsEmpty && !isWeightEmpty
              }
          })
 
@@ -142,7 +133,6 @@ class WorkoutExpandableListAdapter(
          })
 
         childCheckBox?.setOnCheckedChangeListener { _, isChecked ->
-            Handler(Looper.getMainLooper()).postDelayed({
                 series.isChecked = isChecked
                 val allChildrenChecked = workout[listPosition].second.all { it.isChecked }
                 (getGroup(listPosition) as WorkoutExerciseDraft).isChecked = allChildrenChecked
@@ -150,8 +140,6 @@ class WorkoutExpandableListAdapter(
                 workoutSession[listPosition].second[expandedListPosition].isChecked = isChecked
 
                 notifyDataSetChanged()
-
-            }, 1000)
         }
 
         return view
@@ -206,7 +194,7 @@ class WorkoutExpandableListAdapter(
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
 
         val groupCheckBox = workoutExpandableTitleLayout?.getExerciseCheckBox()
-       /* groupCheckBox?.setOnClickListener {
+        groupCheckBox?.setOnClickListener {
             isGroupCheckBoxClicked = true
             exercise.isChecked = groupCheckBox.isChecked
             if(isGroupCheckBoxClicked) {
@@ -216,11 +204,14 @@ class WorkoutExpandableListAdapter(
             }
             notifyDataSetChanged()
             isGroupCheckBoxClicked = false
-        }*/
+        }
         view?.setOnClickListener{
             if(isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
             else (parent as ExpandableListView).expandGroup(listPosition, true)
         }
+
+        groupCheckBox?.isClickable = true
+        groupCheckBox?.isFocusable = false
 
 
         return view

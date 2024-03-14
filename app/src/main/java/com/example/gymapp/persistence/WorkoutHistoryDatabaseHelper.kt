@@ -400,6 +400,47 @@ class WorkoutHistoryDatabaseHelper(
         return listOf(planName, date, routineName)
     }
 
+    private fun getLastTrainingSessionDate(planName: String, routineName: String) : String? {
+        var date: String? = null
+        val dataBaseRead = this.readableDatabase
+        val cursor = dataBaseRead.rawQuery(
+            "SELECT $DATE_COLUMN " +
+                "FROM $TABLE_NAME " +
+                    "WHERE $PLAN_NAME_COLUMN = '$planName' " +
+                    "AND $ROUTINE_NAME_COLUMN = '$routineName'" +
+                    "ORDER BY $DATE_COLUMN DESC", null)
+        if(cursor.moveToFirst()){
+            date = cursor.getString(cursor.getColumnIndexOrThrow(DATE_COLUMN))
+        }
+        cursor.close()
+        return date
+    }
+
+    fun getLastTrainingNotes(planName: String, routineName: String): List<String?>{
+        val notes : MutableList<String?> = ArrayList()
+
+        val dataBaseRead = this.readableDatabase
+        val date = getLastTrainingSessionDate(planName, routineName)
+
+        val cursor = dataBaseRead.rawQuery(
+            "SELECT $NOTES_COLUMN " +
+                    "FROM $TABLE_NAME " +
+                    "WHERE $DATE_COLUMN = '$date'", null
+        )
+        while (cursor.moveToNext()) {
+            val note = cursor.getString(cursor.getColumnIndexOrThrow(NOTES_COLUMN))
+            if(note == "") {
+                notes.add("Note")
+            }else{
+                notes.add(note)
+            }
+
+        }
+        cursor.close()
+
+        return notes
+    }
+
     fun updatePlanNames(oldName: String, newName: String) {
         val values = ContentValues()
         values.put(PLAN_NAME_COLUMN, newName)
