@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory app:title="App settings" app:icon="@drawable/baseline_settings_24">
-        <ListPreference
+<!--        <ListPreference
             app:defaultValue="Dark"
             app:key="theme"
             app:title="App theme"
             app:useSimpleSummaryProvider="true"
             android:defaultValue="Dark"
             app:entries="@array/themes_entries"
-            app:entryValues="@array/themes_values" />
+            app:entryValues="@array/themes_values" />-->
     </PreferenceCategory>
 
     <ListPreference
