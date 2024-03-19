@@ -13,8 +13,6 @@ class WorkoutExpandableTitleLayout(
     private val attributes: AttributeSet
 ) : LinearLayout(context, attributes) {
     private var workoutExerciseDraft: WorkoutExerciseDraft? = null
-    private val checkBox: CheckBox
-
     init {
         inflate(context, R.layout.workout_expandable_title_layout, this)
         val customAttributesStyle = context.obtainStyledAttributes(
@@ -23,7 +21,6 @@ class WorkoutExpandableTitleLayout(
             0,
             0
         )
-        checkBox = findViewById(R.id.checkBoxExerciseDone)
 
         customAttributesStyle.recycle()
     }
@@ -38,7 +35,6 @@ class WorkoutExpandableTitleLayout(
         val exerciseName = findViewById<TextView>(R.id.textViewExerciseName)
         val pause = findViewById<TextView>(R.id.textViewPauseValue)
         val pauseUnit = findViewById<TextView>(R.id.textViewPauseUnitValue)
-        //val reps = findViewById<TextView>(R.id.textViewRepsValue)
         val series = findViewById<TextView>(R.id.textViewSeriesValue)
         val rpe = findViewById<TextView>(R.id.textViewRpeValue)
         val pace = findViewById<TextView>(R.id.textViewPaceValue)
@@ -47,11 +43,9 @@ class WorkoutExpandableTitleLayout(
             exerciseName.text = exerciseAttributes.exerciseName
             pause.text = exerciseAttributes.pause
             pauseUnit.text = exerciseAttributes.pauseUnit.toString()
-            //reps.text = exerciseAttributes.reps
             series.text = exerciseAttributes.series
             rpe.text = exerciseAttributes.rpe
             pace.text = exerciseAttributes.pace
-            checkBox.isChecked = exerciseAttributes.isChecked
                 workoutExerciseDraft =
                     WorkoutExerciseDraft(
                         exerciseAttributes.exerciseName,
@@ -63,7 +57,6 @@ class WorkoutExpandableTitleLayout(
                         exerciseAttributes.pace,
                         null,
                         exerciseAttributes.isChecked,
-                        exerciseAttributes.isNoteEmpty
                     )
             }
         } finally {
@@ -75,7 +68,4 @@ class WorkoutExpandableTitleLayout(
         return this.workoutExerciseDraft
     }
 
-    fun getExerciseCheckBox(): CheckBox{
-        return this.checkBox
-    }
 }

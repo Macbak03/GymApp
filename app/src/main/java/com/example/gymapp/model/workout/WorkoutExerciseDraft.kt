@@ -12,5 +12,4 @@ data class WorkoutExerciseDraft(
     var pace: String?,
     var note: String?,
     var isChecked: Boolean,
-    var isNoteEmpty: Boolean
 )

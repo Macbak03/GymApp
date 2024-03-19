@@ -139,16 +139,13 @@ class WorkoutActivity : BaseActivity() {
                     savedExercise.pace,
                     "",
                     isChecked = false,
-                    isNoteEmpty = true
                 )
                 val seriesList = List(savedExercise.series!!.toInt()) {
                     WorkoutSeriesDraft(
                         "",
                         "",
                         savedExercise.loadUnit,
-                        isChecked = false,
-                        isRepsEmpty = true,
-                        isWeightEmpty = true
+                        isChecked = false
                     )
                 }
                 workout.add(workout.size, Pair(exercise, seriesList))
@@ -224,11 +221,6 @@ class WorkoutActivity : BaseActivity() {
 
                     workout[groupPosition].second[childPosition].isChecked =
                         workoutSessionSet.isChecked
-                    workout[groupPosition].second[childPosition].isRepsEmpty =
-                        workoutSessionSet.isRepsEmpty
-                    workout[groupPosition].second[childPosition].isWeightEmpty =
-                        workoutSessionSet.isWeightEmpty
-                    workout[groupPosition].first.isNoteEmpty = workoutSessionSet.isNoteEmpty
                 }
                 workout[pair.first].first.isChecked = workoutSessionSets.all { it.isChecked }
             }

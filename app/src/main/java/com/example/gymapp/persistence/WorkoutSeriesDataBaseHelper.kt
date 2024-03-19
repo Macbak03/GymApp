@@ -70,9 +70,7 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
             if(loadUnit != null)
             {
                 workoutSeries.add(WorkoutSeriesDraft(actualReps, loadValue, loadUnit,
-                    isChecked = false,
-                    isRepsEmpty = false,
-                    isWeightEmpty = false))
+                    isChecked = false))
             }
         }
         return workoutSeries

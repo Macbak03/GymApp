@@ -39,9 +39,6 @@ class EditWorkoutHistoryExpandableListAdapter(
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             view = inflater.inflate(R.layout.workout_expandable_layout_helper, null)
         }
-        workout[listPosition].first.isNoteEmpty = false
-        workout[listPosition].second[expandedListPosition].isRepsEmpty = false
-        workout[listPosition].second[expandedListPosition].isWeightEmpty = false
         val series = getChild(listPosition, expandedListPosition) as WorkoutSeriesDraft
         val workoutExerciseDraft = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableLayout = view as WorkoutExpandableLayout?
@@ -52,7 +49,6 @@ class EditWorkoutHistoryExpandableListAdapter(
         } else {
             noteEditText?.visibility = View.VISIBLE
         }
-        workoutExpandableLayout?.getSetCheckBox()?.visibility = View.GONE
         return view
     }
 
@@ -89,7 +85,6 @@ class EditWorkoutHistoryExpandableListAdapter(
         val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
-        workoutExpandableTitleLayout?.getExerciseCheckBox()?.visibility = View.GONE
         return view
     }
 

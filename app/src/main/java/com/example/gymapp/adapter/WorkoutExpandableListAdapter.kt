@@ -2,8 +2,6 @@ package com.example.gymapp.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -32,7 +30,6 @@ class WorkoutExpandableListAdapter(
 ) : BaseExpandableListAdapter() {
 
     private val workoutSession = ArrayList<Pair<Int, List<WorkoutSessionSet>>>()
-    private var isGroupCheckBoxClicked = false
 
     init {
         initWorkoutSession()
@@ -48,12 +45,16 @@ class WorkoutExpandableListAdapter(
                 val load = workoutSeriesDraft.load
                 val note = exercise.note
                 val isChecked = workoutSeriesDraft.isChecked
-                val wasSeriesModified = workoutSeriesDraft.isRepsEmpty
-                val wasWeightModified = workoutSeriesDraft.isWeightEmpty
-                val wasNoteModified = exercise.isNoteEmpty
                 if (actualReps != null && load != null && note != null) {
                     val workoutSessionSet =
-                        WorkoutSessionSet(index, seriesIndex, actualReps, load, note, isChecked, wasSeriesModified, wasWeightModified, wasNoteModified)
+                        WorkoutSessionSet(
+                            index,
+                            seriesIndex,
+                            actualReps,
+                            load,
+                            note,
+                            isChecked
+                        )
                     workoutSessionSets.add(workoutSessionSet)
                 }
             }
@@ -99,48 +100,34 @@ class WorkoutExpandableListAdapter(
 
         val repsEditText = workoutExpandableLayout?.getRepsEditText()
         val weightEditText = workoutExpandableLayout?.getWeightEditText()
-        val childCheckBox = workoutExpandableLayout?.getSetCheckBox()
 
 
-         repsEditText?.addTextChangedListener(object: TextWatcher{
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-             override fun afterTextChanged(s: Editable?) {
-                 val reps = workout[listPosition].second[expandedListPosition].actualReps
-                 workoutSession[listPosition].second[expandedListPosition].actualReps = reps
-                 workoutSession[listPosition].second[expandedListPosition].isRepsEmpty = reps.isNullOrBlank()
+        repsEditText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val reps = workout[listPosition].second[expandedListPosition].actualReps
+                workoutSession[listPosition].second[expandedListPosition].actualReps = reps
 
-             }
-         })
-         weightEditText?.addTextChangedListener(object: TextWatcher{
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-             override fun afterTextChanged(s: Editable?) {
-                 val weight = workout[listPosition].second[expandedListPosition].load
-                 workoutSession[listPosition].second[expandedListPosition].load = weight
-                 workoutSession[listPosition].second[expandedListPosition].isWeightEmpty = weight.isNullOrBlank()
-             }
-         })
+            }
+        })
+        weightEditText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val weight = workout[listPosition].second[expandedListPosition].load
+                workoutSession[listPosition].second[expandedListPosition].load = weight
+            }
+        })
 
-         noteEditText?.addTextChangedListener(object: TextWatcher{
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-             override fun afterTextChanged(s: Editable?) {
-                 val note = workout[listPosition].first.note
-                 workoutSession[listPosition].second[expandedListPosition].note = note
-                 workoutSession[listPosition].second[expandedListPosition].isNoteEmpty = note.isNullOrBlank()
-             }
-         })
-
-        childCheckBox?.setOnCheckedChangeListener { _, isChecked ->
-                series.isChecked = isChecked
-                val allChildrenChecked = workout[listPosition].second.all { it.isChecked }
-                (getGroup(listPosition) as WorkoutExerciseDraft).isChecked = allChildrenChecked
-
-                workoutSession[listPosition].second[expandedListPosition].isChecked = isChecked
-
-                notifyDataSetChanged()
-        }
+        noteEditText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val note = workout[listPosition].first.note
+                workoutSession[listPosition].second[expandedListPosition].note = note
+            }
+        })
 
         return view
     }
@@ -193,26 +180,11 @@ class WorkoutExpandableListAdapter(
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
 
-        val groupCheckBox = workoutExpandableTitleLayout?.getExerciseCheckBox()
-        groupCheckBox?.setOnClickListener {
-            isGroupCheckBoxClicked = true
-            exercise.isChecked = groupCheckBox.isChecked
-            if(isGroupCheckBoxClicked) {
-                for (childIndex in 0 until getChildrenCount(listPosition)) {
-                    (getChild(listPosition, childIndex) as WorkoutSeriesDraft).isChecked = groupCheckBox.isChecked
-                }
-            }
-            notifyDataSetChanged()
-            isGroupCheckBoxClicked = false
-        }
-        view?.setOnClickListener{
-            if(isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
+
+        view?.setOnClickListener {
+            if (isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
             else (parent as ExpandableListView).expandGroup(listPosition, true)
         }
-
-        groupCheckBox?.isClickable = true
-        groupCheckBox?.isFocusable = false
-
 
         return view
     }

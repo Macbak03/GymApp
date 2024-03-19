@@ -7,8 +7,5 @@ data class WorkoutSessionSet(
     var actualReps: String?,
     var load: String?,
     var note: String?,
-    var isChecked: Boolean,
-    var isRepsEmpty: Boolean,
-    var isWeightEmpty: Boolean,
-    var isNoteEmpty: Boolean
+    var isChecked: Boolean
 )

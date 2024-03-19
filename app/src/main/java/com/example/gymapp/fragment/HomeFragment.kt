@@ -1,5 +1,6 @@
 package com.example.gymapp.fragment
 
+import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -32,6 +33,7 @@ import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.persistence.PlansDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
+import com.example.gymapp.viewModel.ActivityResultData
 import com.example.gymapp.viewModel.SharedViewModel
 
 
@@ -59,14 +61,11 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
     private val startWorkoutActivityForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_CANCELED) {
-                isUnsaved = true
-                routineNameResult = result.data?.getStringExtra(ROUTINE_NAME)
-                buttonReturn.visibility = View.VISIBLE
-            } else if (result.resultCode == RESULT_OK) {
-                isUnsaved = false
-                buttonReturn.visibility = View.GONE
-            }
+            val sharedViewModel: SharedViewModel by activityViewModels()
+            val isUnsaved = result.resultCode == RESULT_CANCELED
+            val routineNameResult = result.data?.getStringExtra(ROUTINE_NAME)
+            val shouldShowButton = isUnsaved
+            sharedViewModel.setActivityResult(ActivityResultData(isUnsaved, routineNameResult, shouldShowButton))
             spinner.isEnabled = !isUnsaved
             saveResult(isUnsaved)
         }

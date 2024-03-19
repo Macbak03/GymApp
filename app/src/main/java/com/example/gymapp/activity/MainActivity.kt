@@ -28,6 +28,9 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         loadTheme()
         super.onCreate(savedInstanceState)
+        //requirePermission()
+        //restoreDatabase()
+        //openDirectoryPicker()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fragmentManager = supportFragmentManager

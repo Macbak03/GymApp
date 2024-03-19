@@ -16,10 +16,7 @@ class WorkoutSessionSetDeserializer : JsonDeserializer<WorkoutSessionSet> {
         val load = jsonObject.get("load").asString
         val note = jsonObject.get("note").asString
         val isChecked = jsonObject.get("isChecked").asBoolean
-        val isRepsEmpty = jsonObject.get("isRepsEmpty").asBoolean
-        val isWeightEmpty = jsonObject.get("isWeightEmpty").asBoolean
-        val isNoteEmpty = jsonObject.get("isNoteEmpty").asBoolean
 
-        return WorkoutSessionSet(groupId, childId, actualReps, load, note, isChecked, isRepsEmpty, isWeightEmpty, isNoteEmpty)
+        return WorkoutSessionSet(groupId, childId, actualReps, load, note, isChecked)
     }
 }

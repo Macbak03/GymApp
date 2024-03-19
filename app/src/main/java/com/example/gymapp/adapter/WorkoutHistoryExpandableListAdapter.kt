@@ -88,7 +88,6 @@ class WorkoutHistoryExpandableListAdapter (
         val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
-        workoutExpandableTitleLayout?.getExerciseCheckBox()?.visibility = View.GONE
         return view
     }
 
