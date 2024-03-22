@@ -66,6 +66,7 @@ class MainActivity : BaseActivity() {
         workoutHistoryDataBase.onCreate(workoutHistoryDataBase.readableDatabase)
         workoutSeriesDataBase.onCreate(workoutSeriesDataBase.readableDatabase)
         //workoutHistoryDataBase.onUpgrade(workoutHistoryDataBase.writableDatabase, 33, 38)
+        //exercisesDataBase.onUpgrade(exercisesDataBase.writableDatabase, 33, 38)
     }
 
     override fun onResume() {

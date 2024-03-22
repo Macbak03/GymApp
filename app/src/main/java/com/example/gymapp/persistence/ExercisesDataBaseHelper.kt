@@ -46,11 +46,11 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 
-        if (oldVersion < 34) {
-            //db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $INTENSITY_INDEX_COLUMN TEXT")
-            //db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeFrom TO $INTENSITY_RANGE_FROM_COLUMN")
-            //db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeTo TO $INTENSITY_RANGE_TO_COLUMN")
-        }
+/*        if (oldVersion < 34) {
+            db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $INTENSITY_INDEX_COLUMN TEXT")
+            db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeFrom TO $INTENSITY_RANGE_FROM_COLUMN")
+            db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeTo TO $INTENSITY_RANGE_TO_COLUMN")
+        }*/
     }
 
 

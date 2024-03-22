@@ -50,9 +50,9 @@ class WorkoutHistoryDatabaseHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        if(oldVersion < 34){
+        /*if(oldVersion < 34){
             db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $INTENSITY_INDEX_COLUMN TEXT")
-        }
+        }*/
     }
 
 
