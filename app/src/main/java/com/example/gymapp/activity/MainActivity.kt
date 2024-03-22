@@ -28,9 +28,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         loadTheme()
         super.onCreate(savedInstanceState)
-        //requirePermission()
-        //restoreDatabase()
-        //openDirectoryPicker()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fragmentManager = supportFragmentManager
@@ -68,6 +65,7 @@ class MainActivity : BaseActivity() {
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
         workoutHistoryDataBase.onCreate(workoutHistoryDataBase.readableDatabase)
         workoutSeriesDataBase.onCreate(workoutSeriesDataBase.readableDatabase)
+        //workoutHistoryDataBase.onUpgrade(workoutHistoryDataBase.writableDatabase, 33, 38)
     }
 
     override fun onResume() {

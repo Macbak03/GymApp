@@ -1,7 +1,6 @@
 package com.example.gymapp.model.routine
 
 import com.example.gymapp.exception.ValidationException
-import kotlin.time.Duration
 
 data class ExerciseDraft (
     val id: Long,
@@ -13,7 +12,8 @@ data class ExerciseDraft (
     var loadUnit: WeightUnit,
     var series: String?,
     var reps: String?,
-    var rpe: String?,
+    var intensity: String?,
+    var intensityIndex: IntensityIndex,
     var pace: String?,
     var wasModified: Boolean
 ) {
@@ -38,10 +38,10 @@ data class ExerciseDraft (
             throw ValidationException("series must be a number")
         }
         val intSeries = series.toInt()
-        val rpe = Rpe.fromString(rpe)
+        val intensity = Intensity.fromString(intensity, intensityIndex)
         val pace = ExercisePace.fromString(pace)
 
 
-        return Exercise(name, pauseDuration, weight, intSeries, reps, rpe, pace)
+        return Exercise(name, pauseDuration, weight, intSeries, reps, intensity, pace)
     }
 }

@@ -64,8 +64,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
             val sharedViewModel: SharedViewModel by activityViewModels()
             val isUnsaved = result.resultCode == RESULT_CANCELED
             val routineNameResult = result.data?.getStringExtra(ROUTINE_NAME)
-            val shouldShowButton = isUnsaved
-            sharedViewModel.setActivityResult(ActivityResultData(isUnsaved, routineNameResult, shouldShowButton))
+            sharedViewModel.setActivityResult(ActivityResultData(isUnsaved, routineNameResult))
             spinner.isEnabled = !isUnsaved
             saveResult(isUnsaved)
         }
@@ -330,7 +329,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         sharedViewModel.activityResult.observe(viewLifecycleOwner) { resultData ->
             isUnsaved = resultData.isUnsaved
             routineNameResult = resultData.routineNameResult
-            buttonReturn.visibility = if (resultData.shouldShowButton) View.VISIBLE else View.GONE
+            buttonReturn.visibility = if (resultData.isUnsaved) View.VISIBLE else View.GONE
             spinner.isEnabled = !isUnsaved
             saveResult(isUnsaved)
         }

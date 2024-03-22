@@ -79,10 +79,11 @@
             style="@style/workout_linear_layout_title_item">
 
             <TextView
-                android:text="Rpe:"
+                android:id="@+id/textViewIntensityIndex"
+                android:text="Index:"
                 style="@style/workout_text_view_title_item"/>
             <TextView
-                android:id="@+id/textViewRpeValue"
+                android:id="@+id/textViewIntensityValue"
                 android:text="@string/val"
                 style="@style/workout_text_view_title_item"/>
         </LinearLayout>

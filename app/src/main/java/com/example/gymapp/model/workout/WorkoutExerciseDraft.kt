@@ -1,5 +1,6 @@
 package com.example.gymapp.model.workout
 
+import com.example.gymapp.model.routine.IntensityIndex
 import com.example.gymapp.model.routine.TimeUnit
 
 data class WorkoutExerciseDraft(
@@ -8,7 +9,8 @@ data class WorkoutExerciseDraft(
     var pauseUnit: TimeUnit,
     var reps: String?,
     var series: String?,
-    var rpe: String?,
+    var intensity: String?,
+    var intensityIndex: IntensityIndex,
     var pace: String?,
     var note: String?,
     var isChecked: Boolean,

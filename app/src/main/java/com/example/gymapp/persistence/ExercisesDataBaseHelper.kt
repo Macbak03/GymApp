@@ -6,12 +6,13 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.example.gymapp.model.routine.ExactPause
 import com.example.gymapp.model.routine.ExactReps
-import com.example.gymapp.model.routine.ExactRpe
+import com.example.gymapp.model.routine.ExactIntensity
 import com.example.gymapp.model.routine.Exercise
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.IntensityIndex
 import com.example.gymapp.model.routine.RangePause
 import com.example.gymapp.model.routine.RangeReps
-import com.example.gymapp.model.routine.RangeRpe
+import com.example.gymapp.model.routine.RangeIntensity
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 
@@ -32,8 +33,9 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 REPS_RANGE_FROM_COLUMN + " INTEGER NOT NULL," +
                 REPS_RANGE_TO_COLUMN + " INTEGER NOT NULL," +
                 SERIES_COLUMN + " INTEGER NOT NULL," +
-                RPE_RANGE_FROM_COLUMN + " INTEGER," +
-                RPE_RANGE_TO_COLUMN + " INTEGER," +
+                INTENSITY_RANGE_FROM_COLUMN + " INTEGER," +
+                INTENSITY_RANGE_TO_COLUMN + " INTEGER," +
+                INTENSITY_INDEX_COLUMN + " TEXT NOT NULL," +
                 PACE_COLUMN + " TEXT," +
                 "FOREIGN KEY " + "(" + ROUTINE_ID_COLUMN + ")" + " REFERENCES " + RoutinesDataBaseHelper.TABLE_NAME + "(" + RoutinesDataBaseHelper.ROUTINE_ID_COLUMN + ")"
                 + "ON UPDATE CASCADE ON DELETE CASCADE," +
@@ -43,7 +45,12 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        onCreate(db)
+
+        if (oldVersion < 34) {
+            //db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $INTENSITY_INDEX_COLUMN TEXT")
+            //db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeFrom TO $INTENSITY_RANGE_FROM_COLUMN")
+            //db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeTo TO $INTENSITY_RANGE_TO_COLUMN")
+        }
     }
 
 
@@ -61,11 +68,12 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         values.put(ROUTINE_NAME_COLUMN, routineName)
         values.put(EXERCISE_ORDER_COLUMN, exerciseCount)
         values.put(EXERCISE_NAME_COLUMN, exercise.name)
-        when (exercise.pause){
+        when (exercise.pause) {
             is ExactPause -> {
                 values.put(PAUSE_RANGE_FROM_COLUMN, exercise.pause.value)
                 values.put(PAUSE_RANGE_TO_COLUMN, exercise.pause.value)
             }
+
             is RangePause -> {
                 values.put(PAUSE_RANGE_FROM_COLUMN, exercise.pause.from)
                 values.put(PAUSE_RANGE_TO_COLUMN, exercise.pause.to)
@@ -86,15 +94,17 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
 
         }
         values.put(SERIES_COLUMN, exercise.series)
-        when (exercise.rpe) {
-            is ExactRpe -> {
-                values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.value)
-                values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.value)
+        when (exercise.intensity) {
+            is ExactIntensity -> {
+                values.put(INTENSITY_RANGE_FROM_COLUMN, exercise.intensity.value)
+                values.put(INTENSITY_RANGE_TO_COLUMN, exercise.intensity.value)
+                values.put(INTENSITY_INDEX_COLUMN, exercise.intensity.index.toString())
             }
 
-            is RangeRpe -> {
-                values.put(RPE_RANGE_FROM_COLUMN, exercise.rpe.from)
-                values.put(RPE_RANGE_TO_COLUMN, exercise.rpe.to)
+            is RangeIntensity -> {
+                values.put(INTENSITY_RANGE_FROM_COLUMN, exercise.intensity.from)
+                values.put(INTENSITY_RANGE_TO_COLUMN, exercise.intensity.to)
+                values.put(INTENSITY_INDEX_COLUMN, exercise.intensity.index.toString())
             }
 
             null -> {}
@@ -155,10 +165,9 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 null
             )
         return cursor.use {
-            if(it.moveToFirst())
-            {
+            if (it.moveToFirst()) {
                 it.getInt(it.getColumnIndexOrThrow(RoutinesDataBaseHelper.ROUTINE_ID_COLUMN))
-            }else{
+            } else {
                 null
             }
         }
@@ -198,14 +207,12 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         )
     }
 
-    fun getRoutine(routineName: String, planId: String): MutableList<ExerciseDraft>
-    {
+    fun getRoutine(routineName: String, planId: String): MutableList<ExerciseDraft> {
         val exercises: MutableList<ExerciseDraft> = ArrayList()
         val cursor = getRoutineCursor(routineName, planId)
         val seconds = 60
         var count: Long = 0
-        while (cursor.moveToNext())
-        {
+        while (cursor.moveToNext()) {
             val exerciseName =
                 cursor.getString(cursor.getColumnIndexOrThrow(EXERCISE_NAME_COLUMN))
 
@@ -246,14 +253,23 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
             val series =
                 cursor.getString(cursor.getColumnIndexOrThrow(SERIES_COLUMN))
 
-            val rpeRangeFrom =
-                cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_FROM_COLUMN))
-            val rpeRangeTo =
-                cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_TO_COLUMN))
-            val rpe: String = if (rpeRangeFrom == rpeRangeTo) {
-                ExactReps(rpeRangeFrom).toString()
+            val intensityIndex =
+                cursor.getString(cursor.getColumnIndexOrThrow(INTENSITY_INDEX_COLUMN))
+            val intensityRangeFrom =
+                cursor.getInt(cursor.getColumnIndexOrThrow(INTENSITY_RANGE_FROM_COLUMN))
+            val intensityRangeTo =
+                cursor.getInt(cursor.getColumnIndexOrThrow(INTENSITY_RANGE_TO_COLUMN))
+            val intensity: String = if (intensityRangeFrom == intensityRangeTo) {
+                ExactIntensity(
+                    intensityRangeFrom,
+                    IntensityIndex.valueOf(intensityIndex)
+                ).toString()
             } else {
-                RangeReps(rpeRangeFrom, rpeRangeTo).toString()
+                RangeIntensity(
+                    intensityRangeFrom,
+                    intensityRangeTo,
+                    IntensityIndex.valueOf(intensityIndex)
+                ).toString()
             }
 
             val pace =
@@ -268,7 +284,8 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
                 WeightUnit.valueOf(loadUnit),
                 series,
                 reps,
-                rpe,
+                intensity,
+                IntensityIndex.valueOf(intensityIndex),
                 pace,
                 false
             )
@@ -309,8 +326,9 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
         const val REPS_RANGE_FROM_COLUMN = "RepsRangeFrom"
         const val REPS_RANGE_TO_COLUMN = "RepsRangeTo"
         const val SERIES_COLUMN = "Series"
-        const val RPE_RANGE_FROM_COLUMN = "RPERangeFrom"
-        const val RPE_RANGE_TO_COLUMN = "RPERangeTo"
+        const val INTENSITY_RANGE_FROM_COLUMN = "RPERangeFrom"
+        const val INTENSITY_RANGE_TO_COLUMN = "RPERangeTo"
+        const val INTENSITY_INDEX_COLUMN = "IntensityIndex"
         const val PACE_COLUMN = "Pace"
     }
 }
