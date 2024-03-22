@@ -21,6 +21,7 @@ class WorkoutExpandableTitleLayout(
             0,
             0
         )
+
         customAttributesStyle.recycle()
     }
 
@@ -34,19 +35,19 @@ class WorkoutExpandableTitleLayout(
         val exerciseName = findViewById<TextView>(R.id.textViewExerciseName)
         val pause = findViewById<TextView>(R.id.textViewPauseValue)
         val pauseUnit = findViewById<TextView>(R.id.textViewPauseUnitValue)
-        val reps = findViewById<TextView>(R.id.textViewRepsValue)
         val series = findViewById<TextView>(R.id.textViewSeriesValue)
-        val rpe = findViewById<TextView>(R.id.textViewRpeValue)
+        val intensity = findViewById<TextView>(R.id.textViewIntensityValue)
+        val intensityIndex = findViewById<TextView>(R.id.textViewIntensityIndex)
         val pace = findViewById<TextView>(R.id.textViewPaceValue)
         try {
-            exerciseName.text = exerciseAttributes?.exerciseName
-            pause.text = exerciseAttributes?.pause
-            pauseUnit.text = exerciseAttributes?.pauseUnit.toString()
-            reps.text = exerciseAttributes?.reps
-            series.text = exerciseAttributes?.series
-            rpe.text = exerciseAttributes?.rpe
-            pace.text = exerciseAttributes?.pace
             if (exerciseAttributes != null) {
+                exerciseName.text = exerciseAttributes.exerciseName
+                pause.text = exerciseAttributes.pause
+                pauseUnit.text = exerciseAttributes.pauseUnit.toString()
+                series.text = exerciseAttributes.series
+                intensity.text = exerciseAttributes.intensity
+                pace.text = exerciseAttributes.pace
+                intensityIndex.text = exerciseAttributes.intensityIndex.toString()
                 workoutExerciseDraft =
                     WorkoutExerciseDraft(
                         exerciseAttributes.exerciseName,
@@ -54,9 +55,11 @@ class WorkoutExpandableTitleLayout(
                         exerciseAttributes.pauseUnit,
                         exerciseAttributes.reps,
                         exerciseAttributes.series,
-                        exerciseAttributes.rpe,
+                        exerciseAttributes.intensity,
+                        exerciseAttributes.intensityIndex,
                         exerciseAttributes.pace,
-                        null
+                        null,
+                        exerciseAttributes.isChecked,
                     )
             }
         } finally {
@@ -67,4 +70,5 @@ class WorkoutExpandableTitleLayout(
     fun getWorkoutExerciseDraft(): WorkoutExerciseDraft? {
         return this.workoutExerciseDraft
     }
+
 }

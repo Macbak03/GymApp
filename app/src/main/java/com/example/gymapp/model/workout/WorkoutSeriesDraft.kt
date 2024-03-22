@@ -8,7 +8,7 @@ data class WorkoutSeriesDraft (
     var actualReps: String?,
     var load: String?,
     var loadUnit: WeightUnit,
-    var wasModified: Boolean
+    var isChecked: Boolean,
 ) {
 
     fun toWorkoutSeries(seriesCount: Int): WorkoutSeries {

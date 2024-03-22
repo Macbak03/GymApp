@@ -18,15 +18,6 @@
         android:textAlignment="viewStart"
         android:textStyle="bold"/>
 
-    <CheckBox
-        android:id="@+id/checkBoxExerciseDone"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="-3dp"
-        android:layout_marginEnd="20dp"
-        android:focusable="true"
-        android:clickable="true"/>
-
 </LinearLayout>
 
     <LinearLayout
@@ -60,7 +51,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+     <!--   <LinearLayout
             style="@style/workout_linear_layout_title_item">
 
             <TextView
@@ -70,7 +61,7 @@
                 android:id="@+id/textViewRepsValue"
                 android:text="@string/val"
                 style="@style/workout_text_view_title_item"/>
-        </LinearLayout>
+        </LinearLayout>-->
 
         <LinearLayout
             style="@style/workout_linear_layout_title_item">
@@ -88,10 +79,11 @@
             style="@style/workout_linear_layout_title_item">
 
             <TextView
-                android:text="Rpe:"
+                android:id="@+id/textViewIntensityIndex"
+                android:text="Index:"
                 style="@style/workout_text_view_title_item"/>
             <TextView
-                android:id="@+id/textViewRpeValue"
+                android:id="@+id/textViewIntensityValue"
                 android:text="@string/val"
                 style="@style/workout_text_view_title_item"/>
         </LinearLayout>

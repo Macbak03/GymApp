@@ -10,8 +10,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.work.Worker
-import androidx.work.WorkerParameters
 import com.example.gymapp.R
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
 import com.example.gymapp.databinding.ActivityWorkoutBinding
@@ -23,6 +21,7 @@ import com.example.gymapp.model.WorkoutSessionSetDeserializer
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
+import com.example.gymapp.model.workout.WorkoutHint
 import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
@@ -40,11 +39,13 @@ class WorkoutActivity : BaseActivity() {
     private val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
     private var workout: MutableList<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>> =
         ArrayList()
+    private var workoutHints: MutableList<WorkoutHint> = ArrayList()
     private var routineName: String? = null
     private var planName: String? = null
 
     private var isCorrectlyClosed = false
     private var isTerminated = true
+
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -83,7 +84,7 @@ class WorkoutActivity : BaseActivity() {
 
 
         expandableListView = binding.expandableListViewWorkout
-        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout)
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout, workoutHints)
         expandableListView.setAdapter(workoutExpandableListAdapter)
 
 
@@ -123,28 +124,43 @@ class WorkoutActivity : BaseActivity() {
         workout.clear()
         val exercisesDataBase = ExercisesDataBaseHelper(this, null)
         val routineName = intent.getStringExtra(TrainingPlanActivity.ROUTINE_NAME)
-        if (routineName != null && planId != null) {
+        val planName = this.planName
+        if (routineName != null && planId != null && planName != null) {
             val savedRoutine = exercisesDataBase.getRoutine(routineName, planId.toString())
-            for (savedExercise in savedRoutine) {
+            val savedNotes = workoutHistoryDatabase.getLastTrainingNotes(planName, routineName)
+            savedRoutine.forEachIndexed { index, savedExercise ->
                 val exercise = WorkoutExerciseDraft(
                     savedExercise.name,
                     savedExercise.pause,
                     savedExercise.pauseUnit,
                     savedExercise.reps,
                     savedExercise.series,
-                    savedExercise.rpe,
+                    savedExercise.intensity,
+                    savedExercise.intensityIndex,
                     savedExercise.pace,
-                    ""
+                    "",
+                    isChecked = false,
                 )
                 val seriesList = List(savedExercise.series!!.toInt()) {
                     WorkoutSeriesDraft(
                         "",
-                        savedExercise.load,
+                        "",
                         savedExercise.loadUnit,
-                        false
+                        isChecked = false
                     )
                 }
                 workout.add(workout.size, Pair(exercise, seriesList))
+
+                if(savedNotes.isNotEmpty()){
+                    val note = savedNotes[index]
+                    val workoutHint = WorkoutHint(savedExercise.reps, savedExercise.load, note)
+                    workoutHints.add(workoutHint)
+                }else{
+                    val workoutHint = WorkoutHint(savedExercise.reps, savedExercise.load, "Note")
+                    workoutHints.add(workoutHint)
+                }
+
+
             }
         }
         val isUnsaved = intent.getBooleanExtra(HomeFragment.IS_UNSAVED, false)
@@ -184,7 +200,10 @@ class WorkoutActivity : BaseActivity() {
 
             val gson = GsonBuilder()
                 .registerTypeAdapter(WorkoutSessionSet::class.java, WorkoutSessionSetDeserializer())
-                .registerTypeAdapter(object : TypeToken<List<Pair<Int, List<WorkoutSessionSet>>>>() {}.type, CustomPairDeserializer())
+                .registerTypeAdapter(
+                    object : TypeToken<List<Pair<Int, List<WorkoutSessionSet>>>>() {}.type,
+                    CustomPairDeserializer()
+                )
                 .create()
 
             val type = object : TypeToken<List<Pair<Int, List<WorkoutSessionSet>>>>() {}.type
@@ -200,7 +219,11 @@ class WorkoutActivity : BaseActivity() {
                     workout[groupPosition].second[childPosition].actualReps =
                         workoutSessionSet.actualReps
                     workout[groupPosition].second[childPosition].load = workoutSessionSet.load
+
+                    workout[groupPosition].second[childPosition].isChecked =
+                        workoutSessionSet.isChecked
                 }
+                workout[pair.first].first.isChecked = workoutSessionSets.all { it.isChecked }
             }
         } catch (exception: Exception) {
             exception.printStackTrace()

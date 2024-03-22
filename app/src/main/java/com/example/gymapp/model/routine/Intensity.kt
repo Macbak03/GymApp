@@ -2,43 +2,45 @@ package com.example.gymapp.model.routine
 
 import com.example.gymapp.exception.ValidationException
 
-sealed interface Rpe{
-    companion object{
-        fun fromString(rpe: String?): Rpe {
-            if (rpe == null) {
+sealed interface Intensity {
+    companion object {
+        fun fromString(intensity: String?, index: IntensityIndex): Intensity {
+            if (intensity == null) {
                 throw ValidationException("rpe cannot be empty")
             }
             val regex = Regex("""^(\d+)$|^(\d+)-(\d+)$""")
-            val match = regex.matchEntire(rpe)
-                ?: throw ValidationException("rpe must be a number (eg. 7) or range (eg. 7-8)")
+            val match = regex.matchEntire(intensity)
+                ?: throw ValidationException("intensity must be a number (eg. 7) or range (eg. 7-8)")
             val (exactValue, rangeFrom, rangeTo) = match.destructured
             return if (exactValue.isEmpty()) {
                 val intRangeFrom = rangeFrom.toInt()
                 val intRangeTo = rangeTo.toInt()
-                if(intRangeFrom >= intRangeTo)
-                {
+                if (intRangeFrom >= intRangeTo) {
                     throw ValidationException("first number of the range must be lower than the second number")
                 }
-                RangeRpe(intRangeFrom, intRangeTo)
+                RangeIntensity(intRangeFrom, intRangeTo, index)
             } else {
-                ExactRpe(exactValue.toInt())
+                ExactIntensity(exactValue.toInt(), index)
             }
 
         }
     }
 }
-data class ExactRpe(
+
+data class ExactIntensity(
     val value: Int,
-): Rpe {
+    val index: IntensityIndex
+) : Intensity {
     override fun toString(): String {
         return value.toString()
     }
 }
 
-data class RangeRpe(
+data class RangeIntensity(
     val from: Int,
-    val to: Int
-): Rpe {
+    val to: Int,
+    val index: IntensityIndex
+) : Intensity {
     override fun toString(): String {
         return "$from-$to"
     }

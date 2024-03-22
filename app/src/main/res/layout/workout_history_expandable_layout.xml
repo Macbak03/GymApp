@@ -1,62 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="horizontal">
 
         <TextView
             android:id="@+id/textViewHistoryDetailSeriesCount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1."
-            android:textSize="18sp"
-            android:layout_marginStart="10dp"/>
-
-        <TextView
-            android:id="@+id/textViewHistoryDetailReps"
-            android:layout_width="0dp"
-            android:layout_height="50sp"
             android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:textSize="20sp"
-            android:text="Reps"
-            android:textAlignment="textEnd"/>
-        <TextView
-            android:layout_width="20dp"
-            android:layout_height="wrap_content"
-            android:text="x"
-            android:textSize="18sp"
-            android:textAlignment="center"/>
-        <TextView
-            android:id="@+id/textViewHistoryDetailWeight"
-            android:layout_width="0dp"
-            android:layout_height="50sp"
-            android:layout_weight="1"
-            android:textSize="20sp"
-            android:text="Weight" />
-        <TextView
-            android:id="@+id/textViewHistoryDetailWeightUnitValue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="@string/val"
-            android:layout_marginEnd="10dp"/>
+            android:layout_marginTop="4dp"
+            android:text="1."
+            android:textSize="18sp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_gravity="center">
+
+            <TextView
+                android:id="@+id/textViewHistoryDetailReps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reps"
+                android:textAlignment="textEnd"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="20dp"
+                android:layout_height="wrap_content"
+                android:text="x"
+                android:textAlignment="center"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textViewHistoryDetailWeight"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewHistoryDetailWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weight"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewHistoryDetailWeightUnitValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/val"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textViewHistoryDetailWeight"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 
     <TextView
         android:id="@+id/textViewHistoryDetailNote"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Note"
-        android:textSize="20sp"
         android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="Note"
+        android:textSize="20sp" />
 
 </LinearLayout>

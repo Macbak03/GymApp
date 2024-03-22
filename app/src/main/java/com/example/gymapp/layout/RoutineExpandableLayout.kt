@@ -2,16 +2,13 @@ package com.example.gymapp.layout
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
-import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Spinner
+import android.widget.TextView
 import com.example.gymapp.R
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.routine.TimeUnit
@@ -31,8 +28,10 @@ class RoutineExpandableLayout(
     private val loadSpinner: Spinner
     private val repsEditText: EditText
     private val seriesEditText: EditText
-    private val rpeEditText: EditText
+    private val intensityEditText: EditText
     private val paceEditText: EditText
+
+    private val intensityIndexTextView: TextView
 
     private val pauseDescription: FrameLayout
     private val loadDescription: FrameLayout
@@ -59,8 +58,10 @@ class RoutineExpandableLayout(
         loadSpinner = findViewById(R.id.spinnerLoad)
         repsEditText = findViewById(R.id.editTextReps)
         seriesEditText = findViewById(R.id.editTextSeries)
-        rpeEditText = findViewById(R.id.editTextRpe)
+        intensityEditText = findViewById(R.id.editTextIntensity)
         paceEditText = findViewById(R.id.editTextPace)
+
+        intensityIndexTextView = findViewById(R.id.textViewIntensity)
 
         pauseDescription = findViewById(R.id.imageViewPauseDescription)
         loadDescription = findViewById(R.id.imageViewLoadDescription)
@@ -174,8 +175,11 @@ class RoutineExpandableLayout(
         }
         seriesEditText.setText(exercise?.series.toString())
         repsEditText.setText(exercise?.reps.toString())
-        rpeEditText.setText(exercise?.rpe.toString())
+        intensityEditText.setText(exercise?.intensity.toString())
         paceEditText.setText(exercise?.pace.toString())
+
+        intensityEditText.hint = "Enter ${exercise?.intensityIndex.toString()}"
+        intensityIndexTextView.text = exercise?.intensityIndex.toString()
     }
 
 /*    fun getExerciseDraft(): ExerciseDraft? {

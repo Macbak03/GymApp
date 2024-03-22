@@ -8,8 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
-import android.widget.CheckBox
-import android.widget.EditText
 import android.widget.ExpandableListView
 import com.example.gymapp.R
 import com.example.gymapp.layout.WorkoutExpandableLayout
@@ -18,6 +16,7 @@ import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutExercise
+import com.example.gymapp.model.workout.WorkoutHint
 import com.example.gymapp.model.workout.WorkoutSeries
 import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.google.gson.Gson
@@ -26,8 +25,8 @@ import java.io.FileWriter
 
 class WorkoutExpandableListAdapter(
     private val context: Context,
-    private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>
-
+    private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>,
+    private val workoutHints: List<WorkoutHint>
 ) : BaseExpandableListAdapter() {
 
     private val workoutSession = ArrayList<Pair<Int, List<WorkoutSessionSet>>>()
@@ -39,14 +38,23 @@ class WorkoutExpandableListAdapter(
     private fun initWorkoutSession() {
         workout.forEachIndexed { index, pair ->
             val series = pair.second
+            val exercise = pair.first
             val workoutSessionSets = ArrayList<WorkoutSessionSet>()
             series.forEachIndexed { seriesIndex, workoutSeriesDraft ->
                 val actualReps = workoutSeriesDraft.actualReps
                 val load = workoutSeriesDraft.load
-                val note = pair.first.note
+                val note = exercise.note
+                val isChecked = workoutSeriesDraft.isChecked
                 if (actualReps != null && load != null && note != null) {
                     val workoutSessionSet =
-                        WorkoutSessionSet(index, seriesIndex, actualReps, load, note)
+                        WorkoutSessionSet(
+                            index,
+                            seriesIndex,
+                            actualReps,
+                            load,
+                            note,
+                            isChecked
+                        )
                     workoutSessionSets.add(workoutSessionSet)
                 }
             }
@@ -79,49 +87,47 @@ class WorkoutExpandableListAdapter(
         val series = getChild(listPosition, expandedListPosition) as WorkoutSeriesDraft
         val workoutExerciseDraft = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableLayout = view as WorkoutExpandableLayout?
+
+        val workoutHint = workoutHints[listPosition]
+
+        workoutExpandableLayout?.setHints(workoutHint)
         workoutExpandableLayout?.setSeries(series, workoutExerciseDraft, expandedListPosition + 1)
+
         val noteEditText = workoutExpandableLayout?.getNoteEditText()
 
         noteEditText?.visibility = if (isLastChild) View.VISIBLE else View.GONE
 
 
-         val repsEditText = workoutExpandableLayout?.getRepsEditText()
-         val weightEditText = workoutExpandableLayout?.getWeightEditText()
+        val repsEditText = workoutExpandableLayout?.getRepsEditText()
+        val weightEditText = workoutExpandableLayout?.getWeightEditText()
 
-         repsEditText?.addTextChangedListener(object: TextWatcher{
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-             override fun afterTextChanged(s: Editable?) {
-                 workoutSession[listPosition].second[expandedListPosition].actualReps =
-                     workout[listPosition].second[expandedListPosition].actualReps
-             }
-         })
 
-         weightEditText?.addTextChangedListener(object: TextWatcher{
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-             override fun afterTextChanged(s: Editable?) {
-                 workoutSession[listPosition].second[expandedListPosition].load =
-                     workout[listPosition].second[expandedListPosition].load
-             }
-         })
+        repsEditText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val reps = workout[listPosition].second[expandedListPosition].actualReps
+                workoutSession[listPosition].second[expandedListPosition].actualReps = reps
 
-         noteEditText?.addTextChangedListener(object: TextWatcher{
-             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-             override fun afterTextChanged(s: Editable?) {
-                 workoutSession[listPosition].second[expandedListPosition].note =
-                     workout[listPosition].first.note
-             }
-         })
+            }
+        })
+        weightEditText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val weight = workout[listPosition].second[expandedListPosition].load
+                workoutSession[listPosition].second[expandedListPosition].load = weight
+            }
+        })
 
-        val childCheckBox = view?.findViewById<CheckBox>(R.id.checkBoxSetDone)
-        val groupView = getGroupView(listPosition, true, null, null) as WorkoutExpandableTitleLayout
-        val groupCheckBox = groupView.findViewById<CheckBox>(R.id.checkBoxExerciseDone)
-
-        groupCheckBox.setOnClickListener{
-            childCheckBox?.isChecked = groupCheckBox.isChecked
-        }
+        noteEditText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                val note = workout[listPosition].first.note
+                workoutSession[listPosition].second[expandedListPosition].note = note
+            }
+        })
 
         return view
     }
@@ -174,15 +180,11 @@ class WorkoutExpandableListAdapter(
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
         workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
 
-        val groupCheckBox = view?.findViewById<CheckBox>(R.id.checkBoxExerciseDone)
 
-        view?.setOnClickListener{
-            if(isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
+        view?.setOnClickListener {
+            if (isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
             else (parent as ExpandableListView).expandGroup(listPosition, true)
         }
-
-        groupCheckBox?.isFocusable = false
-        groupCheckBox?.isClickable = true
 
         return view
     }
@@ -213,7 +215,8 @@ class WorkoutExpandableListAdapter(
                     workoutSeriesDraft.loadUnit,
                     workoutExerciseDraft.series,
                     workoutExerciseDraft.reps,
-                    workoutExerciseDraft.rpe,
+                    workoutExerciseDraft.intensity,
+                    workoutExerciseDraft.intensityIndex,
                     workoutExerciseDraft.pace,
                     true
                 )
