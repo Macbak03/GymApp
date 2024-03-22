@@ -16,5 +16,4 @@ class SharedViewModel : ViewModel() {
 data class ActivityResultData(
     val isUnsaved: Boolean,
     val routineNameResult: String?,
-    val shouldShowButton: Boolean
 )

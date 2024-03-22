@@ -21,6 +21,7 @@ import com.example.gymapp.databinding.ActivityCreateRoutineBinding
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.routine.Exercise
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.IntensityIndex
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.persistence.PlansDataBaseHelper
@@ -39,6 +40,7 @@ class CreateRoutineActivity : BaseActivity() {
     private var exercises: MutableList<ExerciseDraft> = ArrayList()
     private var exerciseCount: Int = 0
     private var defaultWeightUnit =  WeightUnit.kg
+    private var defaultIntensityIndex = IntensityIndex.RPE
 
     private val simpleCallback = object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN,ItemTouchHelper.RIGHT ) {
         override fun onMove(
@@ -143,6 +145,7 @@ class CreateRoutineActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         loadTheme()
         loadUnitSettings()
+        loadIntensityIndex()
         super.onCreate(savedInstanceState)
         binding = ActivityCreateRoutineBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -159,8 +162,6 @@ class CreateRoutineActivity : BaseActivity() {
                 loadRoutine(planId)
             }
         }
-
-
 
         recyclerView = binding.recyclerViewRoutineItems
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
@@ -220,6 +221,7 @@ class CreateRoutineActivity : BaseActivity() {
             "",
             "",
             "",
+            defaultIntensityIndex,
             "",
             true
         )
@@ -274,6 +276,15 @@ class CreateRoutineActivity : BaseActivity() {
             "lbs" -> defaultWeightUnit = WeightUnit.lbs
         }
 
+    }
+
+    private fun loadIntensityIndex(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        when(sharedPreferences.getString("intensityIndex", ""))
+        {
+            "RPE" -> defaultIntensityIndex = IntensityIndex.RPE
+            "RIR" -> defaultIntensityIndex = IntensityIndex.RIR
+        }
     }
 
 }

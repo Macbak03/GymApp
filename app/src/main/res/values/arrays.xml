@@ -20,4 +20,14 @@
         <item>kg</item>
         <item>lbs</item>
     </string-array>
+
+    <string-array name="intensity_values">
+        <item>RPE</item>
+        <item>RIR</item>
+    </string-array>
+
+    <string-array name="intensity_entries">
+        <item>RPE</item>
+        <item>RIR</item>
+    </string-array>
 </resources>

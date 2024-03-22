@@ -1,7 +1,5 @@
 package com.example.gymapp.model.routine
 
-import kotlin.time.Duration
-
 
 data class Exercise(
     var name: String,
@@ -10,7 +8,7 @@ data class Exercise(
     var load: Weight,
     val series: Int,
     val reps: Reps,
-    val rpe: Rpe?,
+    val intensity: Intensity?,
     val pace: ExercisePace?
     )
 

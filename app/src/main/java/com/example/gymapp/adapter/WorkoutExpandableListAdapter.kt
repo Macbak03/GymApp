@@ -215,7 +215,8 @@ class WorkoutExpandableListAdapter(
                     workoutSeriesDraft.loadUnit,
                     workoutExerciseDraft.series,
                     workoutExerciseDraft.reps,
-                    workoutExerciseDraft.rpe,
+                    workoutExerciseDraft.intensity,
+                    workoutExerciseDraft.intensityIndex,
                     workoutExerciseDraft.pace,
                     true
                 )

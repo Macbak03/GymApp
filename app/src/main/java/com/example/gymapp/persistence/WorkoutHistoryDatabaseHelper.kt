@@ -7,10 +7,11 @@ import android.database.sqlite.SQLiteDatabase
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
 import com.example.gymapp.model.routine.ExactPause
 import com.example.gymapp.model.routine.ExactReps
-import com.example.gymapp.model.routine.ExactRpe
+import com.example.gymapp.model.routine.ExactIntensity
+import com.example.gymapp.model.routine.IntensityIndex
 import com.example.gymapp.model.routine.RangePause
 import com.example.gymapp.model.routine.RangeReps
-import com.example.gymapp.model.routine.RangeRpe
+import com.example.gymapp.model.routine.RangeIntensity
 import com.example.gymapp.model.routine.TimeUnit
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutExercise
@@ -39,8 +40,9 @@ class WorkoutHistoryDatabaseHelper(
                 REPS_RANGE_FROM_COLUMN + " INTEGER NOT NULL," +
                 REPS_RANGE_TO_COLUMN + " INTEGER NOT NULL," +
                 SERIES_COLUMN + " INTEGER NOT NULL," +
-                RPE_RANGE_FROM_COLUMN + " INTEGER," +
-                RPE_RANGE_TO_COLUMN + " INTEGER," +
+                INTENSITY_RANGE_FROM_COLUMN + " INTEGER," +
+                INTENSITY_RANGE_TO_COLUMN + " INTEGER," +
+                INTENSITY_INDEX_COLUMN + " TEXT NOT NULL," +
                 PACE_COLUMN + " TEXT," +
                 NOTES_COLUMN + " TEXT" +
                 ")")
@@ -48,7 +50,9 @@ class WorkoutHistoryDatabaseHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        onCreate(db)
+        /*if(oldVersion < 34){
+            db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $INTENSITY_INDEX_COLUMN TEXT")
+        }*/
     }
 
 
@@ -106,15 +110,33 @@ class WorkoutHistoryDatabaseHelper(
 
         }
         values.put(SERIES_COLUMN, workoutExercise.exercise.series)
-        when (workoutExercise.exercise.rpe) {
-            is ExactRpe -> {
-                values.put(RPE_RANGE_FROM_COLUMN, (workoutExercise.exercise.rpe as ExactRpe).value)
-                values.put(RPE_RANGE_TO_COLUMN, (workoutExercise.exercise.rpe as ExactRpe).value)
+        when (workoutExercise.exercise.intensity) {
+            is ExactIntensity -> {
+                values.put(
+                    INTENSITY_RANGE_FROM_COLUMN,
+                    (workoutExercise.exercise.intensity as ExactIntensity).value
+                )
+                values.put(
+                    INTENSITY_RANGE_TO_COLUMN,
+                    (workoutExercise.exercise.intensity as ExactIntensity).value
+                )
+                values.put(INTENSITY_INDEX_COLUMN,
+                    (workoutExercise.exercise.intensity as ExactIntensity).index.toString()
+                )
             }
 
-            is RangeRpe -> {
-                values.put(RPE_RANGE_FROM_COLUMN, (workoutExercise.exercise.rpe as RangeRpe).from)
-                values.put(RPE_RANGE_TO_COLUMN, (workoutExercise.exercise.rpe as RangeRpe).to)
+            is RangeIntensity -> {
+                values.put(
+                    INTENSITY_RANGE_FROM_COLUMN,
+                    (workoutExercise.exercise.intensity as RangeIntensity).from
+                )
+                values.put(
+                    INTENSITY_RANGE_TO_COLUMN,
+                    (workoutExercise.exercise.intensity as RangeIntensity).to
+                )
+                values.put(INTENSITY_INDEX_COLUMN,
+                    (workoutExercise.exercise.intensity as RangeIntensity).index.toString()
+                )
             }
 
             null -> {}
@@ -283,8 +305,9 @@ class WorkoutHistoryDatabaseHelper(
             REPS_RANGE_FROM_COLUMN,
             REPS_RANGE_TO_COLUMN,
             SERIES_COLUMN,
-            RPE_RANGE_FROM_COLUMN,
-            RPE_RANGE_TO_COLUMN,
+            INTENSITY_RANGE_FROM_COLUMN,
+            INTENSITY_RANGE_TO_COLUMN,
+            INTENSITY_INDEX_COLUMN,
             PACE_COLUMN,
             NOTES_COLUMN
         )
@@ -346,14 +369,16 @@ class WorkoutHistoryDatabaseHelper(
             val series =
                 cursor.getString(cursor.getColumnIndexOrThrow(SERIES_COLUMN))
 
-            val rpeRangeFrom =
-                cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_FROM_COLUMN))
-            val rpeRangeTo =
-                cursor.getInt(cursor.getColumnIndexOrThrow(RPE_RANGE_TO_COLUMN))
-            val rpe: String = if (rpeRangeFrom == rpeRangeTo) {
-                ExactReps(rpeRangeFrom).toString()
+            val intensityIndex =
+                cursor.getString(cursor.getColumnIndexOrThrow(INTENSITY_INDEX_COLUMN))
+            val intensityRangeFrom =
+                cursor.getInt(cursor.getColumnIndexOrThrow(INTENSITY_RANGE_FROM_COLUMN))
+            val intensityRangeTo =
+                cursor.getInt(cursor.getColumnIndexOrThrow(INTENSITY_RANGE_TO_COLUMN))
+            val intensity: String = if (intensityRangeFrom == intensityRangeTo) {
+                ExactReps(intensityRangeFrom).toString()
             } else {
-                RangeReps(rpeRangeFrom, rpeRangeTo).toString()
+                RangeReps(intensityRangeFrom, intensityRangeTo).toString()
             }
 
             val pace =
@@ -361,7 +386,18 @@ class WorkoutHistoryDatabaseHelper(
             val note = cursor.getString(cursor.getColumnIndexOrThrow(NOTES_COLUMN))
 
             val workoutExercise =
-                WorkoutExerciseDraft(exerciseName, pause, pauseUnit, reps, series, rpe, pace, note, isChecked = false)
+                WorkoutExerciseDraft(
+                    exerciseName,
+                    pause,
+                    pauseUnit,
+                    reps,
+                    series,
+                    intensity,
+                    IntensityIndex.valueOf(intensityIndex),
+                    pace,
+                    note,
+                    isChecked = false
+                )
             workoutExercises.add(workoutExercise)
         }
         return workoutExercises
@@ -400,24 +436,25 @@ class WorkoutHistoryDatabaseHelper(
         return listOf(planName, date, routineName)
     }
 
-    private fun getLastTrainingSessionDate(planName: String, routineName: String) : String? {
+    private fun getLastTrainingSessionDate(planName: String, routineName: String): String? {
         var date: String? = null
         val dataBaseRead = this.readableDatabase
         val cursor = dataBaseRead.rawQuery(
             "SELECT $DATE_COLUMN " +
-                "FROM $TABLE_NAME " +
+                    "FROM $TABLE_NAME " +
                     "WHERE $PLAN_NAME_COLUMN = '$planName' " +
                     "AND $ROUTINE_NAME_COLUMN = '$routineName'" +
-                    "ORDER BY $DATE_COLUMN DESC", null)
-        if(cursor.moveToFirst()){
+                    "ORDER BY $DATE_COLUMN DESC", null
+        )
+        if (cursor.moveToFirst()) {
             date = cursor.getString(cursor.getColumnIndexOrThrow(DATE_COLUMN))
         }
         cursor.close()
         return date
     }
 
-    fun getLastTrainingNotes(planName: String, routineName: String): List<String?>{
-        val notes : MutableList<String?> = ArrayList()
+    fun getLastTrainingNotes(planName: String, routineName: String): List<String?> {
+        val notes: MutableList<String?> = ArrayList()
 
         val dataBaseRead = this.readableDatabase
         val date = getLastTrainingSessionDate(planName, routineName)
@@ -429,9 +466,9 @@ class WorkoutHistoryDatabaseHelper(
         )
         while (cursor.moveToNext()) {
             val note = cursor.getString(cursor.getColumnIndexOrThrow(NOTES_COLUMN))
-            if(note == "") {
+            if (note == "") {
                 notes.add("Note")
-            }else{
+            } else {
                 notes.add(note)
             }
 
@@ -478,8 +515,9 @@ class WorkoutHistoryDatabaseHelper(
         const val REPS_RANGE_FROM_COLUMN = "RepsRangeFrom"
         const val REPS_RANGE_TO_COLUMN = "RepsRangeTo"
         const val SERIES_COLUMN = "Series"
-        const val RPE_RANGE_FROM_COLUMN = "RPERangeFrom"
-        const val RPE_RANGE_TO_COLUMN = "RPERangeTo"
+        const val INTENSITY_RANGE_FROM_COLUMN = "RPERangeFrom"
+        const val INTENSITY_RANGE_TO_COLUMN = "RPERangeTo"
+        const val INTENSITY_INDEX_COLUMN = "IntensityIndex"
         const val PACE_COLUMN = "Pace"
         const val NOTES_COLUMN = "Notes"
     }

@@ -37,9 +37,8 @@ class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
             val sharedViewModel: SharedViewModel by activityViewModels()
             val isUnsaved = result.resultCode == Activity.RESULT_CANCELED
             val routineNameResult = result.data?.getStringExtra(HomeFragment.ROUTINE_NAME)
-            val shouldShowButton = isUnsaved
 
-            sharedViewModel.setActivityResult(ActivityResultData(isUnsaved, routineNameResult, shouldShowButton))
+            sharedViewModel.setActivityResult(ActivityResultData(isUnsaved, routineNameResult))
             requireActivity().supportFragmentManager.beginTransaction().remove(this).commit()
         }
 

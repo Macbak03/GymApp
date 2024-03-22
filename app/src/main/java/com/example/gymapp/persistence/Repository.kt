@@ -70,15 +70,9 @@ abstract class Repository(context: Context, factory: SQLiteDatabase.CursorFactor
         return originalList.mapTo(mutableListOf()) { converter(it) }
     }
 
-    protected fun setForeignKeys(switch: String) {
-        val dataBaseWrite = this.writableDatabase
-        val query = ("PRAGMA foreign_keys = $switch")
-        dataBaseWrite.execSQL(query)
-    }
-
 
     companion object {
         const val DATABASE_NAME = "GymApp"
-        private const val DATABASE_VERSION = 33
+        private const val DATABASE_VERSION = 38
     }
 }

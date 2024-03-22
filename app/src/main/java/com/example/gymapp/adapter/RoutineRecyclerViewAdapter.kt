@@ -40,21 +40,18 @@ class RoutineRecyclerViewAdapter(
         val exerciseDetails = binding.exerciseDetails
         val exerciseTitle = binding.exerciseTitle
         val exerciseTitleElement: LinearLayout = exerciseTitle.findViewById(R.id.expandableLayoutTitle)
-        //val exerciseName = binding.editTextExerciseName
         val exerciseNameEditText: EditText = exerciseTitle.findViewById(R.id.editTextExerciseName)
         private val pauseEditText: EditText = exerciseDetails.findViewById(R.id.editTextPause)
         private val loadEditText: EditText = exerciseDetails.findViewById(R.id.editTextLoad)
         private val repsEditText: EditText = exerciseDetails.findViewById(R.id.editTextReps)
         private val seriesEditText: EditText = exerciseDetails.findViewById(R.id.editTextSeries)
-        private val rpeEditText: EditText = exerciseDetails.findViewById(R.id.editTextRpe)
+        private val rpeEditText: EditText = exerciseDetails.findViewById(R.id.editTextIntensity)
         private val paceEditText: EditText = exerciseDetails.findViewById(R.id.editTextPace)
 
         private val pauseUnitSpinner: Spinner = exerciseDetails.findViewById(R.id.spinnerPause)
         private val loadUnitSpinner: Spinner = exerciseDetails.findViewById(R.id.spinnerLoad)
 
-        //val expandImage = binding.buttonExpand
         val expandImage: ImageView = exerciseTitle.findViewById(R.id.buttonExpand)
-        //val moveButton = binding.imageButtonMove
         val moveButton: ImageView = exerciseTitle.findViewById(R.id.imageButtonMove)
 
         val wholeItem = binding.wholeExerciseElement
@@ -118,7 +115,7 @@ class RoutineRecyclerViewAdapter(
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable?) {
                     if (absoluteAdapterPosition != RecyclerView.NO_POSITION) {
-                        exercises[absoluteAdapterPosition].rpe = s.toString()
+                        exercises[absoluteAdapterPosition].intensity = s.toString()
                     }
                 }
             })
@@ -232,9 +229,10 @@ class RoutineRecyclerViewAdapter(
         }
 
         holder.rpeDescription.setOnClickListener{
-            showDescriptionDialog("RPE", "It's a subjective measure used to gauge the intensity of " +
+            showDescriptionDialog("Intensity index", "It's a subjective measure used to gauge the intensity of " +
                     "exercise based on how difficult it feels. " +
-                    "RPE typically ranges from 1 to 10, with 1 being very easy and 10 being maximal exertion.")
+                    "RPE typically ranges from 1 to 10, with 1 being very easy and 10 being maximal exertion." +
+                    "RIR is almost the same as RPE, but 0 means maximal exertion and 10 - very easy.")
         }
 
         holder.paceDescription.setOnClickListener{
