@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
@@ -50,14 +51,30 @@ class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setStyle(STYLE_NORMAL, R.style.DarkBlueCustomBottomSheetDialogTheme)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        when (sharedPreferences.getString("theme", "")) {
+            "Dark" -> setStyle(STYLE_NORMAL, R.style.DarkCustomBottomSheetDialogTheme)
+            "DarkBlue" -> setStyle(STYLE_NORMAL, R.style.DarkBlueCustomBottomSheetDialogTheme)
+            else -> setStyle(STYLE_NORMAL, R.style.DarkCustomBottomSheetDialogTheme)
+        }
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStartWorkoutMenuBinding.inflate(layoutInflater, container, false)
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        when (sharedPreferences.getString("theme", "")) {
+            "Dark" -> binding.workoutMenu.setBackgroundResource(R.drawable.dark_bottom_dialog_sheet_background)
+            "DarkBlue" -> binding.workoutMenu.setBackgroundResource(R.drawable.bottom_dialog_sheet_background)
+            else -> binding.workoutMenu.setBackgroundResource(R.drawable.dark_bottom_dialog_sheet_background)
+        }
+
         return binding.root
     }
 

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.preference.PreferenceManager
 import com.example.gymapp.R
 import com.example.gymapp.activity.EditHistoryActivity
 import com.example.gymapp.activity.HistoryDetailsActivity
@@ -37,7 +38,13 @@ class TrainingHistoryMoreFragment(private val workoutHistoryRecyclerViewAdapter:
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setStyle(STYLE_NORMAL, R.style.DarkBlueCustomBottomSheetDialogTheme)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        when (sharedPreferences.getString("theme", "")) {
+            "Dark" -> setStyle(STYLE_NORMAL, R.style.DarkCustomBottomSheetDialogTheme)
+            "DarkBlue" -> setStyle(STYLE_NORMAL, R.style.DarkBlueCustomBottomSheetDialogTheme)
+            else -> setStyle(STYLE_NORMAL, R.style.DarkCustomBottomSheetDialogTheme)
+        }
     }
 
     override fun onCreateView(
@@ -46,6 +53,14 @@ class TrainingHistoryMoreFragment(private val workoutHistoryRecyclerViewAdapter:
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMoreBinding.inflate(layoutInflater, container, false)
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+
+        when (sharedPreferences.getString("theme", "")) {
+            "Dark" -> binding.moreLayout.setBackgroundResource(R.drawable.dark_bottom_dialog_sheet_background)
+            "DarkBlue" -> binding.moreLayout.setBackgroundResource(R.drawable.bottom_dialog_sheet_background)
+            else -> binding.moreLayout.setBackgroundResource(R.drawable.dark_bottom_dialog_sheet_background)
+        }
 
         return binding.root
     }
