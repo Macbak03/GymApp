@@ -5,7 +5,6 @@
     android:id="@+id/workoutMenu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/dark_bottom_dialog_sheet_background"
     android:orientation="vertical"
     tools:context=".fragment.StartWorkoutMenuFragment">
 

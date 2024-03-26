@@ -14,6 +14,7 @@
         <item name="cardViewStyle">@style/DarkBlueCustomCardView</item>
         <item name="buttonStyle">@style/DarkBlueCustomButtonStyle</item>
         <item name="android:textViewStyle">@style/DarkBlueCustomTextViewStyle</item>
+        <item name="bottomSheetDialogTheme">@style/DarkBlueCustomBottomSheetDialogTheme</item>
 
     </style>
 
@@ -27,8 +28,9 @@
     </style>
 
     <style name="DarkBlueCustomCardView" parent="CardView">
-        <item name="cardBackgroundColor">@color/cardBackgroundColor</item>
-        <item name="cardCornerRadius">5dp</item>
+        <item name="cardBackgroundColor">@color/cardColor</item>
+        <!--<item name="android:background">@drawable/button_color</item>-->
+        <item name="cardCornerRadius">8dp</item>
         <item name="android:elevation">200dp</item>
     </style>
 
@@ -69,12 +71,13 @@
         <item name="android:windowBackground">@drawable/dark_background_color</item>
         <item name="colorPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/bottomNavigationBarColor</item>
-        <item name="colorAccent">#3A539E</item>
+        <item name="colorAccent">#698CFD</item>
 
         <item name="bottomNavigationStyle">@style/DarkCustomBottomNavigationStyle</item>
         <item name="cardViewStyle">@style/DarkCustomCardView</item>
         <item name="buttonStyle">@style/DarkCustomButtonStyle</item>
         <item name="android:textViewStyle">@style/DarkCustomTextViewStyle</item>
+        <item name="bottomSheetDialogTheme">@style/DarkCustomBottomSheetDialogTheme</item>
     </style>
 
     <style name="DarkCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
@@ -85,8 +88,10 @@
     <style name="DarkCustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@android:color/transparent</item>
     </style>
+
     <style name="DarkCustomCardView" parent="CardView">
-        <item name="cardBackgroundColor">@color/cardBackgroundColor</item>
+        <item name="cardBackgroundColor">@color/darkCardColor</item>
+        <item name="android:background">@color/darkCardBackgroundColor</item>
         <item name="cardCornerRadius">5dp</item>
         <item name="android:elevation">200dp</item>
     </style>
@@ -108,7 +113,6 @@
     </style>
 
     <!--Dark theme-->
-
 
     <style name="YourAlertDialogTheme">
         <item name="android:windowFrame">@null</item>

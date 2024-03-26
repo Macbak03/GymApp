@@ -12,13 +12,14 @@
 
     <!--Dark blue theme-->
     <color name="app_background">#333333</color>
-    <color name="cardBackgroundColor">#00CCCCCC</color>
+    <color name="cardColor">#294857</color>
     <color name="addButtonColor">#8B8B8B</color>
     <!--Dark blue theme-->
 
     <!--Dark theme-->
     <color name="darkButtonColor">#6A6B83</color>
     <color name="darkCardBackgroundColor">#151925</color>
+    <color name="darkCardColor">#262C43</color>
     <color name="darkButtonStartColor">#220070</color>
     <color name="darkButtonCenterColor">#21035C</color>
     <color name="darkButtonEndColor">#220070</color>

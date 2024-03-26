@@ -22,6 +22,9 @@
     <string name="delete_routines_text">Choose routines to delete</string>
     <string name="termdescription">termDescription</string>
     <string name="title_activity_edit_history_actvity">EditHistoryActvity</string>
+    <string name="dark_theme">Dark</string>
+    <string name="dark_blue_theme">DarkBlue</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
