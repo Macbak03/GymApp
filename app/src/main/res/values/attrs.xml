@@ -23,7 +23,7 @@
     <declare-styleable name="WorkoutHistoryExpandableLayout">
     </declare-styleable>
 
-    <declare-styleable name="Axis">
+    <!--<declare-styleable name="Axis">
         <attr name="axisLabelBackground" format="color"/>
         <attr name="title" format="string"/>
         <attr name="showTitle" format="boolean"/>
@@ -52,5 +52,5 @@
         <attr name="gradientTopColor" format="color"/>
         <attr name="gradientBottomColor" format="color"/>
         <attr name="lineThickness" format="dimension"/>
-    </declare-styleable>
+    </declare-styleable>-->
 </resources>

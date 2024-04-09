@@ -46,11 +46,11 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 
-/*        if (oldVersion < 34) {
+        if (oldVersion < 34) {
             db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $INTENSITY_INDEX_COLUMN TEXT")
             db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeFrom TO $INTENSITY_RANGE_FROM_COLUMN")
             db.execSQL("ALTER TABLE $TABLE_NAME RENAME COLUMN RPERangeTo TO $INTENSITY_RANGE_TO_COLUMN")
-        }*/
+        }
     }
 
 
@@ -296,17 +296,25 @@ class ExercisesDataBaseHelper(context: Context, factory: SQLiteDatabase.CursorFa
     }
 
     private fun deleteRoutine(planId: Int, routineId: Int, originalRoutineName: String?) {
-        val db = this.writableDatabase
+        val dataBaseWrite = this.writableDatabase
         val deleteSelection =
             "$PLAN_ID_COLUMN = ? AND $ROUTINE_ID_COLUMN = ? AND $ROUTINE_NAME_COLUMN = ?"
         val deleteSelectionArgs =
             arrayOf(planId.toString(), routineId.toString(), originalRoutineName)
 
         val cursor =
-            db.query(TABLE_NAME, null, deleteSelection, deleteSelectionArgs, null, null, null)
+            dataBaseWrite.query(
+                TABLE_NAME,
+                null,
+                deleteSelection,
+                deleteSelectionArgs,
+                null,
+                null,
+                null
+            )
         cursor.use { cur ->
             if (cur.moveToFirst()) {
-                db.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
+                dataBaseWrite.delete(TABLE_NAME, deleteSelection, deleteSelectionArgs)
             }
         }
     }

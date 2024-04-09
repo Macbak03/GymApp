@@ -78,6 +78,13 @@
         <item name="buttonStyle">@style/DarkCustomButtonStyle</item>
         <item name="android:textViewStyle">@style/DarkCustomTextViewStyle</item>
         <item name="bottomSheetDialogTheme">@style/DarkCustomBottomSheetDialogTheme</item>
+
+        <!--charts-->
+        <item name="showTopAxis">false</item>
+        <item name="bottomAxisStyle">@style/DarkCustomHorizontalAxisStyle</item>
+        <item name="axisStyle">@style/DarkCustomAxisStyle</item>
+        <item name="axisGuidelineStyle">@style/DarkCustomLineComponentStyle</item>
+        <item name="axisLabelStyle">@style/DarkCustomTextComponentStyle</item>
     </style>
 
     <style name="DarkCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
@@ -110,6 +117,25 @@
 
     <style name="DarkCustomBottomNavigationStyle">
         <item name="itemBackground">@color/bottomNavigationBarColor</item>
+    </style>
+
+    <style name="DarkCustomHorizontalAxisStyle">
+        <item name="showGuideline">false</item>
+        <item name="axisLineStyle">@style/DarkCustomLineComponentStyle</item>
+        <item name="horizontalAxisLabelSpacing">2</item>
+    </style>
+
+    <style name="DarkCustomAxisStyle">
+        <item name="axisLineStyle">@style/DarkCustomLineComponentStyle</item>
+    </style>
+
+    <style name="DarkCustomLineComponentStyle">
+        <item name="color">#6E6E6E</item>
+        <item name="thickness">1dp</item>
+    </style>
+    
+    <style name="DarkCustomTextComponentStyle">
+        <item name="labelColor">@color/white</item>
     </style>
 
     <!--Dark theme-->

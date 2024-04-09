@@ -1,26 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.ChartsFragment">
 
+    <AutoCompleteTextView
+        android:id="@+id/exerciseSelect"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="20dp"
+        android:hint="Select exercise"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/select_background"/>
+
+
     <com.patrykandpatrick.vico.views.chart.CartesianChartView
-        android:id="@+id/chartView"
+        android:id="@+id/chartViewLoad"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="10dp"
         app:chartHorizontalScrollingEnabled="true"
         app:layers="line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chartViewReps"
+        app:layout_constraintVertical_bias="0.202"
         app:showBottomAxis="true"
-        app:showStartAxis="true"
-        android:layout_marginHorizontal="10dp"
-        android:layout_gravity="center" />
+        app:showStartAxis="true" />
 
-    <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/composeView"
+    <com.patrykandpatrick.vico.views.chart.CartesianChartView
+        android:id="@+id/chartViewReps"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="10dp"
+        app:chartHorizontalScrollingEnabled="true"
+        app:layers="line"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.323"
+        app:showBottomAxis="true"
+        app:showStartAxis="true" />
 
-
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
