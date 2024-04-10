@@ -26,13 +26,12 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="132dp"
         app:chartHorizontalScrollingEnabled="true"
         app:layers="line"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/chartViewReps"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chartViewReps"
-        app:layout_constraintVertical_bias="0.202"
         app:showBottomAxis="true"
         app:showStartAxis="true" />
 
@@ -42,13 +41,13 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="120dp"
         app:chartHorizontalScrollingEnabled="true"
         app:layers="line"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.323"
         app:showBottomAxis="true"
         app:showStartAxis="true" />
 

@@ -9,11 +9,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ArrayAdapter
+import androidx.compose.ui.unit.dp
+import com.example.gymapp.R
 import com.example.gymapp.databinding.FragmentChartsBinding
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
+import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.core.axis.AxisPosition
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
+import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
+import com.patrykandpatrick.vico.core.axis.horizontal.createHorizontalAxis
+import com.patrykandpatrick.vico.core.axis.vertical.createVerticalAxis
+import com.patrykandpatrick.vico.core.component.shape.LineComponent
+import com.patrykandpatrick.vico.core.context.DrawContext
+import com.patrykandpatrick.vico.core.formatter.ValueFormatter
 import com.patrykandpatrick.vico.core.model.CartesianChartModelProducer
 import com.patrykandpatrick.vico.core.model.ExtraStore
 import com.patrykandpatrick.vico.core.model.lineSeries
@@ -30,7 +39,7 @@ class ChartsFragment : Fragment() {
 
     private lateinit var lineChartLoad: CartesianChartView
     private lateinit var lineChartReps: CartesianChartView
-    
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -104,6 +113,7 @@ class ChartsFragment : Fragment() {
             val cartesianChartModelProducerLoad = CartesianChartModelProducer.build()
             lineChartLoad.modelProducer = cartesianChartModelProducerLoad
 
+
             val dates = historyDataBase.getExercisesToChart(selectedExercise).second
             val exerciseIds = historyDataBase.getExercisesToChart(selectedExercise).first
 
@@ -120,24 +130,31 @@ class ChartsFragment : Fragment() {
                 repsValues.add(reps)
             }
 
-            val dataLoad = dates.map { LocalDate.parse(it) }.zip(loadValues).toMap()
-            val dataReps = dates.map { LocalDate.parse(it) }.zip(repsValues).toMap()
-
-            val xToDateMapKey = ExtraStore.Key<Map<Float, LocalDate>>()
-
-            val xToDates = dataLoad.keys.associateBy { it.toEpochDay().toFloat() }
-
             val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM")
-            AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, chartValues, _ ->
-                (chartValues.model.extraStore[xToDateMapKey][x] ?: LocalDate.ofEpochDay(x.toLong()))
-                    .format(dateTimeFormatter)
+            val sortedDates = dates.map{ LocalDate.parse(it) }.sorted()
+            val labels = sortedDates.map { it.format(dateTimeFormatter) }
+
+            val dateToXValue = sortedDates.withIndex().associate { it.value to it.index.toFloat() }
+            val dataLoad = sortedDates.mapIndexed{index, localDate -> dateToXValue[localDate] to loadValues[index] }.toMap()
+            val dataReps = sortedDates.mapIndexed{index, localDate -> dateToXValue[localDate] to repsValues[index] }.toMap()
+
+
+
+            val bottomAxisValueFormatter =
+                AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _, _ ->
+                    labels.getOrElse(x.toInt()) { " " }
+                }
+           with(binding.chartViewLoad.chart?.bottomAxis as HorizontalAxis){
+               valueFormatter = bottomAxisValueFormatter
+           }
+            with(binding.chartViewReps.chart?.bottomAxis as HorizontalAxis){
+                valueFormatter = bottomAxisValueFormatter
             }
 
             cartesianChartModelProducerLoad.tryRunTransaction {
                 lineSeries {
-                    series(xToDates.keys, dataLoad.values)
+                    series(dataLoad.values)
                 }
-                updateExtras { it[xToDateMapKey] = xToDates }
             }
 
 
@@ -147,11 +164,9 @@ class ChartsFragment : Fragment() {
 
             cartesianChartModelProducerReps.tryRunTransaction {
                 lineSeries {
-                    series(xToDates.keys, dataReps.values)
+                    series(dataReps.values)
                 }
-                updateExtras { it[xToDateMapKey] = xToDates }
             }
-
         }
 
     }
