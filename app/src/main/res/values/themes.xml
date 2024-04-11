@@ -85,6 +85,7 @@
         <item name="axisStyle">@style/DarkCustomAxisStyle</item>
         <item name="axisGuidelineStyle">@style/DarkCustomLineComponentStyle</item>
         <item name="axisLabelStyle">@style/DarkCustomTextComponentStyle</item>
+        <item name="lineLayerStyle">@style/DarkCustomLineLayerStyle</item>
     </style>
 
     <style name="DarkCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
@@ -122,7 +123,6 @@
     <style name="DarkCustomHorizontalAxisStyle">
         <item name="showGuideline">false</item>
         <item name="axisLineStyle">@style/DarkCustomLineComponentStyle</item>
-        <item name="horizontalAxisLabelSpacing">2</item>
     </style>
 
     <style name="DarkCustomAxisStyle">
@@ -136,6 +136,21 @@
     
     <style name="DarkCustomTextComponentStyle">
         <item name="labelColor">@color/white</item>
+    </style>
+
+    <style name="DarkCustomLineLayerStyle">
+        <item name="line1Spec">@style/DarkCustomLineSpec</item>
+        <item name="spacing">60dp</item>
+    </style>
+
+    <style name="DarkCustomPointComponentStyle">
+        <item name="color">@color/white</item>
+        <item name="shapeStyle">@style/circle</item>
+    </style>
+
+    <style name="DarkCustomLineSpec">
+        <item name="pointSize">7dp</item>
+        <item name="pointStyle">@style/DarkCustomPointComponentStyle</item>
     </style>
 
     <!--Dark theme-->
@@ -198,6 +213,11 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="circle">
+        <item name="cornerSize">2dp</item>
+        <item name="cornerTreatment">rounded</item>
     </style>
 
 

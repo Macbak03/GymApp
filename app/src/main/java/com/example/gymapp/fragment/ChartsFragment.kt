@@ -9,22 +9,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ArrayAdapter
-import androidx.compose.ui.unit.dp
-import com.example.gymapp.R
 import com.example.gymapp.databinding.FragmentChartsBinding
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
-import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.core.axis.AxisPosition
 import com.patrykandpatrick.vico.core.axis.formatter.AxisValueFormatter
 import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
-import com.patrykandpatrick.vico.core.axis.horizontal.createHorizontalAxis
-import com.patrykandpatrick.vico.core.axis.vertical.createVerticalAxis
-import com.patrykandpatrick.vico.core.component.shape.LineComponent
-import com.patrykandpatrick.vico.core.context.DrawContext
-import com.patrykandpatrick.vico.core.formatter.ValueFormatter
+import com.patrykandpatrick.vico.core.chart.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.core.chart.values.AxisValueOverrider
+import com.patrykandpatrick.vico.core.model.CartesianChartModel
 import com.patrykandpatrick.vico.core.model.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.model.ExtraStore
+import com.patrykandpatrick.vico.core.model.LineCartesianLayerModel
 import com.patrykandpatrick.vico.core.model.lineSeries
 import com.patrykandpatrick.vico.views.chart.CartesianChartView
 import java.time.LocalDate
@@ -113,7 +108,6 @@ class ChartsFragment : Fragment() {
             val cartesianChartModelProducerLoad = CartesianChartModelProducer.build()
             lineChartLoad.modelProducer = cartesianChartModelProducerLoad
 
-
             val dates = historyDataBase.getExercisesToChart(selectedExercise).second
             val exerciseIds = historyDataBase.getExercisesToChart(selectedExercise).first
 
@@ -131,24 +125,42 @@ class ChartsFragment : Fragment() {
             }
 
             val dateTimeFormatter = DateTimeFormatter.ofPattern("d MMM")
-            val sortedDates = dates.map{ LocalDate.parse(it) }.sorted()
+            val sortedDates = dates.map { LocalDate.parse(it) }.sorted()
             val labels = sortedDates.map { it.format(dateTimeFormatter) }
 
             val dateToXValue = sortedDates.withIndex().associate { it.value to it.index.toFloat() }
-            val dataLoad = sortedDates.mapIndexed{index, localDate -> dateToXValue[localDate] to loadValues[index] }.toMap()
-            val dataReps = sortedDates.mapIndexed{index, localDate -> dateToXValue[localDate] to repsValues[index] }.toMap()
+            val dataLoad =
+                sortedDates.mapIndexed { index, localDate -> dateToXValue[localDate] to loadValues[index] }
+                    .toMap()
+            val dataReps =
+                sortedDates.mapIndexed { index, localDate -> dateToXValue[localDate] to repsValues[index] }
+                    .toMap()
 
+            val minLoadValue = getMinValue(loadValues)
+            val maxLoadValue = getMaxValue(loadValues, 10)
 
+            val maxRepValue = getMaxValue(repsValues, 1)
 
             val bottomAxisValueFormatter =
                 AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _, _ ->
                     labels.getOrElse(x.toInt()) { " " }
                 }
-           with(binding.chartViewLoad.chart?.bottomAxis as HorizontalAxis){
-               valueFormatter = bottomAxisValueFormatter
-           }
-            with(binding.chartViewReps.chart?.bottomAxis as HorizontalAxis){
-                valueFormatter = bottomAxisValueFormatter
+
+            val loadAxisValueOverrider = AxisValueOverrider.fixed(minY = minLoadValue.toFloat(), maxY = maxLoadValue.toFloat())
+            val repsAxisValueOverrider = AxisValueOverrider.fixed(maxY = maxRepValue.toFloat())
+
+            CartesianChartModel(LineCartesianLayerModel.build {  series(dataLoad.values) }, LineCartesianLayerModel.build { series(dataReps.values) })
+
+
+            with(lineChartLoad){
+                (chart?.layers?.get(0) as LineCartesianLayer?)?.axisValueOverrider = loadAxisValueOverrider
+                (chart?.bottomAxis as HorizontalAxis?)?.valueFormatter = bottomAxisValueFormatter
+                //(chart?.layers?.get(1) as LineCartesianLayer?)?.axisValueOverrider = repsAxisValueOverrider
+            }
+
+            with(lineChartReps){
+                (chart?.layers?.get(0) as LineCartesianLayer?)?.axisValueOverrider = repsAxisValueOverrider
+                (chart?.bottomAxis as HorizontalAxis?)?.valueFormatter = bottomAxisValueFormatter
             }
 
             cartesianChartModelProducerLoad.tryRunTransaction {
@@ -171,6 +183,29 @@ class ChartsFragment : Fragment() {
 
     }
 
+    private fun getMinValue(data: List<Float>): Int {
+        val min = data.min()
+        val offset = min * 0.1
+        return (min - offset).toInt().roundToClosest(10)
+    }
+
+    private fun getMaxValue(data: List<Float>, roundStep: Int): Int{
+        val max = data.max()
+        val offset = max * 0.1
+        return if (max>roundStep+roundStep/2) {
+            (max + offset).toInt().roundToClosest(roundStep)
+        }
+        else{
+            (max + offset).toInt().roundToClosest(1)
+        }
+    }
+
+    private fun Int.roundToClosest(step: Int): Int {
+        require(step > 0)
+        val lower = this - (this % step)
+        val upper = lower + if (this >= 0) step else -step
+        return if (this - lower < upper - this) lower else upper
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
