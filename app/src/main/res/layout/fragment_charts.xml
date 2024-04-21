@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".fragment.ChartsFragment">
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <AutoCompleteTextView
         android:id="@+id/exerciseSelect"
         android:layout_width="match_parent"
@@ -33,7 +38,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:showBottomAxis="true"
-        app:showStartAxis="true" />
+        app:showStartAxis="true"
+        app:showEndAxis="true"/>
 
     <com.patrykandpatrick.vico.views.chart.CartesianChartView
         android:id="@+id/chartViewReps"
@@ -49,6 +55,7 @@
         app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
         app:showBottomAxis="true"
-        app:showStartAxis="true" />
+        app:showStartAxis="true"
+        app:showEndAxis="true"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
