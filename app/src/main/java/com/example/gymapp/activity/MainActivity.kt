@@ -25,6 +25,7 @@ class MainActivity : BaseActivity() {
     private val planDataBase = PlansDataBaseHelper(this, null)
     private val workoutHistoryDataBase = WorkoutHistoryDatabaseHelper(this, null)
     private val workoutSeriesDataBase = WorkoutSeriesDataBaseHelper(this, null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         loadTheme()
         super.onCreate(savedInstanceState)

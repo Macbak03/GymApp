@@ -525,6 +525,21 @@ class WorkoutHistoryDatabaseHelper(
         return Pair(exerciseIds, dates)
     }
 
+    fun getLoadUnit(exerciseId: Int): String{
+        val databaseRead = this.readableDatabase
+        val selectQuery = "SELECT $LOAD_UNIT_COLUMN FROM $TABLE_NAME WHERE $EXERCISE_ID_COLUMN = '$exerciseId'"
+        val cursor = databaseRead.rawQuery(selectQuery, null)
+
+        var unit = ""
+
+        cursor.use { cur ->
+            if (cur.moveToFirst()) {
+                unit = cur.getString(cur.getColumnIndexOrThrow(LOAD_UNIT_COLUMN))
+            }
+        }
+        return unit
+    }
+
     fun updatePlanNames(oldName: String, newName: String) {
         val values = ContentValues()
         values.put(PLAN_NAME_COLUMN, newName)

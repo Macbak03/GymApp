@@ -10,7 +10,10 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
+import androidx.preference.PreferenceManager
 import com.example.gymapp.R
 import com.example.gymapp.chart.CustomMarkerLabelFormatter
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
@@ -21,22 +24,29 @@ import com.patrykandpatrick.vico.core.axis.horizontal.HorizontalAxis
 import com.patrykandpatrick.vico.core.chart.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.core.chart.values.AxisValueOverrider
 import com.patrykandpatrick.vico.core.component.marker.MarkerComponent
-import com.patrykandpatrick.vico.core.model.CartesianChartModel
 import com.patrykandpatrick.vico.core.model.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.model.LineCartesianLayerModel
 import com.patrykandpatrick.vico.core.model.lineSeries
 import com.example.gymapp.chart.rememberMarker
+import com.example.gymapp.model.routine.WeightUnit
+import com.patrykandpatrick.vico.core.axis.vertical.VerticalAxis
+import com.patrykandpatrick.vico.core.component.text.TextComponent
+import com.patrykandpatrick.vico.core.scroll.Scroll
 import com.patrykandpatrick.vico.views.chart.CartesianChartView
+import com.patrykandpatrick.vico.views.scroll.ScrollHandler
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class ChartsFragment : Fragment() {
 
     private lateinit var historyDataBase: WorkoutHistoryDatabaseHelper
+    private lateinit var workoutSeriesDataBase: WorkoutSeriesDataBaseHelper
 
     private lateinit var lineChartLoad: CartesianChartView
-    private lateinit var lineChartReps: CartesianChartView
     private lateinit var customMarker: MarkerComponent
+
+    private lateinit var autoCompleteTextView: AutoCompleteTextView
+    private lateinit var items: List<String>
+    private var defaultWeightUnit = WeightUnit.kg
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,18 +57,18 @@ class ChartsFragment : Fragment() {
                 customMarker = rememberMarker()
             }
             lineChartLoad = findViewById(R.id.chartViewLoad)
-            lineChartReps = findViewById(R.id.chartViewReps)
 
 
             historyDataBase = WorkoutHistoryDatabaseHelper(requireContext(), null)
+            workoutSeriesDataBase = WorkoutSeriesDataBaseHelper(requireContext(), null)
 
-            val items = historyDataBase.getExerciseNames()
+            items = historyDataBase.getExerciseNames()
 
             var selectedItem: String
 
             val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, items)
 
-            findViewById<AutoCompleteTextView>(R.id.exerciseSelect).apply {
+            autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.exerciseSelect).apply {
                 setAdapter(adapter)
 
                 threshold = 1
@@ -72,7 +82,14 @@ class ChartsFragment : Fragment() {
                     ) {
                     }
 
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                    override fun onTextChanged(
+                        s: CharSequence?,
+                        start: Int,
+                        before: Int,
+                        count: Int
+                    ) {
+                    }
+
                     override fun afterTextChanged(s: Editable?) {
                         if (s.toString().isEmpty()) {
                             postDelayed({
@@ -103,11 +120,20 @@ class ChartsFragment : Fragment() {
     }
 
     override fun onResume() {
+        val selectedExercise = autoCompleteTextView.text.toString()
         super.onResume()
+        if(items.contains(selectedExercise))
+        {
+            setChart(selectedExercise)
+        }else{
+            lineChartLoad.visibility = View.GONE
+        }
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
     private fun setChart(selectedExercise: String) {
+        loadUnitSettings()
+        lineChartLoad.visibility = View.VISIBLE
         if (selectedExercise.isNotBlank()) {
             val cartesianChartModelProducerLoad = CartesianChartModelProducer.build()
             lineChartLoad.modelProducer = cartesianChartModelProducerLoad
@@ -118,11 +144,10 @@ class ChartsFragment : Fragment() {
             val loadValues = ArrayList<Float>()
             val repsValues = ArrayList<Float>()
 
-            val workoutSeriesDatabase = WorkoutSeriesDataBaseHelper(requireContext(), null)
 
             for (exerciseId in exerciseIds) {
-                val load = workoutSeriesDatabase.getChartData(exerciseId).second
-                val reps = workoutSeriesDatabase.getChartData(exerciseId).first
+                val load = adaptLoadToUnit(exerciseId)
+                val reps = workoutSeriesDataBase.getChartData(exerciseId).first
 
                 loadValues.add(load)
                 repsValues.add(reps)
@@ -136,14 +161,9 @@ class ChartsFragment : Fragment() {
             val dataLoad =
                 sortedDates.mapIndexed { index, localDate -> dateToXValue[localDate] to loadValues[index] }
                     .toMap()
-            val dataReps =
-                sortedDates.mapIndexed { index, localDate -> dateToXValue[localDate] to repsValues[index] }
-                    .toMap()
 
             val minLoadValue = getMinValue(loadValues)
             val maxLoadValue = getMaxValue(loadValues, 10)
-
-            val maxRepValue = getMaxValue(repsValues, 1)
 
             val bottomAxisValueFormatter =
                 AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _, _ ->
@@ -154,26 +174,24 @@ class ChartsFragment : Fragment() {
                 minY = minLoadValue.toFloat(),
                 maxY = maxLoadValue.toFloat()
             )
-            val repsAxisValueOverrider = AxisValueOverrider.fixed(maxY = maxRepValue.toFloat())
-
-            CartesianChartModel(
-                LineCartesianLayerModel.build { series(dataLoad.values) },
-                LineCartesianLayerModel.build { series(dataReps.values) })
 
             val markerFormatter = CustomMarkerLabelFormatter(repsValues)
             customMarker.labelFormatter = markerFormatter
+
+            val scrollHandler = ScrollHandler(initialScroll = Scroll.Absolute.End)
+            lineChartLoad.scrollHandler = scrollHandler
 
             with(lineChartLoad) {
                 (chart?.layers?.get(0) as LineCartesianLayer?)?.axisValueOverrider =
                     loadAxisValueOverrider
                 (chart?.bottomAxis as HorizontalAxis?)?.valueFormatter = bottomAxisValueFormatter
+                (chart?.startAxis as VerticalAxis?)?.titleComponent = TextComponent.build {
+                    color = Color.White.toArgb()
+                    textSizeSp = 14f
+                }
+                (chart?.startAxis as VerticalAxis?)?.title = defaultWeightUnit.toString()
                 marker = customMarker
             }
-
-            /*           with(lineChartReps){
-                           (chart?.layers?.get(0) as LineCartesianLayer?)?.axisValueOverrider = repsAxisValueOverrider
-                           (chart?.bottomAxis as HorizontalAxis?)?.valueFormatter = bottomAxisValueFormatter
-                       }*/
 
             cartesianChartModelProducerLoad.tryRunTransaction {
                 lineSeries {
@@ -181,18 +199,20 @@ class ChartsFragment : Fragment() {
                 }
             }
 
-
-            /* val cartesianChartModelProducerReps = CartesianChartModelProducer.build()
-             lineChartReps.modelProducer = cartesianChartModelProducerReps
-
-
-             cartesianChartModelProducerReps.tryRunTransaction {
-                 lineSeries {
-                     series(dataReps.values)
-                 }
-             }*/
         }
 
+    }
+
+    private fun adaptLoadToUnit(exerciseId: Int): Float{
+        val multiplier = 2.205f
+        var load = workoutSeriesDataBase.getChartData(exerciseId).second
+        val unit = historyDataBase.getLoadUnit(exerciseId)
+        if (defaultWeightUnit.toString() == "kg" && unit == "lbs"){
+            load /= multiplier
+        }else if(defaultWeightUnit.toString() == "lbs" && unit == "kg"){
+            load *= multiplier
+        }
+        return load
     }
 
     private fun getMinValue(data: List<Float>): Int {
@@ -216,6 +236,16 @@ class ChartsFragment : Fragment() {
         val lower = this - (this % step)
         val upper = lower + if (this >= 0) step else -step
         return if (this - lower < upper - this) lower else upper
+    }
+
+    private fun loadUnitSettings(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        when(sharedPreferences.getString("unit", ""))
+        {
+            "kg" -> defaultWeightUnit = WeightUnit.kg
+            "lbs" -> defaultWeightUnit = WeightUnit.lbs
+        }
+
     }
 
 }
