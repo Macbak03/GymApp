@@ -25,6 +25,7 @@ class MainActivity : BaseActivity() {
     private val planDataBase = PlansDataBaseHelper(this, null)
     private val workoutHistoryDataBase = WorkoutHistoryDatabaseHelper(this, null)
     private val workoutSeriesDataBase = WorkoutSeriesDataBaseHelper(this, null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         loadTheme()
         super.onCreate(savedInstanceState)
@@ -45,21 +46,18 @@ class MainActivity : BaseActivity() {
 
         binding.bottomNavigationBar.setOnItemSelectedListener { item ->
             val targetItem = when (item.itemId) {
-                R.id.buttonHome ->  ViewPagerAdapter.HOME_FRAGMENT
+                R.id.buttonCharts -> ViewPagerAdapter.CHARTS_FRAGMENT
                 R.id.buttonTrainingPlans -> ViewPagerAdapter.TRAINING_PLANS_FRAGMENT
+                R.id.buttonHome ->  ViewPagerAdapter.HOME_FRAGMENT
                 R.id.buttonTrainingHistory -> ViewPagerAdapter.TRAINING_HISTORY_FRAGMENT
                 R.id.buttonSettings -> ViewPagerAdapter.SETTINGS_FRAGMENT
                 else -> return@setOnItemSelectedListener false
             }
             viewPager.setCurrentItem(targetItem, false)
-/*            viewPager.post {
-                val currentFragment = adapter.getFragmentAtPosition(viewPager.currentItem)
-                if(currentFragment is FragmentAnimator){
-                    currentFragment.triggerAnimation()
-                }
-            }*/
             true
         }
+
+        viewPager.setCurrentItem(2, false)
         planDataBase.onCreate(planDataBase.readableDatabase)
         routinesDataBase.onCreate(routinesDataBase.readableDatabase)
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)
@@ -75,7 +73,7 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
-        const val NUM_PAGES = 4
+        const val NUM_PAGES = 5
     }
 }
 

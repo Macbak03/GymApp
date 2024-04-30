@@ -91,6 +91,26 @@ class WorkoutSeriesDataBaseHelper(context: Context, factory: SQLiteDatabase.Curs
         db.close()
     }
 
+    fun getChartData(exerciseId: Int): Pair<Float, Float>{
+        val dataBaseRead = this.readableDatabase
+
+        var actualReps = 0f
+        var loadValue = 0f
+
+        val cursor = dataBaseRead.rawQuery("SELECT $ACTUAL_REPS_COLUMN, $LOAD_VALUE_COLUMN FROM " +
+                "$TABLE_NAME WHERE $EXERCISE_ID_COLUMN = ? AND $LOAD_VALUE_COLUMN = (" +
+                "SELECT MAX($LOAD_VALUE_COLUMN) FROM $TABLE_NAME WHERE $EXERCISE_ID_COLUMN = ?)",
+            arrayOf(exerciseId.toString(), exerciseId.toString()))
+
+        cursor.use { cur ->
+            if (cur.moveToFirst()) {
+                    actualReps = cur.getFloat(cur.getColumnIndexOrThrow(ACTUAL_REPS_COLUMN))
+                    loadValue = cur.getFloat(cur.getColumnIndexOrThrow(LOAD_VALUE_COLUMN))
+            }
+        }
+        return Pair(actualReps, loadValue)
+    }
+
 
 
 

@@ -40,7 +40,8 @@
         android:layout_weight="1"
         android:hint="Weight"
         android:autofillHints=""
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:inputType="numberDecimal"/>
     <TextView
         android:id="@+id/textViewWeightUnitValue"
         android:layout_width="wrap_content"

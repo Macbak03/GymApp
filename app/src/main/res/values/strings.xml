@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GymApp</string>
+    <string name="app_name">LiftHub</string>
     <string name="reps">Reps</string>
     <string name="series">Series</string>
     <string name="load">Load</string>

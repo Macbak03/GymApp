@@ -19,7 +19,7 @@ data class WorkoutSeriesDraft (
         }
         if(actualReps.toFloatOrNull() == null)
         {
-            throw ValidationException("series must be a number")
+            throw ValidationException("reps must be a number")
         }
         val actualRepsFloat = actualReps.toFloat()
         val weight = Weight.fromStringWithUnit(load, loadUnit)
