@@ -131,6 +131,7 @@ class ChartsFragment : Fragment() {
                 setOnItemClickListener { parent, _, position, _ ->
                     selectedItem = parent.adapter.getItem(position).toString()
                     statButtons.visibility = View.VISIBLE
+                    buttonLast5.setClickedBackground()
                     setChart(selectedItem)
                 }
             }
@@ -200,7 +201,6 @@ class ChartsFragment : Fragment() {
     private fun setChart(selectedExercise: String) {
         loadUnitSettings()
         trainingCount = 0
-        buttonLast5.setClickedBackground()
         lineChartLoad.visibility = View.VISIBLE
         if (selectedExercise.isNotBlank()) {
             val cartesianChartModelProducerLoad = CartesianChartModelProducer.build()
