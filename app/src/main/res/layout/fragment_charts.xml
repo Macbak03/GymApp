@@ -29,25 +29,54 @@
         android:background="@drawable/select_background"/>
 
 
-    <Button
-        android:id="@+id/buttonLast15Workouts"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayoutStatButtons"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Last 15 workouts"
-        android:layout_marginStart="25dp"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="25dp"
         android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@+id/hGuideline"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone">
 
-    <Button
-        android:id="@+id/buttonLast5Workouts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="25dp"
-        android:text="Last 5 workouts"
-        app:layout_constraintBottom_toTopOf="@+id/hGuideline"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/buttonAllWorkouts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:text="All" />
+
+        <Button
+            android:id="@+id/buttonLast30Workouts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:text="Last 30" />
+
+        <Button
+            android:id="@+id/buttonLast15Workouts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:text="Last 15" />
+
+
+        <Button
+            android:id="@+id/buttonLast5Workouts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Last 5" />
+
+
+
+    </LinearLayout>
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/hGuideline"
@@ -62,6 +91,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         app:chartHorizontalScrollingEnabled="true"
+        app:chartZoomEnabled="true"
         app:layers="line"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
