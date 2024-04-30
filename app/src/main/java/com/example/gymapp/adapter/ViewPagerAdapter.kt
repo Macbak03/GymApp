@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.gymapp.activity.MainActivity
+import com.example.gymapp.fragment.ChartsFragment
 import com.example.gymapp.fragment.HomeFragment
 import com.example.gymapp.fragment.SettingsFragment
 import com.example.gymapp.fragment.TrainingHistoryFragment
@@ -20,8 +21,9 @@ class ViewPagerAdapter(fragmentActivity: FragmentActivity) :
 
     override fun createFragment(position: Int): Fragment {
         val fragment = when (position) {
-            HOME_FRAGMENT -> HomeFragment()
+            CHARTS_FRAGMENT -> ChartsFragment()
             TRAINING_PLANS_FRAGMENT -> TrainingPlansFragment()
+            HOME_FRAGMENT -> HomeFragment()
             TRAINING_HISTORY_FRAGMENT -> TrainingHistoryFragment()
             SETTINGS_FRAGMENT -> SettingsFragment()
             else -> throw IllegalArgumentException("Invalid position")
@@ -33,9 +35,10 @@ class ViewPagerAdapter(fragmentActivity: FragmentActivity) :
     fun getFragmentAtPosition(position: Int): Fragment? = fragments.get(position)
 
     companion object{
-        const val HOME_FRAGMENT = 0
+        const val CHARTS_FRAGMENT = 0
         const val TRAINING_PLANS_FRAGMENT = 1
-        const val TRAINING_HISTORY_FRAGMENT = 2
-        const val SETTINGS_FRAGMENT = 3
+        const val HOME_FRAGMENT = 2
+        const val TRAINING_HISTORY_FRAGMENT = 3
+        const val SETTINGS_FRAGMENT = 4
     }
 }

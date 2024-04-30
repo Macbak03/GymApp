@@ -22,4 +22,35 @@
 
     <declare-styleable name="WorkoutHistoryExpandableLayout">
     </declare-styleable>
+
+    <!--<declare-styleable name="Axis">
+        <attr name="axisLabelBackground" format="color"/>
+        <attr name="title" format="string"/>
+        <attr name="showTitle" format="boolean"/>
+        <attr name="showGuideline" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="ComponentStyle">
+        <attr name="color" format="color"/>
+        <attr name="strokeColor" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="TextComponentStyle">
+        <attr name="labelColor" format="color"/>
+        <attr name="android:textSize" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="LineComponentStyle">
+        <attr name="color" format="color"/>
+        <attr name="thickness" format="dimension"/>
+        <attr name="strokeColor" format="color"/>
+        <attr name="strokeWidth" format="dimension"/>
+    </declare-styleable>
+
+    <declare-styleable name="LineSpec">
+        <attr name="color" format="color"/>
+        <attr name="gradientTopColor" format="color"/>
+        <attr name="gradientBottomColor" format="color"/>
+        <attr name="lineThickness" format="dimension"/>
+    </declare-styleable>-->
 </resources>

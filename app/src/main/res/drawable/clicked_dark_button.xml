@@ -21,16 +21,8 @@
     <!-- ... add more items if you want more layers to shadow for depth effect ... -->
 
     <!-- Button Foreground -->
-    <item android:bottom="5dp" android:right="2dp" android:state_pressed="false">
+    <item android:bottom="5dp" android:right="2dp" android:state_pressed="true">
         <shape android:shape="rectangle">
-            <!--      fajne      android:startColor="#1B2135"
-                        android:centerColor="#191F32"
-                        android:endColor="#1B2135"
-
-                            android:startColor="#4D3D80"
-                            android:centerColor="#483681"
-                            android:endColor="#4D3D80"
-                        -->
             <gradient
                 android:startColor="#1B2135"
                 android:centerColor="#191F32"
@@ -41,7 +33,7 @@
             <corners android:radius="5dp" /> <!-- Corner radius of button -->
             <stroke
                 android:width="2dp"
-                android:color="#3D3264"/>
+                android:color="#ADA6C7"/>
         </shape>
     </item>
 </layer-list>

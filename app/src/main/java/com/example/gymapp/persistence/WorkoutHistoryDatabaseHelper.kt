@@ -50,9 +50,9 @@ class WorkoutHistoryDatabaseHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        /*if(oldVersion < 34){
+        if(oldVersion < 34){
             db.execSQL("ALTER TABLE $TABLE_NAME ADD COLUMN $INTENSITY_INDEX_COLUMN TEXT")
-        }*/
+        }
     }
 
 
@@ -476,6 +476,68 @@ class WorkoutHistoryDatabaseHelper(
         cursor.close()
 
         return notes
+    }
+
+    fun getExerciseNames() : List<String>{
+        val databaseRead = this.readableDatabase
+
+        val exerciseNames = ArrayList<String>()
+
+        val cursor = databaseRead.rawQuery(
+            "SELECT DISTINCT LOWER($EXERCISE_NAME_COLUMN) as exercise_name FROM $TABLE_NAME ORDER BY exercise_name",
+            null
+        )
+
+        cursor.use { cur ->
+            if (cur.moveToFirst()) {
+                do {
+                    val exerciseName = cur.getString(cur.getColumnIndexOrThrow(
+                        "exercise_name"))
+                    exerciseNames.add(exerciseName)
+                } while (cur.moveToNext())
+            }
+        }
+        return exerciseNames
+    }
+
+    fun getExercisesToChart(exerciseName: String): Pair<List<Int>, List<String>>{
+        val databaseRead = this.readableDatabase
+        val selectQuery = "SELECT $EXERCISE_ID_COLUMN, $DATE_COLUMN FROM $TABLE_NAME WHERE LOWER($EXERCISE_NAME_COLUMN) = LOWER(?)"
+        val cursor = databaseRead.rawQuery(selectQuery, arrayOf(exerciseName))
+
+        val customDate = CustomDate()
+
+        val exerciseIds = ArrayList<Int>()
+        val dates = ArrayList<String>()
+
+        cursor.use { cur ->
+            if (cur.moveToFirst()) {
+                do {
+                    val exerciseId = cur.getInt(cur.getColumnIndexOrThrow(EXERCISE_ID_COLUMN))
+                    val savedDate = cur.getString(cur.getColumnIndexOrThrow(DATE_COLUMN))
+                    val date = customDate.getChartFormattedDate(savedDate)
+
+                    exerciseIds.add(exerciseId)
+                    dates.add(date)
+                } while (cur.moveToNext())
+            }
+        }
+        return Pair(exerciseIds, dates)
+    }
+
+    fun getLoadUnit(exerciseId: Int): String{
+        val databaseRead = this.readableDatabase
+        val selectQuery = "SELECT $LOAD_UNIT_COLUMN FROM $TABLE_NAME WHERE $EXERCISE_ID_COLUMN = '$exerciseId'"
+        val cursor = databaseRead.rawQuery(selectQuery, null)
+
+        var unit = ""
+
+        cursor.use { cur ->
+            if (cur.moveToFirst()) {
+                unit = cur.getString(cur.getColumnIndexOrThrow(LOAD_UNIT_COLUMN))
+            }
+        }
+        return unit
     }
 
     fun updatePlanNames(oldName: String, newName: String) {

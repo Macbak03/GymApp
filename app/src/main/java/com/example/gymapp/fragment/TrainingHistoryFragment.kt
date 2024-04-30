@@ -111,6 +111,7 @@ class TrainingHistoryFragment : Fragment(), FragmentAnimator {
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
+        activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         setRecyclerViewContent()
         workoutHistoryRecyclerViewAdapter.notifyDataSetChanged()
     }

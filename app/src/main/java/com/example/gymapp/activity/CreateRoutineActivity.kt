@@ -237,10 +237,16 @@ class CreateRoutineActivity : BaseActivity() {
     private fun getRoutine(): ArrayList<Exercise>{
         val routineDraft = routineRecyclerViewAdapter.getRoutine()
         val routine = ArrayList<Exercise>()
+        val routineNames = ArrayList<String>()
         for(exerciseDraft in routineDraft)
         {
             val exercise = exerciseDraft.toExercise()
-            routine.add(exercise)
+            if(routineNames.contains(exercise.name)){
+                throw ValidationException("You can't create routine with exercises with the same name")
+            }else{
+                routineNames.add(exercise.name)
+                routine.add(exercise)
+            }
         }
         return routine
     }
