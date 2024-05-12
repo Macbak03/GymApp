@@ -2,7 +2,11 @@ package com.example.gymapp.activity
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -84,8 +88,9 @@ class WorkoutActivity : BaseActivity() {
 
 
         expandableListView = binding.expandableListViewWorkout
-        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout, workoutHints)
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout, workoutHints, expandableListView)
         expandableListView.setAdapter(workoutExpandableListAdapter)
+
 
 
         binding.buttonSaveWorkout.setOnClickListener {
@@ -118,6 +123,22 @@ class WorkoutActivity : BaseActivity() {
                 .apply()
             workoutExpandableListAdapter.saveToFile()
         }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val view = currentFocus
+            if (view is EditText) {
+                val outRect = Rect()
+                view.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    view.clearFocus()
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     private fun loadRoutine(planId: Int?) {

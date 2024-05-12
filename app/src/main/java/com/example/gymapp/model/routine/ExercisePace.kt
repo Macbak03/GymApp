@@ -42,13 +42,13 @@ data class ExercisePace(
     }
 
     companion object {
-        fun fromString(pace: String?): ExercisePace {
+        fun fromString(pace: String?, position: Int): ExercisePace {
             if (pace == null) {
-                throw ValidationException("pace cannot be empty")
+                throw ValidationException("pace cannot be empty", position)
             }
             val regex = Regex("""^[x\d]{4}$""")
             val match = regex.matchEntire(pace)
-                ?: throw ValidationException("pace must be in correct form, eg. 21x1")
+                ?: throw ValidationException("pace must be in correct form, eg. 21x1", position)
             val exercisePace = match.value
             return ExercisePace(
                 Pace.fromChar(exercisePace[0]),

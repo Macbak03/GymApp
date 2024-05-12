@@ -1,17 +1,21 @@
 package com.example.gymapp.fragment
 
-import android.graphics.drawable.Drawable
+import android.content.Context
+import android.graphics.Rect
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -39,7 +43,6 @@ import com.patrykandpatrick.vico.core.zoom.Zoom
 import com.patrykandpatrick.vico.views.chart.CartesianChartView
 import com.patrykandpatrick.vico.views.scroll.ScrollHandler
 import com.patrykandpatrick.vico.views.zoom.ZoomHandler
-import org.xmlpull.v1.XmlPullParser
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.ceil
@@ -73,9 +76,9 @@ class ChartsFragment : Fragment() {
             findViewById<ComposeView>(R.id.composeView).setContent {
                 customMarker = rememberMarker()
             }
+
             lineChartLoad = findViewById(R.id.chartViewLoad)
             statButtons = findViewById(R.id.linearLayoutStatButtons)
-
 
             historyDataBase = WorkoutHistoryDatabaseHelper(requireContext(), null)
             workoutSeriesDataBase = WorkoutSeriesDataBaseHelper(requireContext(), null)
@@ -198,6 +201,7 @@ class ChartsFragment : Fragment() {
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
+
     private fun setChart(selectedExercise: String) {
         loadUnitSettings()
         trainingCount = 0
@@ -234,7 +238,7 @@ class ChartsFragment : Fragment() {
                     .toMap()
 
             val minLoadValue = getMinValue(loadValues)
-            val maxLoadValue = getMaxValue(loadValues, 10)
+            val maxLoadValue = getMaxValue(loadValues)
 
             val bottomAxisValueFormatter =
                 AxisValueFormatter<AxisPosition.Horizontal.Bottom> { x, _, _ ->
@@ -289,17 +293,22 @@ class ChartsFragment : Fragment() {
 
     private fun getMinValue(data: List<Float>): Int {
         val min = data.min()
+        if(min <= 15){
+            return 0
+        }
         val offset = min * 0.1
         return (min - offset).toInt().roundToClosest(10)
     }
 
-    private fun getMaxValue(data: List<Float>, roundStep: Int): Int {
+    private fun getMaxValue(data: List<Float>): Int {
+        val roundStep = 10
+        val step = 5
         val max = data.max()
-        val offset = max * 0.1
-        return if (max > roundStep + roundStep / 2) {
-            (max + offset).toInt().roundToClosest(roundStep)
-        } else {
-            (max + offset).toInt().roundToClosest(1)
+        return if(max <= 15){
+            (max + step).toInt().roundToClosest(roundStep)
+        } else{
+            val offset = max * 0.1
+            (max + offset + step).toInt().roundToClosest(roundStep)
         }
     }
 

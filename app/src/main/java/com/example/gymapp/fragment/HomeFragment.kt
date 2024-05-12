@@ -1,5 +1,6 @@
 package com.example.gymapp.fragment
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
@@ -13,6 +14,7 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -336,14 +338,20 @@ class HomeFragment : Fragment(), FragmentAnimator {
     }
 
 
+    @SuppressLint("InflateParams")
     private fun showWarningDialog() {
         val builder = context?.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
+        val dialogLayout = layoutInflater.inflate(R.layout.text_view_dialog_layout, null)
+        val textView = dialogLayout.findViewById<TextView>(R.id.textViewDialog)
+        val message = "You have unsaved workout that will be lost. Do you want to start new one?"
+        textView.text = message
         with(builder) {
-            this?.setTitle("You have unsaved workout that will be lost. Do you want to start new one?")
+            this?.setTitle(" ")
             this?.setPositiveButton("Yes") { _, _ ->
                 openStartWorkoutMenuFragment()
             }
             this?.setNegativeButton("No") { _, _ -> }
+            this?.setView(dialogLayout)
             this?.show()
         }
     }
