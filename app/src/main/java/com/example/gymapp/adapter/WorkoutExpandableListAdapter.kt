@@ -10,22 +10,16 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.EditText
 import android.widget.ExpandableListView
-import android.widget.Toast
 import com.example.gymapp.R
 import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
-import com.example.gymapp.model.routine.ExactPause
 import com.example.gymapp.model.routine.Exercise
 import com.example.gymapp.model.routine.ExerciseDraft
-import com.example.gymapp.model.routine.Pause
-import com.example.gymapp.model.routine.TimeUnit
-import com.example.gymapp.model.routine.Weight
-import com.example.gymapp.model.routine.WeightUnit
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutExercise
-import com.example.gymapp.model.workout.WorkoutHint
+import com.example.gymapp.model.workout.WorkoutHints
 import com.example.gymapp.model.workout.WorkoutSeries
 import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.google.gson.Gson
@@ -35,7 +29,7 @@ import java.io.FileWriter
 class WorkoutExpandableListAdapter(
     private val context: Context,
     private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>,
-    private val workoutHints: List<WorkoutHint>,
+    private val workoutHints: List<WorkoutHints>,
     private val expandableList: ExpandableListView
 ) : BaseExpandableListAdapter() {
 
@@ -243,7 +237,7 @@ class WorkoutExpandableListAdapter(
                     workoutExerciseDraft.exerciseName,
                     workoutExerciseDraft.pause,
                     workoutExerciseDraft.pauseUnit,
-                    workoutSeriesDraft.load,
+                    "0",
                     workoutSeriesDraft.loadUnit,
                     workoutExerciseDraft.series,
                     workoutExerciseDraft.reps,
@@ -270,18 +264,12 @@ class WorkoutExpandableListAdapter(
         for (i: Int in 0 until getChildrenCount(exerciseIndex)) {
             val workoutExpandableLayout =
                 getChildView(exerciseIndex, i, false, null, null) as WorkoutExpandableLayout?
-            var workoutSeries: WorkoutSeries?
-            try {
-                workoutSeries =
-                    workoutExpandableLayout?.getWorkoutSeriesDraft()?.toWorkoutSeries(i + 1)
-            } catch (exception: ValidationException) {
+            if(workoutExpandableLayout?.convertHintsToData(workoutHints[exerciseIndex]) == false) {
                 expandableList.expandGroup(exerciseIndex)
-                val errorEditText =
-                    workoutExpandableLayout?.findViewById<EditText>(exception.viewId)
-                //exception.highlightError(errorEditText)
-                //errorEditText?.setText("agwgg")
-                throw ValidationException(exception.message!!)
+                expandableList.smoothScrollToPosition(exerciseIndex)
+                notifyDataSetChanged()
             }
+            val workoutSeries: WorkoutSeries? = workoutExpandableLayout?.getWorkoutSeriesDraft()?.toWorkoutSeries(i + 1)
             if (workoutSeries != null) {
                 series.add(workoutSeries)
             }

@@ -25,7 +25,7 @@ import com.example.gymapp.model.WorkoutSessionSetDeserializer
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
-import com.example.gymapp.model.workout.WorkoutHint
+import com.example.gymapp.model.workout.WorkoutHints
 import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
@@ -43,7 +43,7 @@ class WorkoutActivity : BaseActivity() {
     private val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
     private var workout: MutableList<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>> =
         ArrayList()
-    private var workoutHints: MutableList<WorkoutHint> = ArrayList()
+    private var workoutHints: MutableList<WorkoutHints> = ArrayList()
     private var routineName: String? = null
     private var planName: String? = null
 
@@ -101,6 +101,11 @@ class WorkoutActivity : BaseActivity() {
 
         binding.buttonCancelWorkout.setOnClickListener {
             showCancelDialog()
+        }
+
+        binding.buttonTimer.setOnClickListener{
+            val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
+            startActivity(explicitIntent)
         }
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -174,11 +179,11 @@ class WorkoutActivity : BaseActivity() {
 
                 if(savedNotes.isNotEmpty()){
                     val note = savedNotes[index]
-                    val workoutHint = WorkoutHint(savedExercise.reps, savedExercise.load, note)
-                    workoutHints.add(workoutHint)
+                    val workoutHints = WorkoutHints(savedExercise.reps, savedExercise.load, note)
+                    this.workoutHints.add(workoutHints)
                 }else{
-                    val workoutHint = WorkoutHint(savedExercise.reps, savedExercise.load, "Note")
-                    workoutHints.add(workoutHint)
+                    val workoutHints = WorkoutHints(savedExercise.reps, savedExercise.load, "Note")
+                    this.workoutHints.add(workoutHints)
                 }
 
 
