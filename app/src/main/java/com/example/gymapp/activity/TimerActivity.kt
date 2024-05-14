@@ -7,6 +7,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.View
+import androidx.core.app.NotificationCompat
 import com.example.gymapp.R
 import com.example.gymapp.databinding.ActivityTimerBinding
 import com.example.gymapp.timer.TimerExpiredReceiver
@@ -44,15 +46,18 @@ class TimerActivity : BaseActivity() {
         binding.buttonTimerClear.setOnClickListener {
             onTimerFinished()
         }
+        binding.buttonTimerStop.setOnClickListener {
+            NotificationUtil.audioPlayer.stopSound()
+            it.visibility = View.GONE
+        }
 
     }
 
     override fun onResume() {
         super.onResume()
         initTimer()
-
-        removeAlarm(this)
         NotificationUtil.hideTimerNotification(this)
+        removeAlarm(this)
     }
 
 
@@ -87,6 +92,7 @@ class TimerActivity : BaseActivity() {
 
         if (secondsRemaining <= 0) {
             onTimerFinished()
+            binding.buttonTimerStop.visibility = View.VISIBLE
         } else if (timerState == TimerState.Running) {
             startTimer()
         }
@@ -101,13 +107,18 @@ class TimerActivity : BaseActivity() {
 
         setNewTimerLength()
 
-        binding.progressCountdown.progress = 0
+        binding.progressCountdown.progress = 0f
 
         PrefUtil.setSecondsRemaining(timerLengthSeconds, this)
         secondsRemaining = timerLengthSeconds
 
         updateButtons()
         updateCountdownUI()
+    }
+
+    private fun playAudio(){
+        NotificationUtil.audioPlayer.playSound(this, R.raw.timer_alarm)
+        binding.buttonTimerStop.visibility = View.VISIBLE
     }
 
     private fun startTimer() {
@@ -117,6 +128,9 @@ class TimerActivity : BaseActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 secondsRemaining = millisUntilFinished / 1000
                 updateCountdownUI()
+                if(secondsRemaining <= 0){
+                    playAudio()
+                }
             }
         }
         timerState = TimerState.Running
@@ -126,12 +140,12 @@ class TimerActivity : BaseActivity() {
     private fun setNewTimerLength() {
         val lengthInMinutes = PrefUtil.getTimerLength(this)
         timerLengthSeconds = (lengthInMinutes * 60L)
-        binding.progressCountdown.max = timerLengthSeconds.toInt()
+        binding.progressCountdown.progressMax = timerLengthSeconds.toFloat()
     }
 
     private fun setPreviousTimerLength() {
         timerLengthSeconds = PrefUtil.getPreviousTimerLengthSeconds(this)
-        binding.progressCountdown.max = timerLengthSeconds.toInt()
+        binding.progressCountdown.progressMax = timerLengthSeconds.toFloat()
     }
 
     private fun updateCountdownUI() {
@@ -140,7 +154,7 @@ class TimerActivity : BaseActivity() {
         val secondsStr = secondsInMinuteUntilFinished.toString()
         binding.editTextMinutes.setText("$minutesUntilFinished")
         binding.editTextSeconds.setText(if (secondsStr.length == 2) secondsStr else "0$secondsStr")
-        binding.progressCountdown.progress = (timerLengthSeconds - secondsRemaining).toInt()
+        binding.progressCountdown.progress = (timerLengthSeconds - secondsRemaining).toFloat()
     }
 
     private fun updateButtons() {
@@ -162,10 +176,7 @@ class TimerActivity : BaseActivity() {
         }
     }
 
-
-    override fun onPause() {
-        super.onPause()
-
+    private fun showNotification(){
         if (timerState == TimerState.Running) {
             timer.cancel()
             val wakeUpTime = setAlarm(this, nowSeconds, secondsRemaining)
@@ -173,7 +184,12 @@ class TimerActivity : BaseActivity() {
         } else if (timerState == TimerState.Paused) {
             NotificationUtil.showTimerPaused(this)
         }
+    }
 
+
+    override fun onPause() {
+        super.onPause()
+        showNotification()
         PrefUtil.setPreviousTimerLengthSeconds(timerLengthSeconds, this)
         PrefUtil.setSecondsRemaining(secondsRemaining, this)
         PrefUtil.setTimerState(timerState, this)
@@ -195,9 +211,9 @@ class TimerActivity : BaseActivity() {
 
             val pendingIntent = PendingIntent.getBroadcast(
                 context,
-                0, // request code
+                0,
                 intent,
-                PendingIntent.FLAG_IMMUTABLE // Flags
+                PendingIntent.FLAG_IMMUTABLE
             )
             alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpTime, pendingIntent)
             PrefUtil.setAlarmSetTime(nowSeconds, context)

@@ -1,3 +1,5 @@
+
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -98,6 +100,7 @@ dependencies {
     implementation("com.patrykandpatrick.vico:views:$vicoVersion")
     implementation("com.patrykandpatrick.vico:compose-m2:$vicoVersion")
     implementation("com.patrykandpatrick.vico:compose-m3:$vicoVersion")
+    implementation ("com.mikhaellopez:circularprogressbar:3.1.0")
 
     implementation("com.google.android.material:material:1.12.0-alpha03")
 }

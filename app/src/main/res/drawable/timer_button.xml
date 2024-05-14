@@ -26,13 +26,14 @@
         <selector>
             <item android:state_pressed="true">
                 <shape android:shape="oval">
-                    <solid android:color="#4F78FF" />
+                    <solid android:color="#8686D7" />
 
                 </shape>
             </item>
             <item android:state_pressed="false">
                 <shape android:shape="oval">
-                    <solid android:color="#698CFD" />
+                    <solid android:color="#4A4CC4"
+                    />
                 </shape>
             </item>
         </selector>

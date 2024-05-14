@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:id="@+id/popupLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginHorizontal="20dp"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@drawable/popup_background">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Timer Expired"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
+        <Button
+            android:id="@+id/btnStopAlarm"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_height="40dp"
+            android:text="Stop"
+            android:background="@drawable/poput_button"
+            android:textColor="#3E75D4"/>
+
+    </LinearLayout>
+</RelativeLayout>
