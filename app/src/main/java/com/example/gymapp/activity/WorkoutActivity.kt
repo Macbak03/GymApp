@@ -1,8 +1,10 @@
 package com.example.gymapp.activity
 
+import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
@@ -10,6 +12,7 @@ import android.widget.EditText
 import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -104,8 +107,16 @@ class WorkoutActivity : BaseActivity() {
         }
 
         binding.buttonTimer.setOnClickListener{
-            val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
-            startActivity(explicitIntent)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                showPermissionExplanation()
+                if(this.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()){
+                    val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
+                    startActivity(explicitIntent)
+                }
+            }else{
+                val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
+                startActivity(explicitIntent)
+            }
         }
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -144,6 +155,23 @@ class WorkoutActivity : BaseActivity() {
             }
         }
         return super.dispatchTouchEvent(event)
+    }
+
+    private fun showPermissionExplanation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!this.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()) {
+                android.app.AlertDialog.Builder(this)
+                    .setTitle("Permission Needed")
+                    .setMessage("This function requires the ability to schedule exact alarms to function properly. Please allow this permission in the settings.")
+                    .setPositiveButton("Settings") { _, _ ->
+                        val intent =
+                            Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+        }
     }
 
     private fun loadRoutine(planId: Int?) {

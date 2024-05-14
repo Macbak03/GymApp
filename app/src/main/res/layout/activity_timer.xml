@@ -14,6 +14,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
+            android:id="@+id/editTextMinutes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -21,13 +22,13 @@
             android:textSize="70sp" />
 
         <TextView
-            android:id="@+id/textView_countdown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=":"
             android:textSize="70sp" />
 
         <EditText
+            android:id="@+id/editTextSeconds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -36,7 +37,7 @@
     </LinearLayout>
 
     <ProgressBar
-        android:id="@+id/progress_countdown"
+        android:id="@+id/progressCountdown"
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -57,7 +58,7 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progress_countdown">
+        app:layout_constraintTop_toBottomOf="@+id/progressCountdown">
 
         <FrameLayout
             android:id="@+id/buttonTimerClear"
@@ -83,6 +84,7 @@
             android:background="@drawable/timer_button">
 
             <ImageView
+                android:id="@+id/imagePlayPause"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:background="@drawable/baseline_play_arrow_24"
