@@ -67,7 +67,7 @@
             android:name=".activity.TimerActivity"
             android:exported="false"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
 
         <activity android:name=".activity.TimerPopupActivity"
             android:theme="@style/Theme.AppCompat.Dialog.Alert"

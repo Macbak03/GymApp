@@ -9,9 +9,15 @@ class PrefUtil {
     companion object {
 
         private const val TIMER_LENGTH_ID = "com.example.gymapp.timer.timer_length"
-        fun getTimerLength(context: Context): Int{
+        fun getTimerLength(context: Context): Long{
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            return preferences.getInt(TIMER_LENGTH_ID, 1)
+            return preferences.getLong(TIMER_LENGTH_ID, 180)
+        }
+
+        fun setTimerLength(seconds: Long, context: Context){
+            val editor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+            editor.putLong(TIMER_LENGTH_ID, seconds)
+            editor.apply()
         }
 
         private const val PREVIOUS_TIMER_LENGTH_SECONDS_ID = "com.example.gymapp.timer.previous_timer_length_seconds"
@@ -56,6 +62,33 @@ class PrefUtil {
             editor.putLong(SECONDS_REMAINING_ID, seconds)
             editor.apply()
         }
+
+
+        private const val TIME_PICKER_MINUTES_ID = "com.example.gymapp.timer.picker_minutes"
+
+        fun getPickerMinutes(context: Context) : Int{
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            return preferences.getInt(TIME_PICKER_MINUTES_ID, 3)
+        }
+        fun setPickerMinutes(minutes: Int, context: Context){
+            val editor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+            editor.putInt(TIME_PICKER_MINUTES_ID, minutes)
+            editor.apply()
+        }
+
+
+        private const val TIME_PICKER_SECONDS_ID = "com.example.gymapp.timer.picker_seconds"
+
+        fun getPickerSeconds(context: Context) : Int{
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            return preferences.getInt(TIME_PICKER_SECONDS_ID, 0)
+        }
+        fun setPickerSeconds(seconds: Int, context: Context){
+            val editor = PreferenceManager.getDefaultSharedPreferences(context).edit()
+            editor.putInt(TIME_PICKER_SECONDS_ID, seconds)
+            editor.apply()
+        }
+
 
 
         private const val ALARM_SET_TIME_ID = "com.example.gymapp.timer.backgrounded_time"

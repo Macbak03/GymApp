@@ -85,6 +85,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
         spinner = binding.spinnerTrainingPlans
 
+        setLastTraining()
+
 
         plansDataBase = PlansDataBaseHelper(requireContext(), null)
         val trainingPlanNamesString = plansDataBase.getColumn(

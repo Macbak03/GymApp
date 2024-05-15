@@ -21,7 +21,7 @@
             style="@style/routine_edit_text_item"
             android:layout_weight="1"
             android:inputType="numberDecimal"
-            android:digits="012345678-"
+            android:digits="012345678-."
             android:hint="@string/enter_pause" />
 
         <Spinner
@@ -57,7 +57,7 @@
             android:layout_weight="1"
             android:hint="@string/enter_load"
             android:inputType="number"
-            android:digits="0123456789-"/>
+            android:digits="0123456789."/>
 
         <Spinner
             android:id="@+id/spinnerLoad"
@@ -141,7 +141,7 @@
             style="@style/routine_edit_text_item"
             android:hint="@string/enter_rpe"
             android:inputType="numberDecimal"
-            android:digits="012345678-"/>
+            android:digits="012345678-."/>
 
         <FrameLayout
             android:id="@+id/imageViewRpeDescription"

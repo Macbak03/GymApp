@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
-import androidx.core.app.NotificationCompat
 import com.example.gymapp.R
 import com.example.gymapp.databinding.ActivityTimerBinding
 import com.example.gymapp.timer.TimerExpiredReceiver
@@ -20,8 +19,12 @@ class TimerActivity : BaseActivity() {
     private lateinit var binding: ActivityTimerBinding
 
     private lateinit var timer: CountDownTimer
+
     private var timerLengthSeconds: Long = 0
     private var timerState = TimerState.Stopped
+
+    private var timerSetterMinutes: Int = 0
+    private var timerSetterSeconds: Int = 0
 
     private var secondsRemaining: Long = 0
 
@@ -41,16 +44,28 @@ class TimerActivity : BaseActivity() {
                 TimerState.Paused
             }
             updateButtons()
+            handleTimePickerStatus()
         }
 
         binding.buttonTimerClear.setOnClickListener {
             onTimerFinished()
+            handleTimePickerStatus()
         }
         binding.buttonTimerStop.setOnClickListener {
             NotificationUtil.audioPlayer.stopSound()
             it.visibility = View.GONE
         }
 
+        binding.numberPickerMinutes.minValue = 0
+        binding.numberPickerMinutes.maxValue = 59
+        binding.numberPickerSeconds.minValue = 0
+        binding.numberPickerSeconds.maxValue = 59
+
+        if (binding.numberPickerMinutes.value == 0) {
+            binding.numberPickerSeconds.value = 1
+        }
+
+        handleTimerPicker()
     }
 
     override fun onResume() {
@@ -60,15 +75,83 @@ class TimerActivity : BaseActivity() {
         removeAlarm(this)
     }
 
+    override fun onPause() {
+        super.onPause()
+        showNotification()
+        PrefUtil.setPreviousTimerLengthSeconds(timerLengthSeconds, this)
+        PrefUtil.setSecondsRemaining(secondsRemaining, this)
+        PrefUtil.setTimerState(timerState, this)
+
+        PrefUtil.setPickerMinutes(timerSetterMinutes, this)
+        PrefUtil.setPickerSeconds(timerSetterSeconds, this)
+    }
+
+    private fun handleTimerPicker() {
+        val numberPickerSeconds = binding.numberPickerSeconds
+        val numberPickerMinutes = binding.numberPickerMinutes
+        numberPickerMinutes.setOnValueChangedListener { picker, oldVal, newVal ->
+            if (newVal == 0 && numberPickerSeconds.value == 0) {
+                numberPickerSeconds.value = 1
+            }
+            if (timerState == TimerState.Stopped) {
+                binding.textViewMinutes.text = newVal.toString()
+            }
+            timerSetterMinutes = newVal
+            setTimerOnPickerChange()
+        }
+        numberPickerSeconds.setOnValueChangedListener { picker, oldVal, newVal ->
+            if (newVal == 0 && numberPickerMinutes.value == 0) {
+                picker.value = 1
+            }
+            if (timerState == TimerState.Stopped) {
+                if (newVal < 10) {
+                    val formattedSeconds = getString(R.string.timeLessThan10, newVal.toString())
+                    binding.textViewSeconds.text = formattedSeconds
+                } else {
+                    binding.textViewSeconds.text = newVal.toString()
+                }
+            }
+            timerSetterSeconds = newVal
+            setTimerOnPickerChange()
+        }
+    }
+
+    private fun setTimerOnPickerChange() {
+        timerLengthSeconds = (timerSetterMinutes * 60).toLong() + timerSetterSeconds.toLong()
+        PrefUtil.setTimerLength(timerLengthSeconds, this)
+        setNewTimerLength()
+        secondsRemaining = timerLengthSeconds
+    }
+
+
+    private fun handleTimePickerStatus() {
+        if (timerState == TimerState.Running || timerState == TimerState.Paused) {
+            binding.numberPickerSeconds.isEnabled = false
+            binding.numberPickerMinutes.isEnabled = false
+        } else {
+            binding.numberPickerSeconds.isEnabled = true
+            binding.numberPickerMinutes.isEnabled = true
+        }
+    }
+
+    private fun setTimePicker() {
+        binding.numberPickerMinutes.value = PrefUtil.getPickerMinutes(this)
+        binding.numberPickerSeconds.value = PrefUtil.getPickerSeconds(this)
+        timerSetterMinutes = binding.numberPickerMinutes.value
+        timerSetterSeconds = binding.numberPickerSeconds.value
+        val seconds = (timerSetterMinutes * 60 + timerSetterSeconds).toLong()
+        PrefUtil.setTimerLength(seconds, this)
+    }
+
 
     private fun initTimer() {
         timerState = PrefUtil.getTimerState(this)
 
-        if (timerState == TimerState.Stopped) {
-            setNewTimerLength()
-        } else {
-            setPreviousTimerLength()
-        }
+        setTimePicker()
+
+        handleTimePickerStatus()
+
+        setNewTimerLength()
 
         secondsRemaining =
             if (timerState == TimerState.Running || timerState == TimerState.Paused) {
@@ -113,10 +196,11 @@ class TimerActivity : BaseActivity() {
         secondsRemaining = timerLengthSeconds
 
         updateButtons()
+        handleTimePickerStatus()
         updateCountdownUI()
     }
 
-    private fun playAudio(){
+    private fun playAudio() {
         NotificationUtil.audioPlayer.playSound(this, R.raw.timer_alarm)
         binding.buttonTimerStop.visibility = View.VISIBLE
     }
@@ -128,7 +212,7 @@ class TimerActivity : BaseActivity() {
             override fun onTick(millisUntilFinished: Long) {
                 secondsRemaining = millisUntilFinished / 1000
                 updateCountdownUI()
-                if(secondsRemaining <= 0){
+                if (secondsRemaining <= 0) {
                     playAudio()
                 }
             }
@@ -138,8 +222,8 @@ class TimerActivity : BaseActivity() {
     }
 
     private fun setNewTimerLength() {
-        val lengthInMinutes = PrefUtil.getTimerLength(this)
-        timerLengthSeconds = (lengthInMinutes * 60L)
+        val timerLength = PrefUtil.getTimerLength(this)
+        timerLengthSeconds = timerLength
         binding.progressCountdown.progressMax = timerLengthSeconds.toFloat()
     }
 
@@ -152,8 +236,8 @@ class TimerActivity : BaseActivity() {
         val minutesUntilFinished = secondsRemaining / 60
         val secondsInMinuteUntilFinished = secondsRemaining - minutesUntilFinished * 60
         val secondsStr = secondsInMinuteUntilFinished.toString()
-        binding.editTextMinutes.setText("$minutesUntilFinished")
-        binding.editTextSeconds.setText(if (secondsStr.length == 2) secondsStr else "0$secondsStr")
+        binding.textViewMinutes.text = ("$minutesUntilFinished")
+        binding.textViewSeconds.text = (if (secondsStr.length == 2) secondsStr else "0$secondsStr")
         binding.progressCountdown.progress = (timerLengthSeconds - secondsRemaining).toFloat()
     }
 
@@ -176,7 +260,8 @@ class TimerActivity : BaseActivity() {
         }
     }
 
-    private fun showNotification(){
+
+    private fun showNotification() {
         if (timerState == TimerState.Running) {
             timer.cancel()
             val wakeUpTime = setAlarm(this, nowSeconds, secondsRemaining)
@@ -184,15 +269,6 @@ class TimerActivity : BaseActivity() {
         } else if (timerState == TimerState.Paused) {
             NotificationUtil.showTimerPaused(this)
         }
-    }
-
-
-    override fun onPause() {
-        super.onPause()
-        showNotification()
-        PrefUtil.setPreviousTimerLengthSeconds(timerLengthSeconds, this)
-        PrefUtil.setSecondsRemaining(secondsRemaining, this)
-        PrefUtil.setTimerState(timerState, this)
     }
 
     companion object {

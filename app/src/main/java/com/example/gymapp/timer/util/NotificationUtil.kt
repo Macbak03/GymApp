@@ -31,7 +31,7 @@ class NotificationUtil {
             val startIntent = Intent(context, TimerNotificationActionReceiver::class.java)
             startIntent.action = Constants.ACTION_STOP_ALARM
             val startPendingIntent = PendingIntent.getBroadcast(context,
-                0, startIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                0, startIntent, PendingIntent.FLAG_IMMUTABLE)
 
             val nBuilder = getBasicNotificationBuilder(context, CHANNEL_ID_TIMER, true)
             nBuilder.setContentTitle("Timer Expired")
@@ -48,12 +48,12 @@ class NotificationUtil {
             val stopIntent = Intent(context, TimerNotificationActionReceiver::class.java)
             stopIntent.action = Constants.ACTION_STOP
             val stopPendingIntent = PendingIntent.getBroadcast(context,
-                0, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                0, stopIntent, PendingIntent.FLAG_IMMUTABLE)
 
             val pauseIntent = Intent(context, TimerNotificationActionReceiver::class.java)
             pauseIntent.action = Constants.ACTION_PAUSE
             val pausePendingIntent = PendingIntent.getBroadcast(context,
-                0, pauseIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                0, pauseIntent, PendingIntent.FLAG_IMMUTABLE)
 
             val df = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
@@ -75,7 +75,7 @@ class NotificationUtil {
             val resumeIntent = Intent(context, TimerNotificationActionReceiver::class.java)
             resumeIntent.action = Constants.ACTION_RESUME
             val resumePendingIntent = PendingIntent.getBroadcast(context,
-                0, resumeIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+                0, resumeIntent, PendingIntent.FLAG_IMMUTABLE)
 
             val nBuilder = getBasicNotificationBuilder(context, CHANNEL_ID_TIMER, false)
             nBuilder.setContentTitle("Timer is paused.")
@@ -115,7 +115,7 @@ class NotificationUtil {
             stackBuilder.addParentStack(javaClass)
             stackBuilder.addNextIntent(resultIntent)
 
-            return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+            return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_IMMUTABLE)
         }
 
 
