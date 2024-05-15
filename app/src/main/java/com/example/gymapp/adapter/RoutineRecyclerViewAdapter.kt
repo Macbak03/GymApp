@@ -45,11 +45,12 @@ class RoutineRecyclerViewAdapter(
         private val loadEditText: EditText = exerciseDetails.findViewById(R.id.editTextLoad)
         private val repsEditText: EditText = exerciseDetails.findViewById(R.id.editTextReps)
         private val seriesEditText: EditText = exerciseDetails.findViewById(R.id.editTextSeries)
-        private val rpeEditText: EditText = exerciseDetails.findViewById(R.id.editTextIntensity)
+        private val intensityEditText: EditText = exerciseDetails.findViewById(R.id.editTextIntensity)
         private val paceEditText: EditText = exerciseDetails.findViewById(R.id.editTextPace)
 
         private val pauseUnitSpinner: Spinner = exerciseDetails.findViewById(R.id.spinnerPause)
         private val loadUnitSpinner: Spinner = exerciseDetails.findViewById(R.id.spinnerLoad)
+
 
         val expandImage: ImageView = exerciseTitle.findViewById(R.id.buttonExpand)
         val moveButton: ImageView = exerciseTitle.findViewById(R.id.imageButtonMove)
@@ -110,7 +111,7 @@ class RoutineRecyclerViewAdapter(
                     }
                 }
             })
-            rpeEditText.addTextChangedListener(object : TextWatcher{
+            intensityEditText.addTextChangedListener(object : TextWatcher{
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
                 override fun afterTextChanged(s: Editable?) {
@@ -244,7 +245,6 @@ class RoutineRecyclerViewAdapter(
                     "For example pace 21x0 in bench press means you go down for 2 seconds, 1 second pause " +
                     "at the bottom, push as fast as you can to the top and immediately start to go down again.")
         }
-
 
     }
 

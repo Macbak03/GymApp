@@ -8,15 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
+import android.widget.EditText
 import android.widget.ExpandableListView
 import com.example.gymapp.R
+import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.layout.WorkoutExpandableLayout
 import com.example.gymapp.layout.WorkoutExpandableTitleLayout
+import com.example.gymapp.model.routine.Exercise
 import com.example.gymapp.model.routine.ExerciseDraft
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
 import com.example.gymapp.model.workout.WorkoutExercise
-import com.example.gymapp.model.workout.WorkoutHint
+import com.example.gymapp.model.workout.WorkoutHints
 import com.example.gymapp.model.workout.WorkoutSeries
 import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.google.gson.Gson
@@ -26,7 +29,8 @@ import java.io.FileWriter
 class WorkoutExpandableListAdapter(
     private val context: Context,
     private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>,
-    private val workoutHints: List<WorkoutHint>
+    private val workoutHints: List<WorkoutHints>,
+    private val expandableList: ExpandableListView
 ) : BaseExpandableListAdapter() {
 
     private val workoutSession = ArrayList<Pair<Int, List<WorkoutSessionSet>>>()
@@ -103,22 +107,44 @@ class WorkoutExpandableListAdapter(
 
 
         repsEditText?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val reps = workout[listPosition].second[expandedListPosition].actualReps
-                workoutSession[listPosition].second[expandedListPosition].actualReps = reps
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    val reps = workout[listPosition].second[expandedListPosition].actualReps
+                    workoutSession[listPosition].second[expandedListPosition].actualReps = reps
 
-            }
-        })
+                }
+            })
+        /*repsEditText?.setOnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) {
+                    try {
+                        workoutExpandableLayout.validateReps()
+                    } catch (exception: ValidationException){
+                        repsEditText.error = exception.message
+                    }
+
+                }
+            }*/
+
         weightEditText?.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                val weight = workout[listPosition].second[expandedListPosition].load
-                workoutSession[listPosition].second[expandedListPosition].load = weight
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+                override fun afterTextChanged(s: Editable?) {
+                    val weight = workout[listPosition].second[expandedListPosition].load
+                    workoutSession[listPosition].second[expandedListPosition].load = weight
+                }
+            })
+       /* weightEditText?.setOnFocusChangeListener { v, hasFocus ->
+                if (!hasFocus) {
+                    try {
+                        workoutExpandableLayout.validateWeight()
+                    } catch (exception: ValidationException){
+                        weightEditText.error = exception.message
+                    }
+
+                }
             }
-        })
+*/
 
         noteEditText?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -211,7 +237,7 @@ class WorkoutExpandableListAdapter(
                     workoutExerciseDraft.exerciseName,
                     workoutExerciseDraft.pause,
                     workoutExerciseDraft.pauseUnit,
-                    workoutSeriesDraft.load,
+                    "0",
                     workoutSeriesDraft.loadUnit,
                     workoutExerciseDraft.series,
                     workoutExerciseDraft.reps,
@@ -220,8 +246,14 @@ class WorkoutExpandableListAdapter(
                     workoutExerciseDraft.pace,
                     true
                 )
-                val exercise = exerciseDraft.toExercise()
-                workout.add(WorkoutExercise(exercise, i + 1, note))
+                val exercise: Exercise? = try {
+                    exerciseDraft.toExercise()
+                } catch (exception: ValidationException) {
+                    null
+                }
+                if (exercise != null) {
+                    workout.add(WorkoutExercise(exercise, i + 1, note))
+                }
             }
         }
         return workout
@@ -232,8 +264,12 @@ class WorkoutExpandableListAdapter(
         for (i: Int in 0 until getChildrenCount(exerciseIndex)) {
             val workoutExpandableLayout =
                 getChildView(exerciseIndex, i, false, null, null) as WorkoutExpandableLayout?
-            val workoutSeries =
-                workoutExpandableLayout?.getWorkoutSeriesDraft()?.toWorkoutSeries(i + 1)
+            if(workoutExpandableLayout?.convertHintsToData(workoutHints[exerciseIndex]) == false) {
+                expandableList.expandGroup(exerciseIndex)
+                expandableList.smoothScrollToPosition(exerciseIndex)
+                notifyDataSetChanged()
+            }
+            val workoutSeries: WorkoutSeries? = workoutExpandableLayout?.getWorkoutSeriesDraft()?.toWorkoutSeries(i + 1)
             if (workoutSeries != null) {
                 series.add(workoutSeries)
             }

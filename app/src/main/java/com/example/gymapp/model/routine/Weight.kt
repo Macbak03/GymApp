@@ -19,16 +19,16 @@ data class Weight private constructor(
             }
         }
 
-        fun fromStringWithUnit(weight: String?, unit: WeightUnit) : Weight
+        fun fromStringWithUnit(weight: String?, unit: WeightUnit, viewId: Int) : Weight
         {
             if(weight.isNullOrBlank())
             {
-                throw ValidationException("weight cannot be empty")
+                throw ValidationException("weight cannot be empty", viewId)
             }
-            val floatWeight = weight.toFloatOrNull() ?: throw ValidationException("weight must be a number")
+            val floatWeight = weight.toFloatOrNull() ?: throw ValidationException("weight must be a number", viewId)
             if(floatWeight < 0)
             {
-                throw ValidationException("weight cannot be negative")
+                throw ValidationException("weight cannot be negative", viewId)
             }
             return Weight(floatWeight, unit)
         }

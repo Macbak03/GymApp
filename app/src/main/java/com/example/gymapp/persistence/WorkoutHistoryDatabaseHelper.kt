@@ -189,15 +189,17 @@ class WorkoutHistoryDatabaseHelper(
         val db = this.writableDatabase
         db.transaction {
             val workout = workoutExpandableListAdapter.getWorkoutGroup()
-            for (workoutExercise in workout) {
-                addExerciseToHistory(
-                    date,
-                    workoutExercise,
-                    planName,
-                    routineName,
-                )
+            for(index: Int in 0 until workoutExpandableListAdapter.groupCount){
+                if(workout.isNotEmpty()) {
+                    addExerciseToHistory(
+                        date,
+                        workout[index],
+                        planName,
+                        routineName,
+                    )
+                }
                 val series =
-                    workoutExpandableListAdapter.getWorkoutSeries(workoutExercise.exerciseCount - 1)
+                    workoutExpandableListAdapter.getWorkoutSeries(index)
                 val id = getLastID()
                 if (id != null) {
                     addSeries(series, id)

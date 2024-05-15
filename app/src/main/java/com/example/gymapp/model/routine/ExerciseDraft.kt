@@ -1,5 +1,6 @@
 package com.example.gymapp.model.routine
 
+import com.example.gymapp.R
 import com.example.gymapp.exception.ValidationException
 
 data class ExerciseDraft (
@@ -22,24 +23,24 @@ data class ExerciseDraft (
         val name = name
         if(name.isNullOrBlank())
         {
-            throw ValidationException("name cannot be empty")
+            throw ValidationException("name cannot be empty", R.id.editTextExerciseName)
 
         }
-        val pauseDuration = Pause.fromString(pause, pauseUnit)
-        val weight = Weight.fromStringWithUnit(load, loadUnit)
-        val reps = Reps.fromString(reps)
+        val pauseDuration = Pause.fromString(pause, pauseUnit, R.id.editTextPause)
+        val weight = Weight.fromStringWithUnit(load, loadUnit, R.id.editTextLoad)
+        val reps = Reps.fromString(reps, R.id.editTextReps)
         val series = series
         if(series.isNullOrBlank())
         {
-            throw ValidationException("series cannot be empty")
+            throw ValidationException("series cannot be empty", R.id.editTextSeries)
         }
         if(series.toIntOrNull() == null)
         {
-            throw ValidationException("series must be a number")
+            throw ValidationException("series must be a number", R.id.editTextSeries)
         }
         val intSeries = series.toInt()
-        val intensity = Intensity.fromString(intensity, intensityIndex)
-        val pace = ExercisePace.fromString(pace)
+        val intensity = Intensity.fromString(intensity, intensityIndex, R.id.editTextIntensity)
+        val pace = ExercisePace.fromString(pace, R.id.editTextPace)
 
 
         return Exercise(name, pauseDuration, weight, intSeries, reps, intensity, pace)

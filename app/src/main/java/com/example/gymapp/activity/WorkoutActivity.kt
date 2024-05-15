@@ -1,11 +1,18 @@
 package com.example.gymapp.activity
 
+import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
+import android.os.Build
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -21,7 +28,7 @@ import com.example.gymapp.model.WorkoutSessionSetDeserializer
 import com.example.gymapp.model.workout.CustomDate
 import com.example.gymapp.model.workout.WorkoutSeriesDraft
 import com.example.gymapp.model.workout.WorkoutExerciseDraft
-import com.example.gymapp.model.workout.WorkoutHint
+import com.example.gymapp.model.workout.WorkoutHints
 import com.example.gymapp.model.workout.WorkoutSessionSet
 import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.PlansDataBaseHelper
@@ -39,7 +46,7 @@ class WorkoutActivity : BaseActivity() {
     private val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
     private var workout: MutableList<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>> =
         ArrayList()
-    private var workoutHints: MutableList<WorkoutHint> = ArrayList()
+    private var workoutHints: MutableList<WorkoutHints> = ArrayList()
     private var routineName: String? = null
     private var planName: String? = null
 
@@ -84,8 +91,9 @@ class WorkoutActivity : BaseActivity() {
 
 
         expandableListView = binding.expandableListViewWorkout
-        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout, workoutHints)
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout, workoutHints, expandableListView)
         expandableListView.setAdapter(workoutExpandableListAdapter)
+
 
 
         binding.buttonSaveWorkout.setOnClickListener {
@@ -96,6 +104,19 @@ class WorkoutActivity : BaseActivity() {
 
         binding.buttonCancelWorkout.setOnClickListener {
             showCancelDialog()
+        }
+
+        binding.buttonTimer.setOnClickListener{
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                showPermissionExplanation()
+                if(this.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()){
+                    val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
+                    startActivity(explicitIntent)
+                }
+            }else{
+                val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
+                startActivity(explicitIntent)
+            }
         }
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -117,6 +138,39 @@ class WorkoutActivity : BaseActivity() {
             prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
                 .apply()
             workoutExpandableListAdapter.saveToFile()
+        }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val view = currentFocus
+            if (view is EditText) {
+                val outRect = Rect()
+                view.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    view.clearFocus()
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event)
+    }
+
+    private fun showPermissionExplanation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if (!this.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()) {
+                android.app.AlertDialog.Builder(this)
+                    .setTitle("Permission Needed")
+                    .setMessage("This function requires the ability to schedule exact alarms to function properly. Please allow this permission in the settings.")
+                    .setPositiveButton("Settings") { _, _ ->
+                        val intent =
+                            Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         }
     }
 
@@ -153,11 +207,11 @@ class WorkoutActivity : BaseActivity() {
 
                 if(savedNotes.isNotEmpty()){
                     val note = savedNotes[index]
-                    val workoutHint = WorkoutHint(savedExercise.reps, savedExercise.load, note)
-                    workoutHints.add(workoutHint)
+                    val workoutHints = WorkoutHints(savedExercise.reps, savedExercise.load, note)
+                    this.workoutHints.add(workoutHints)
                 }else{
-                    val workoutHint = WorkoutHint(savedExercise.reps, savedExercise.load, "Note")
-                    workoutHints.add(workoutHint)
+                    val workoutHints = WorkoutHints(savedExercise.reps, savedExercise.load, "Note")
+                    this.workoutHints.add(workoutHints)
                 }
 
 

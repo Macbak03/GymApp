@@ -26,7 +26,9 @@
         android:hint="Reps"
         android:inputType="numberDecimal"
         android:autofillHints=""
-        android:textAlignment="textEnd"/>
+        android:textAlignment="textEnd"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
     <TextView
         android:layout_width="20dp"
         android:layout_height="wrap_content"
@@ -41,7 +43,9 @@
         android:hint="Weight"
         android:autofillHints=""
         android:singleLine="true"
-        android:inputType="numberDecimal"/>
+        android:inputType="numberDecimal"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
     <TextView
         android:id="@+id/textViewWeightUnitValue"
         android:layout_width="wrap_content"

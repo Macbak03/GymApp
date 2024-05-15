@@ -20,6 +20,8 @@
             android:id="@+id/editTextPause"
             style="@style/routine_edit_text_item"
             android:layout_weight="1"
+            android:inputType="numberDecimal"
+            android:digits="012345678-."
             android:hint="@string/enter_pause" />
 
         <Spinner
@@ -54,7 +56,8 @@
             style="@style/routine_edit_text_item"
             android:layout_weight="1"
             android:hint="@string/enter_load"
-            android:inputType="numberDecimal" />
+            android:inputType="number"
+            android:digits="0123456789."/>
 
         <Spinner
             android:id="@+id/spinnerLoad"
@@ -84,6 +87,8 @@
         <EditText
             android:id="@+id/editTextReps"
             style="@style/routine_edit_text_item"
+            android:inputType="number"
+            android:digits="012345678-"
             android:hint="@string/enter_reps" />
 
         <FrameLayout
@@ -134,7 +139,9 @@
         <EditText
             android:id="@+id/editTextIntensity"
             style="@style/routine_edit_text_item"
-            android:hint="@string/enter_rpe" />
+            android:hint="@string/enter_rpe"
+            android:inputType="numberDecimal"
+            android:digits="012345678-."/>
 
         <FrameLayout
             android:id="@+id/imageViewRpeDescription"

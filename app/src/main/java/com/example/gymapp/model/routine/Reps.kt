@@ -4,20 +4,20 @@ import com.example.gymapp.exception.ValidationException
 
 sealed interface Reps {
     companion object {
-        fun fromString(reps: String?): Reps {
+        fun fromString(reps: String?, position: Int): Reps {
             if (reps.isNullOrBlank()) {
-                throw ValidationException("reps cannot be empty")
+                throw ValidationException("reps cannot be empty", position)
             }
             val regex = Regex("""^(\d+)$|^(\d+)-(\d+)$""")
             val match = regex.matchEntire(reps)
-                ?: throw ValidationException("reps must be a number (eg. 5) or range (eg. 3-5) and cannot be negative")
+                ?: throw ValidationException("reps must be a number (eg. 5) or range (eg. 3-5) and cannot be negative", position)
             val (exactValue, rangeFrom, rangeTo) = match.destructured
             return if (exactValue.isEmpty()) {
                 val intRangeFrom = rangeFrom.toInt()
                 val intRangeTo = rangeTo.toInt()
                 if(intRangeFrom >= intRangeTo)
                 {
-                    throw ValidationException("first number of the range must be lower than the second number")
+                    throw ValidationException("first number of the range must be lower than the second number", position)
                 }
                 RangeReps(intRangeFrom, intRangeTo)
             } else {
