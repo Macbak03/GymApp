@@ -4,6 +4,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginHorizontal="70dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <NumberPicker
+            android:id="@+id/numberPickerMinutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="20dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=":"
+            android:textSize="30sp"
+            android:layout_gravity="center"/>
+
+        <NumberPicker
+            android:id="@+id/numberPickerSeconds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="20dp"/>
+
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -13,7 +46,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <EditText
+        <TextView
+            android:id="@+id/textViewMinutes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -21,13 +55,13 @@
             android:textSize="70sp" />
 
         <TextView
-            android:id="@+id/textView_countdown"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=":"
             android:textSize="70sp" />
 
-        <EditText
+        <TextView
+            android:id="@+id/textViewSeconds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -35,59 +69,83 @@
             android:textSize="70sp" />
     </LinearLayout>
 
-    <ProgressBar
-        android:id="@+id/progress_countdown"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:minWidth="306dp"
-        android:minHeight="306dp"
+    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+        android:id="@+id/progressCountdown"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginHorizontal="30dp"
+        app:cpb_background_progressbar_color="#40475F"
+        app:cpb_background_progressbar_width="25dp"
+        app:cpb_progress_direction="to_right"
+        app:cpb_progressbar_color_direction="top_to_bottom"
+        app:cpb_progressbar_color_start="#4F78FF"
+        app:cpb_progressbar_color_end="#462691"
+        app:cpb_progressbar_width="25dp"
+        app:cpb_round_border="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progress_countdown">
+        app:layout_constraintTop_toBottomOf="@+id/progressCountdown">
 
         <FrameLayout
             android:id="@+id/buttonTimerClear"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_marginEnd="15dp"
-            android:clickable="true"
-            android:background="@drawable/timer_button">
+            android:layout_marginEnd="25dp"
+            android:background="@drawable/timer_button"
+            android:clickable="true">
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@drawable/baseline_clear_24"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:background="@drawable/baseline_clear_24" />
         </FrameLayout>
 
         <FrameLayout
             android:id="@+id/buttonTimerPlayPause"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_marginStart="15dp"
-            android:clickable="true"
-            android:background="@drawable/timer_button">
+            android:layout_marginStart="25dp"
+            android:background="@drawable/timer_button"
+            android:clickable="true">
 
             <ImageView
+                android:id="@+id/imagePlayPause"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:background="@drawable/baseline_play_arrow_24"
-                android:layout_gravity="center"/>
+                android:layout_gravity="center"
+                android:background="@drawable/baseline_play_arrow_24" />
         </FrameLayout>
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/buttonTimerStop"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/timer_button"
+        android:clickable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+        android:backgroundTint="@color/red"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imageStop"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:background="@drawable/baseline_stop_24" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
