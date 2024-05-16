@@ -91,28 +91,33 @@ class TimerActivity : BaseActivity() {
         val numberPickerMinutes = binding.numberPickerMinutes
         numberPickerMinutes.setOnValueChangedListener { picker, oldVal, newVal ->
             if (newVal == 0 && numberPickerSeconds.value == 0) {
-                numberPickerSeconds.value = 1
+                val minValue = 1
+                numberPickerSeconds.value = minValue
+                timerSetterSeconds = minValue
+                val formattedSeconds = getString(R.string.timeLessThan10, minValue.toString())
+                binding.textViewSeconds.text = formattedSeconds
             }
             if (timerState == TimerState.Stopped) {
-                binding.textViewMinutes.text = newVal.toString()
+                binding.textViewMinutes.text = picker.value.toString()
+                timerSetterMinutes = picker.value
+                setTimerOnPickerChange()
             }
-            timerSetterMinutes = newVal
-            setTimerOnPickerChange()
         }
         numberPickerSeconds.setOnValueChangedListener { picker, oldVal, newVal ->
             if (newVal == 0 && numberPickerMinutes.value == 0) {
-                picker.value = 1
+                picker.value = oldVal
             }
             if (timerState == TimerState.Stopped) {
-                if (newVal < 10) {
-                    val formattedSeconds = getString(R.string.timeLessThan10, newVal.toString())
+                if (picker.value < 10) {
+                    val formattedSeconds = getString(R.string.timeLessThan10, picker.value.toString())
                     binding.textViewSeconds.text = formattedSeconds
                 } else {
-                    binding.textViewSeconds.text = newVal.toString()
+                    binding.textViewSeconds.text = picker.value.toString()
                 }
             }
-            timerSetterSeconds = newVal
+            timerSetterSeconds = picker.value
             setTimerOnPickerChange()
+
         }
     }
 
