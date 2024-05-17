@@ -31,6 +31,9 @@
             <corners
                 android:radius="5dp"/>
             <corners android:radius="3dp" />
+            <stroke
+                android:width="2dp"
+                android:color="#71A2C3"/>
         </shape>
     </item>
 </layer-list>

@@ -171,7 +171,6 @@ class HomeFragment : Fragment(), FragmentAnimator {
             val noneTrainingPlanFound = "Create your first plan"
 
             textView.text = noneTrainingPlanFound
-            //textView.background = ContextCompat.getDrawable(requireContext(), R.drawable.button_color)
             spinner.visibility = View.GONE
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE

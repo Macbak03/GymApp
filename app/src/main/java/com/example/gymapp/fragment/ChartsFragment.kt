@@ -1,22 +1,20 @@
 package com.example.gymapp.fragment
 
-import android.content.Context
-import android.graphics.Rect
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
-import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
@@ -64,9 +62,12 @@ class ChartsFragment : Fragment() {
     private lateinit var buttonAll: Button
     private lateinit var statButtons: LinearLayout
 
+    private lateinit var loadingBar: ProgressBar
+
     private var defaultWeightUnit = WeightUnit.kg
 
     private var trainingCount = 0
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -184,20 +185,31 @@ class ChartsFragment : Fragment() {
                 }
             }
 
+            loadingBar = findViewById(R.id.loadingChart)
+
         }
     }
+
 
     override fun onResume() {
         val selectedExercise = autoCompleteTextView.text.toString()
         super.onResume()
-        if(exercises.contains(selectedExercise))
-        {
-            statButtons.visibility = View.VISIBLE
-            setChart(selectedExercise)
-        }else{
-            lineChartLoad.visibility = View.GONE
-            statButtons.visibility = View.GONE
+        view?.findViewById<ComposeView>(R.id.composeView)?.setContent {
+            customMarker = rememberMarker()
         }
+
+            if(exercises.contains(selectedExercise))
+            {
+                loadingBar.visibility = View.VISIBLE
+                Handler(Looper.getMainLooper()).postDelayed({
+                statButtons.visibility = View.VISIBLE
+                setChart(selectedExercise)
+                }, 1000)
+                loadingBar.visibility = View.GONE
+            }else{
+                lineChartLoad.visibility = View.GONE
+                statButtons.visibility = View.GONE
+            }
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
@@ -207,8 +219,8 @@ class ChartsFragment : Fragment() {
         trainingCount = 0
         lineChartLoad.visibility = View.VISIBLE
         if (selectedExercise.isNotBlank()) {
-            val cartesianChartModelProducerLoad = CartesianChartModelProducer.build()
-            lineChartLoad.modelProducer = cartesianChartModelProducerLoad
+            val cartesianChartModelProducer = CartesianChartModelProducer.build()
+            lineChartLoad.modelProducer = cartesianChartModelProducer
 
             val dates = historyDataBase.getExercisesToChart(selectedExercise).second
             val exerciseIds = historyDataBase.getExercisesToChart(selectedExercise).first
@@ -269,7 +281,7 @@ class ChartsFragment : Fragment() {
                 marker = customMarker
             }
 
-            cartesianChartModelProducerLoad.tryRunTransaction {
+            cartesianChartModelProducer.tryRunTransaction {
                 lineSeries {
                     series(dataLoad.values)
                 }
@@ -320,11 +332,21 @@ class ChartsFragment : Fragment() {
     }
 
     private fun View.setClickedBackground(){
-        setBackgroundResource(R.drawable.clicked_dark_button)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        when (sharedPreferences.getString("theme", "")) {
+            "Dark" -> setBackgroundResource(R.drawable.clicked_dark_button)
+            "DarkBlue" -> setBackgroundResource(R.drawable.clicked_button_color)
+            else -> setBackgroundResource(R.drawable.clicked_dark_button)
+        }
     }
 
     private fun View.setUnclickedBackground(){
-        setBackgroundResource(R.drawable.dark_button_color)
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        when (sharedPreferences.getString("theme", "")) {
+            "Dark" -> setBackgroundResource(R.drawable.dark_button_color)
+            "DarkBlue" -> setBackgroundResource(R.drawable.button_color)
+            else -> setBackgroundResource(R.drawable.dark_button_color)
+        }
     }
 
     private fun setEnabledButtons(itemCount: Int){
