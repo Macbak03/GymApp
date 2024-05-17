@@ -194,6 +194,9 @@ class CreateRoutineActivity : BaseActivity() {
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
+        binding.goBackButton.setOnClickListener {
+            onBackPressedCallback.handleOnBackPressed()
+        }
 
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)){ view, insets ->

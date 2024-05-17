@@ -68,6 +68,10 @@ class TimerActivity : BaseActivity() {
             binding.numberPickerSeconds.value = 1
         }
 
+        binding.goBackButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         setAlarmTheme()
 
         handleTimerPicker()
