@@ -10,10 +10,16 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import com.example.gymapp.R
+import com.example.gymapp.exception.ValidationException
 import com.example.gymapp.model.routine.ExerciseDraft
+import com.example.gymapp.model.routine.ExercisePace
+import com.example.gymapp.model.routine.Intensity
+import com.example.gymapp.model.routine.IntensityIndex
+import com.example.gymapp.model.routine.Pause
+import com.example.gymapp.model.routine.Reps
 import com.example.gymapp.model.routine.TimeUnit
+import com.example.gymapp.model.routine.Weight
 import com.example.gymapp.model.routine.WeightUnit
-
 
 
 class RoutineExpandableLayout(
@@ -69,6 +75,13 @@ class RoutineExpandableLayout(
         seriesDescription = findViewById(R.id.imageViewSeriesDescription)
         rpeDescription = findViewById(R.id.imageViewRpeDescription)
         paceDescription = findViewById(R.id.imageViewPaceDescription)
+
+        validatePause()
+        validateLoad()
+        validateReps()
+        validateSeries()
+        validateIntensity()
+        validatePace()
 
         initTimeUnitSpinner()
         initWeightUnitSpinner()
@@ -143,6 +156,98 @@ class RoutineExpandableLayout(
 
         val selectionIndex = weightUnits.indexOf(weightUnit)
         loadSpinner.setSelection(selectionIndex)
+    }
+
+    private fun validatePause() {
+        pauseEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                try {
+                    Pause.fromString(pauseEditText.text.toString(), TimeUnit.s, R.id.editTextPause)
+                } catch (exception: ValidationException) {
+                    pauseEditText.error = exception.message
+                }
+            }
+        }
+    }
+
+    private fun validateLoad() {
+        loadEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                try {
+                    Weight.fromStringWithUnit(
+                        loadEditText.text.toString(),
+                        WeightUnit.kg,
+                        R.id.editTextLoad
+                    )
+                } catch (exception: ValidationException) {
+                    loadEditText.error = exception.message
+                }
+            }
+        }
+    }
+
+    private fun validateReps() {
+        repsEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                try {
+                    Reps.fromString(repsEditText.text.toString(), R.id.editTextReps)
+                } catch (exception: ValidationException) {
+                    repsEditText.error = exception.message
+                }
+            }
+        }
+    }
+
+    private fun validateSeries() {
+        seriesEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                try {
+                    handleSeriesException()
+                } catch (exception: ValidationException) {
+                    seriesEditText.error = exception.message
+                }
+            }
+        }
+    }
+
+    private fun handleSeriesException() {
+        if (repsEditText.text.isNullOrBlank()) {
+            throw ValidationException("series cannot be empty", R.id.editTextSeries)
+        }
+        if (repsEditText.text.toString().toIntOrNull() == null) {
+            throw ValidationException("series must be a number", R.id.editTextSeries)
+        }
+    }
+
+    private fun validateIntensity() {
+        intensityEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                try {
+                    Intensity.fromString(
+                        intensityEditText.text.toString(),
+                        IntensityIndex.valueOf(intensityIndexTextView.text.toString()),
+                        R.id.editTextIntensity
+                    )
+                } catch (exception: ValidationException) {
+                    intensityEditText.error = exception.message
+                }
+            }
+        }
+    }
+
+    private fun validatePace() {
+        paceEditText.setOnFocusChangeListener { v, hasFocus ->
+            if (!hasFocus) {
+                try {
+                    ExercisePace.fromString(
+                        paceEditText.text.toString(),
+                        R.id.editTextPace
+                    )
+                } catch (exception: ValidationException) {
+                    paceEditText.error = exception.message
+                }
+            }
+        }
     }
 
     fun getPauseDescription(): FrameLayout {
