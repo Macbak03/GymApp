@@ -59,6 +59,7 @@ internal fun rememberMarker(labelPosition: MarkerComponent.LabelPosition = Marke
             typeface = Typeface.MONOSPACE,
             textAlignment = Layout.Alignment.ALIGN_CENTER,
             minWidth = TextComponent.MinWidth.fixed(40.dp),
+            lineCount = 2
         )
     val indicatorFrontComponent = rememberShapeComponent(Shapes.pillShape, MaterialTheme.colorScheme.surface)
     val indicatorCenterComponent = rememberShapeComponent(Shapes.pillShape)

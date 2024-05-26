@@ -1,10 +1,15 @@
 package com.example.gymapp.chart
 
+import com.example.gymapp.model.routine.WeightUnit
 import com.patrykandpatrick.vico.core.chart.values.ChartValues
 import com.patrykandpatrick.vico.core.marker.Marker
 import com.patrykandpatrick.vico.core.marker.MarkerLabelFormatter
 
-class CustomMarkerLabelFormatter(private val data: List<Float>): MarkerLabelFormatter{
+class CustomMarkerLabelFormatter(
+    private val reps: List<Float>,
+    private val weight: List<Float>,
+    private val weightUnit: WeightUnit
+) : MarkerLabelFormatter {
     override fun getLabel(
         markedEntries: List<Marker.EntryModel>,
         chartValues: ChartValues
@@ -12,15 +17,25 @@ class CustomMarkerLabelFormatter(private val data: List<Float>): MarkerLabelForm
         val labelBuilder = StringBuilder()
         for (entry in markedEntries) {
             val index = entry.index
-            val displayValue = if (data[index] % 1 == 0f){
-                String.format("%.0f", data[index])
-            } else{
-                String.format("%.2f", data[index])
+            val repsValue = if (reps[index] % 1 == 0f) {
+                String.format("%.0f", reps[index])
+            } else {
+                String.format("%.2f", reps[index])
             }
-            if(data[index] <= 1f){
-                labelBuilder.append("$displayValue ").append("rep").append("\n")
-            }else{
-                labelBuilder.append("$displayValue ").append("reps").append("\n")
+
+            val weightValue = if (weight[index] % 1 == 0f) {
+                String.format("%.0f", weight[index])
+            } else {
+                String.format("%.2f", weight[index])
+            }
+            if (reps[index] <= 1f) {
+                labelBuilder.append("$weightValue ").append(weightUnit.toString()).append("\n")
+                    .append("$repsValue ").append("rep").append("\n")
+
+            } else {
+                labelBuilder.append("$weightValue ").append(weightUnit.toString()).append("\n")
+                    .append("$repsValue ").append("reps").append("\n")
+
             }
         }
         return labelBuilder.toString()

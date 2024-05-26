@@ -43,28 +43,12 @@ open class BaseActivity : AppCompatActivity() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         when (sharedPreferences.getString("theme", "")) {
+            "Default" -> setTheme(R.style.Theme_Default)
             "Dark" -> setTheme(R.style.Theme_Dark)
             "DarkBlue" -> setTheme(R.style.Theme_DarkBlue)
             else -> setTheme(R.style.Theme_Dark)
         }
     }
-
-   /* protected fun requirePermission() {
-        val permissionCheck =
-            ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-        if (permissionCheck != PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.i("Message", "You don't have the permission to write.")
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
-            )
-        } else {
-            Log.i("Message", "Permission granted.")
-        }
-    }*/
 
     companion object{
         private const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1

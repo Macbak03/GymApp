@@ -90,6 +90,11 @@ class ChartsFragment : Fragment() {
 
             val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, exercises)
 
+            buttonLast5 = findViewById(R.id.buttonLast5Workouts)
+            buttonLast15 = findViewById(R.id.buttonLast15Workouts)
+            buttonLast30 = findViewById(R.id.buttonLast30Workouts)
+            buttonAll = findViewById(R.id.buttonAllWorkouts)
+
             autoCompleteTextView = findViewById<AutoCompleteTextView>(R.id.exerciseSelect).apply {
                 setAdapter(adapter)
 
@@ -135,15 +140,14 @@ class ChartsFragment : Fragment() {
                 setOnItemClickListener { parent, _, position, _ ->
                     selectedItem = parent.adapter.getItem(position).toString()
                     statButtons.visibility = View.VISIBLE
+                    setZoom(5f, 1, 0)
                     buttonLast5.setClickedBackground()
+                    buttonLast15.setUnclickedBackground()
+                    buttonLast30.setUnclickedBackground()
+                    buttonAll.setUnclickedBackground()
                     setChart(selectedItem)
                 }
             }
-
-            buttonLast5 = findViewById(R.id.buttonLast5Workouts)
-            buttonLast15 = findViewById(R.id.buttonLast15Workouts)
-            buttonLast30 = findViewById(R.id.buttonLast30Workouts)
-            buttonAll = findViewById(R.id.buttonAllWorkouts)
 
             buttonLast5.apply {
                 setOnClickListener {
@@ -226,7 +230,7 @@ class ChartsFragment : Fragment() {
             val exerciseIds = historyDataBase.getExercisesToChart(selectedExercise).first
 
             trainingCount = dates.size
-            setEnabledButtons(dates.count())
+            setEnabledButtons(trainingCount)
 
             val loadValues = ArrayList<Float>()
             val repsValues = ArrayList<Float>()
@@ -262,7 +266,7 @@ class ChartsFragment : Fragment() {
                 maxY = maxLoadValue.toFloat()
             )
 
-            val markerFormatter = CustomMarkerLabelFormatter(repsValues)
+            val markerFormatter = CustomMarkerLabelFormatter(repsValues, loadValues, defaultWeightUnit)
             customMarker.labelFormatter = markerFormatter
 
             val scrollHandler = ScrollHandler(initialScroll = Scroll.Absolute.End)
@@ -334,6 +338,7 @@ class ChartsFragment : Fragment() {
     private fun View.setClickedBackground(){
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         when (sharedPreferences.getString("theme", "")) {
+            "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
             "Dark" -> setBackgroundResource(R.drawable.clicked_dark_button)
             "DarkBlue" -> setBackgroundResource(R.drawable.clicked_button_color)
             else -> setBackgroundResource(R.drawable.clicked_dark_button)
@@ -343,6 +348,7 @@ class ChartsFragment : Fragment() {
     private fun View.setUnclickedBackground(){
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         when (sharedPreferences.getString("theme", "")) {
+            "Default" -> setBackgroundResource(R.drawable.default_button_color)
             "Dark" -> setBackgroundResource(R.drawable.dark_button_color)
             "DarkBlue" -> setBackgroundResource(R.drawable.button_color)
             else -> setBackgroundResource(R.drawable.dark_button_color)
@@ -351,13 +357,19 @@ class ChartsFragment : Fragment() {
 
     private fun setEnabledButtons(itemCount: Int){
         if(itemCount <= 5){
+            buttonLast5.isEnabled = true
             buttonLast15.isEnabled = false
             buttonLast30.isEnabled = false
             buttonAll.isEnabled = false
         } else if(itemCount <= 15){
+            buttonLast5.isEnabled = true
+            buttonLast15.isEnabled = true
             buttonLast30.isEnabled = false
             buttonAll.isEnabled = false
         } else if(itemCount <= 30){
+            buttonLast5.isEnabled = true
+            buttonLast15.isEnabled = true
+            buttonLast30.isEnabled = true
             buttonAll.isEnabled = false
         }
     }

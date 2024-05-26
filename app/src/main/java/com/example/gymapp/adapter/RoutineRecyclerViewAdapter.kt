@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
@@ -53,7 +54,7 @@ class RoutineRecyclerViewAdapter(
 
 
         val expandImage: ImageView = exerciseTitle.findViewById(R.id.buttonExpand)
-        val moveButton: ImageView = exerciseTitle.findViewById(R.id.imageButtonMove)
+        val moveButton: FrameLayout = exerciseTitle.findViewById(R.id.imageButtonMove)
 
         val wholeItem = binding.wholeExerciseElement
 
