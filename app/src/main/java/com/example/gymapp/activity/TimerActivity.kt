@@ -227,7 +227,7 @@ class TimerActivity : BaseActivity() {
                 secondsRemaining = millisUntilFinished / 1000
                 updateCountdownUI()
                 if (secondsRemaining <= 0) {
-                    playAudio()
+                    //playAudio()
                 }
             }
         }
@@ -283,6 +283,13 @@ class TimerActivity : BaseActivity() {
     private fun setAlarmTheme(){
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         when (sharedPreferences.getString("theme", "")) {
+            "Default" -> {
+                binding.buttonTimerClear.setBackgroundResource(R.drawable.default_timer_button)
+                binding.buttonTimerPlayPause.setBackgroundResource(R.drawable.default_timer_button)
+                binding.progressCountdown.backgroundProgressBarColor = Color(43, 43, 43).toArgb()
+                binding.progressCountdown.progressBarColorStart = Color(145, 35, 35).toArgb()
+                binding.progressCountdown.progressBarColorEnd = Color(129, 30, 30).toArgb()
+            }
             "Dark" -> {
                 binding.buttonTimerClear.setBackgroundResource(R.drawable.timer_button)
                 binding.buttonTimerPlayPause.setBackgroundResource(R.drawable.timer_button)
