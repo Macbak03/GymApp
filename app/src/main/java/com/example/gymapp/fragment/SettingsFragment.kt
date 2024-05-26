@@ -70,7 +70,8 @@ class SettingsFragment : PreferenceFragmentCompat(){
         when (sharedPreferences.getString("theme", "")) {
             "Dark" -> requireActivity().setTheme(R.style.Theme_Dark)
             "DarkBlue" -> requireActivity().setTheme(R.style.Theme_DarkBlue)
-            else -> requireActivity().setTheme(R.style.Theme_Dark)
+            "Default" -> requireActivity().setTheme(R.style.Theme_Default)
+            else -> requireActivity().setTheme(R.style.Theme_Default)
         }
         requireActivity().recreate()
     }

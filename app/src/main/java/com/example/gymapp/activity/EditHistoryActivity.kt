@@ -66,6 +66,10 @@ class EditHistoryActivity : BaseActivity() {
             editHistoryDetails()
         }
 
+        binding.goBackButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
     }
 
     private fun loadWorkoutHistoryDetails() {

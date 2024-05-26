@@ -50,6 +50,10 @@ class HistoryDetailsActivity : BaseActivity() {
         workoutExpandableListAdapter = WorkoutHistoryExpandableListAdapter(this, workout)
         expandableListView.setAdapter(workoutExpandableListAdapter)
 
+        binding.goBackButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
         loadWorkoutHistoryDetails()
     }
 

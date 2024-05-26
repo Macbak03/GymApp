@@ -6,12 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".activity.TrainingPlanActivity">
 
+    <FrameLayout
+        android:id="@+id/goBackButton"
+        android:layout_width="60dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="5dp"
+        android:clickable="true"
+        android:contentDescription="return"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:background="@drawable/baseline_arrow_back_24" />
+
+    </FrameLayout>
+
     <TextView
         android:id="@+id/textViewTrainingPlanName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Plan"
         android:textSize="30sp"
+        android:layout_marginHorizontal="80dp"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="6dp"
         app:layout_constraintStart_toStartOf="parent"

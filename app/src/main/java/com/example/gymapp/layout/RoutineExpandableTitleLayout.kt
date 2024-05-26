@@ -5,6 +5,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.example.gymapp.R
 
@@ -22,6 +23,7 @@ class RoutineExpandableTitleLayout(
         inflate(context, R.layout.routine_expandable_title_layout, this)
 
         exerciseNameEditText = findViewById(R.id.editTextExerciseName)
+        val moveButton = findViewById<FrameLayout>(R.id.imageButtonMove)
 
         exerciseNameEditText.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -32,6 +34,7 @@ class RoutineExpandableTitleLayout(
 
             override fun afterTextChanged(s: Editable?) {
                 exerciseName = exerciseNameEditText.text.toString()
+                moveButton.contentDescription = "move $exerciseName"
             }
 
         })

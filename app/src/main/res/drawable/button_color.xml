@@ -2,8 +2,8 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#00CCCCCC" /> <!-- Shadow color -->
-            <corners android:radius="5dp" /> <!-- Corner radius of button -->
+            <solid android:color="#00CCCCCC" />
+            <corners android:radius="5dp" />
         </shape>
     </item>
     <item>
@@ -15,12 +15,10 @@
                 android:angle="90"
                 android:centerX="0.008"
                 android:centerY="0.5" />
-            <corners android:radius="5dp" /> <!-- Corner radius of button -->
+            <corners android:radius="5dp" />
         </shape>
     </item>
-    <!-- ... add more items if you want more layers to shadow for depth effect ... -->
 
-    <!-- Button Foreground -->
     <item android:bottom="5dp" android:right="2dp">
         <shape android:shape="rectangle">
             <gradient
@@ -32,7 +30,7 @@
                 android:centerY="0.5" />
             <corners
                 android:radius="5dp"/>
-            <corners android:radius="3dp" /> <!-- Corner radius of button -->
+            <corners android:radius="3dp" />
         </shape>
     </item>
 </layer-list>

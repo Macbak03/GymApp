@@ -2,11 +2,13 @@
 <resources>
     <!-- Themes -->
     <string-array name="themes_entries">
+        <item>Default</item>
         <item>Dark</item>
         <item>Dark blue</item>
     </string-array>
 
     <string-array name="themes_values">
+        <item>Default</item>
         <item>Dark</item>
         <item>DarkBlue</item>
     </string-array>

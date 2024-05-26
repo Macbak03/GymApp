@@ -9,7 +9,7 @@
     <SearchView
         android:id="@+id/searchViewHistory"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_margin="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +22,16 @@
         android:background="@drawable/search_background"
         android:queryBackground="@android:color/transparent"/>
 
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:alpha="0.2"
+        android:background="@drawable/history_icon_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewWorkoutHistory"
@@ -30,7 +40,8 @@
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline"
-        app:layout_constraintTop_toBottomOf="@+id/searchViewHistory" />
+        app:layout_constraintTop_toBottomOf="@+id/searchViewHistory"
+        android:contentDescription="training history"/>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"

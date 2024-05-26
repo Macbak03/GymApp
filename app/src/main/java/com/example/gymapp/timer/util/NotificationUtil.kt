@@ -102,7 +102,7 @@ class NotificationUtil {
                 .setAutoCancel(true)
                 .setDefaults(0)
             if (playSound){
-                audioPlayer.playSound(context, R.raw.timer_alarm)
+                //audioPlayer.playSound(context, R.raw.timer_alarm)
             }
             return nBuilder
         }

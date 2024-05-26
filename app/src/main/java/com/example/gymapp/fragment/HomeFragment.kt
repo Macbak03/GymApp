@@ -158,7 +158,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
     override fun onResume() {
         super.onResume()
-
+        buttonReturn.setReturnButtonColor()
         setLastTraining()
         val trainingPlanNamesString = plansDataBase.getColumn(
             PlansDataBaseHelper.TABLE_NAME,
@@ -171,7 +171,6 @@ class HomeFragment : Fragment(), FragmentAnimator {
             val noneTrainingPlanFound = "Create your first plan"
 
             textView.text = noneTrainingPlanFound
-            //textView.background = ContextCompat.getDrawable(requireContext(), R.drawable.button_color)
             spinner.visibility = View.GONE
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE
@@ -193,6 +192,16 @@ class HomeFragment : Fragment(), FragmentAnimator {
         if(!routineNameResult.isNullOrBlank())
         {
             isUnsaved = true
+        }
+    }
+
+    private fun View.setReturnButtonColor(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        when (sharedPreferences.getString("theme", "")) {
+            "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
+            "Dark" -> setBackgroundResource(R.drawable.dark_button_color)
+            "DarkBlue" -> setBackgroundResource(R.drawable.button_color)
+            else -> setBackgroundResource(R.drawable.clicked_button_color)
         }
     }
 

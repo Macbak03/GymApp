@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -163,6 +164,10 @@ class TrainingPlanActivity : BaseActivity() {
         })
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
+
+        binding.goBackButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
 

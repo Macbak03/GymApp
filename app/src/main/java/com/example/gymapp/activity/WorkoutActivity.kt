@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ExpandableListView
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.preference.PreferenceManager
 import com.example.gymapp.R
 import com.example.gymapp.adapter.WorkoutExpandableListAdapter
 import com.example.gymapp.databinding.ActivityWorkoutBinding
@@ -106,25 +108,42 @@ class WorkoutActivity : BaseActivity() {
             showCancelDialog()
         }
 
-        binding.buttonTimer.setOnClickListener{
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                showPermissionExplanation()
-                if(this.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()){
+        binding.buttonTimer.apply {
+            setTimerButtonBackground()
+            setOnClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    showPermissionExplanation()
+                    if (this@WorkoutActivity.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()) {
+                        val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
+                        startActivity(explicitIntent)
+                    }
+                } else {
                     val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
                     startActivity(explicitIntent)
                 }
-            }else{
-                val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
-                startActivity(explicitIntent)
             }
         }
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
+        binding.goBackButton.setOnClickListener {
+            onBackPressedCallback.handleOnBackPressed()
+        }
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
             val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             view.updatePadding(bottom = bottom)
             insets
+        }
+    }
+
+    private fun View.setTimerButtonBackground(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        when (sharedPreferences.getString("theme", "")) {
+            "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
+            "Dark" -> setBackgroundResource(R.drawable.dark_button_color)
+            "DarkBlue" -> setBackgroundResource(R.drawable.button_color)
+            else -> setBackgroundResource(R.drawable.clicked_default_button)
         }
     }
 

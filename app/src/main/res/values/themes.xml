@@ -16,6 +16,12 @@
         <item name="android:textViewStyle">@style/DarkBlueCustomTextViewStyle</item>
         <item name="bottomSheetDialogTheme">@style/DarkBlueCustomBottomSheetDialogTheme</item>
 
+        <item name="showTopAxis">false</item>
+        <item name="bottomAxisStyle">@style/DarkCustomHorizontalAxisStyle</item>
+        <item name="axisStyle">@style/DarkCustomAxisStyle</item>
+        <item name="axisGuidelineStyle">@style/DarkCustomLineComponentStyle</item>
+        <item name="axisLabelStyle">@style/DarkCustomTextComponentStyle</item>
+        <item name="lineLayerStyle">@style/DarkCustomLineLayerStyle</item>
     </style>
 
     <style name="DarkBlueCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
@@ -70,7 +76,7 @@
 
         <item name="android:windowBackground">@drawable/dark_background_color</item>
         <item name="colorPrimary">@color/white</item>
-        <item name="colorPrimaryDark">@color/bottomNavigationBarColor</item>
+        <item name="colorPrimaryDark">@color/darkBottomNavigationBarColor</item>
         <item name="colorAccent">#698CFD</item>
 
         <item name="bottomNavigationStyle">@style/DarkCustomBottomNavigationStyle</item>
@@ -117,7 +123,7 @@
     </style>
 
     <style name="DarkCustomBottomNavigationStyle">
-        <item name="itemBackground">@color/bottomNavigationBarColor</item>
+        <item name="itemBackground">@color/darkBottomNavigationBarColor</item>
     </style>
 
     <style name="DarkCustomHorizontalAxisStyle">
@@ -154,6 +160,65 @@
     </style>
 
     <!--Dark theme-->
+
+    <!--Default theme-->
+
+    <style name="Theme.Default" parent="@style/Theme.AppCompat.NoActionBar">
+        <item name="android:alertDialogTheme">@style/YourAlertDialogTheme</item>
+
+        <item name="android:windowBackground">@drawable/default_background_color</item>
+        <item name="colorPrimary">#FFCC5F</item>
+        <item name="colorPrimaryDark">@color/defaultBottomNavigationBarColor</item>
+        <item name="colorAccent">#FFCC5F</item>
+
+        <item name="bottomNavigationStyle">@style/DefaultCustomBottomNavigationStyle</item>
+        <item name="cardViewStyle">@style/DefaultCustomCardView</item>
+        <item name="buttonStyle">@style/DefaultCustomButtonStyle</item>
+        <item name="android:textViewStyle">@style/DefaultCustomTextViewStyle</item>
+        <item name="bottomSheetDialogTheme">@style/DefaultCustomBottomSheetDialogTheme</item>
+
+        <!--charts-->
+        <item name="showTopAxis">false</item>
+        <item name="bottomAxisStyle">@style/DarkCustomHorizontalAxisStyle</item>
+        <item name="axisStyle">@style/DarkCustomAxisStyle</item>
+        <item name="axisGuidelineStyle">@style/DarkCustomLineComponentStyle</item>
+        <item name="axisLabelStyle">@style/DarkCustomTextComponentStyle</item>
+        <item name="lineLayerStyle">@style/DarkCustomLineLayerStyle</item>
+    </style>
+
+    <style name="DefaultCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/DefaultCustomBottomSheetStyle</item>
+        <item name="android:buttonStyle">@style/DefaultCustomButtonStyle</item>
+    </style>
+
+    <style name="DefaultCustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="DefaultCustomCardView" parent="CardView">
+        <item name="cardBackgroundColor">@color/defaultCardColor</item>
+        <item name="android:background">@color/defaultCardBackgroundColor</item>
+        <item name="cardCornerRadius">5dp</item>
+        <item name="android:elevation">200dp</item>
+    </style>
+
+    <style name="DefaultCustomAddButtonColor">
+        <item name="android:backgroundTint">#912323</item>
+    </style>
+
+    <style name="DefaultCustomButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/default_button_color</item>
+    </style>
+
+    <style name="DefaultCustomTextViewStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="DefaultCustomBottomNavigationStyle">
+        <item name="itemBackground">@color/defaultBottomNavigationBarColor</item>
+    </style>
+
+    <!--Default theme-->
 
     <style name="YourAlertDialogTheme">
         <item name="android:windowFrame">@null</item>

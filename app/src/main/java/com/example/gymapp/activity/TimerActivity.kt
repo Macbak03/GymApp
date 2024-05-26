@@ -8,6 +8,9 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.preference.PreferenceManager
 import com.example.gymapp.R
 import com.example.gymapp.databinding.ActivityTimerBinding
 import com.example.gymapp.timer.TimerExpiredReceiver
@@ -64,6 +67,12 @@ class TimerActivity : BaseActivity() {
         if (binding.numberPickerMinutes.value == 0) {
             binding.numberPickerSeconds.value = 1
         }
+
+        binding.goBackButton.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
+        setAlarmTheme()
 
         handleTimerPicker()
     }
@@ -218,7 +227,7 @@ class TimerActivity : BaseActivity() {
                 secondsRemaining = millisUntilFinished / 1000
                 updateCountdownUI()
                 if (secondsRemaining <= 0) {
-                    playAudio()
+                    //playAudio()
                 }
             }
         }
@@ -229,11 +238,6 @@ class TimerActivity : BaseActivity() {
     private fun setNewTimerLength() {
         val timerLength = PrefUtil.getTimerLength(this)
         timerLengthSeconds = timerLength
-        binding.progressCountdown.progressMax = timerLengthSeconds.toFloat()
-    }
-
-    private fun setPreviousTimerLength() {
-        timerLengthSeconds = PrefUtil.getPreviousTimerLengthSeconds(this)
         binding.progressCountdown.progressMax = timerLengthSeconds.toFloat()
     }
 
@@ -273,6 +277,40 @@ class TimerActivity : BaseActivity() {
             NotificationUtil.showTimerRunning(this, wakeUpTime)
         } else if (timerState == TimerState.Paused) {
             NotificationUtil.showTimerPaused(this)
+        }
+    }
+
+    private fun setAlarmTheme(){
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        when (sharedPreferences.getString("theme", "")) {
+            "Default" -> {
+                binding.buttonTimerClear.setBackgroundResource(R.drawable.default_timer_button)
+                binding.buttonTimerPlayPause.setBackgroundResource(R.drawable.default_timer_button)
+                binding.progressCountdown.backgroundProgressBarColor = Color(43, 43, 43).toArgb()
+                binding.progressCountdown.progressBarColorStart = Color(145, 35, 35).toArgb()
+                binding.progressCountdown.progressBarColorEnd = Color(129, 30, 30).toArgb()
+            }
+            "Dark" -> {
+                binding.buttonTimerClear.setBackgroundResource(R.drawable.timer_button)
+                binding.buttonTimerPlayPause.setBackgroundResource(R.drawable.timer_button)
+                binding.progressCountdown.backgroundProgressBarColor = Color(64, 71, 95).toArgb()
+                binding.progressCountdown.progressBarColorStart = Color(47, 86, 212).toArgb()
+                binding.progressCountdown.progressBarColorEnd = Color(40, 74, 186).toArgb()
+            }
+            "DarkBlue" -> {
+                binding.buttonTimerClear.setBackgroundResource(R.drawable.dark_blue_timer_button)
+                binding.buttonTimerPlayPause.setBackgroundResource(R.drawable.dark_blue_timer_button)
+                binding.progressCountdown.backgroundProgressBarColor = Color(86, 91, 96).toArgb()
+                binding.progressCountdown.progressBarColorStart = Color(32, 153, 213).toArgb()
+                binding.progressCountdown.progressBarColorEnd = Color(26, 121, 168).toArgb()
+            }
+            else -> {
+                binding.buttonTimerClear.setBackgroundResource(R.drawable.timer_button)
+                binding.buttonTimerPlayPause.setBackgroundResource(R.drawable.timer_button)
+                binding.progressCountdown.backgroundProgressBarColor = Color(64, 71, 95).toArgb()
+                binding.progressCountdown.progressBarColorStart = Color(47, 86, 212).toArgb()
+                binding.progressCountdown.progressBarColorEnd = Color(40, 74, 186).toArgb()
+            }
         }
     }
 

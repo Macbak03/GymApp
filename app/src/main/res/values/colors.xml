@@ -24,6 +24,16 @@
     <color name="darkButtonCenterColor">#21035C</color>
     <color name="darkButtonEndColor">#220070</color>
 
-    <color name="bottomNavigationBarColor">#1A1E2B</color>
+    <color name="darkBottomNavigationBarColor">#1A1E2B</color>
     <!--Dark theme-->
+
+    <!--Default theme-->
+
+    <color name="defaultButtonColor">#6A6B83</color>
+    <color name="defaultCardBackgroundColor">#89713A</color>
+    <color name="defaultCardColor">#2B2B2B</color>
+
+    <color name="defaultBottomNavigationBarColor">#101010</color>
+
+    <!--Default theme-->
 </resources>
