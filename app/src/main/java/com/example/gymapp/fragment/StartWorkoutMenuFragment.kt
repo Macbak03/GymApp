@@ -2,7 +2,6 @@ package com.example.gymapp.fragment
 
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -54,9 +53,10 @@ class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         when (sharedPreferences.getString("theme", "")) {
+            "Default" -> setStyle(STYLE_NORMAL, R.style.DefaultCustomBottomSheetDialogTheme)
             "Dark" -> setStyle(STYLE_NORMAL, R.style.DarkCustomBottomSheetDialogTheme)
             "DarkBlue" -> setStyle(STYLE_NORMAL, R.style.DarkBlueCustomBottomSheetDialogTheme)
-            else -> setStyle(STYLE_NORMAL, R.style.DarkCustomBottomSheetDialogTheme)
+            else -> setStyle(STYLE_NORMAL, R.style.DefaultCustomBottomSheetDialogTheme)
         }
     }
 
@@ -70,9 +70,10 @@ class StartWorkoutMenuFragment : BottomSheetDialogFragment() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         when (sharedPreferences.getString("theme", "")) {
+            "Default" -> binding.workoutMenu.setBackgroundResource(R.drawable.default_bottom_dialog_sheet_background)
             "Dark" -> binding.workoutMenu.setBackgroundResource(R.drawable.dark_bottom_dialog_sheet_background)
             "DarkBlue" -> binding.workoutMenu.setBackgroundResource(R.drawable.bottom_dialog_sheet_background)
-            else -> binding.workoutMenu.setBackgroundResource(R.drawable.dark_bottom_dialog_sheet_background)
+            else -> binding.workoutMenu.setBackgroundResource(R.drawable.default_bottom_dialog_sheet_background)
         }
 
         return binding.root

@@ -3,10 +3,10 @@ package com.example.gymapp.activity
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.PreferenceManager
 import com.example.gymapp.R
-
 
 
 open class BaseActivity : AppCompatActivity() {
@@ -50,7 +50,7 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
-    companion object{
+    companion object {
         private const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
     }
 

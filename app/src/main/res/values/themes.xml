@@ -161,6 +161,8 @@
 
     <!--Dark theme-->
 
+    <!--Default theme-->
+
     <style name="Theme.Default" parent="@style/Theme.AppCompat.NoActionBar">
         <item name="android:alertDialogTheme">@style/YourAlertDialogTheme</item>
 
@@ -185,8 +187,8 @@
     </style>
 
     <style name="DefaultCustomBottomSheetDialogTheme" parent="Theme.Design.BottomSheetDialog">
-        <item name="bottomSheetStyle">@style/DarkCustomBottomSheetStyle</item>
-        <item name="android:buttonStyle">@style/DarkCustomButtonStyle</item>
+        <item name="bottomSheetStyle">@style/DefaultCustomBottomSheetStyle</item>
+        <item name="android:buttonStyle">@style/DefaultCustomButtonStyle</item>
     </style>
 
     <style name="DefaultCustomBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
@@ -201,7 +203,7 @@
     </style>
 
     <style name="DefaultCustomAddButtonColor">
-        <item name="android:backgroundTint">#8B8B8B</item>
+        <item name="android:backgroundTint">#912323</item>
     </style>
 
     <style name="DefaultCustomButtonStyle" parent="Widget.AppCompat.Button">
@@ -215,10 +217,6 @@
     <style name="DefaultCustomBottomNavigationStyle">
         <item name="itemBackground">@color/defaultBottomNavigationBarColor</item>
     </style>
-
-    <!--Default theme-->
-
-
 
     <!--Default theme-->
 

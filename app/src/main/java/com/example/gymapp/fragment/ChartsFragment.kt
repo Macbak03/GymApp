@@ -341,7 +341,7 @@ class ChartsFragment : Fragment() {
             "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
             "Dark" -> setBackgroundResource(R.drawable.clicked_dark_button)
             "DarkBlue" -> setBackgroundResource(R.drawable.clicked_button_color)
-            else -> setBackgroundResource(R.drawable.clicked_dark_button)
+            else -> setBackgroundResource(R.drawable.clicked_default_button)
         }
     }
 
@@ -351,7 +351,7 @@ class ChartsFragment : Fragment() {
             "Default" -> setBackgroundResource(R.drawable.default_button_color)
             "Dark" -> setBackgroundResource(R.drawable.dark_button_color)
             "DarkBlue" -> setBackgroundResource(R.drawable.button_color)
-            else -> setBackgroundResource(R.drawable.dark_button_color)
+            else -> setBackgroundResource(R.drawable.default_button_color)
         }
     }
 

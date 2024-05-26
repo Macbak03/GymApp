@@ -16,10 +16,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.gymapp.R
+import com.example.gymapp.activity.BaseActivity
 import com.example.gymapp.activity.TrainingPlanActivity
 import com.example.gymapp.adapter.TrainingPlansRecyclerViewAdapter
 import com.example.gymapp.animation.FragmentAnimator
@@ -168,7 +170,6 @@ class TrainingPlansFragment : Fragment(), FragmentAnimator {
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -140,9 +140,10 @@ class WorkoutActivity : BaseActivity() {
     private fun View.setTimerButtonBackground(){
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         when (sharedPreferences.getString("theme", "")) {
+            "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
             "Dark" -> setBackgroundResource(R.drawable.dark_button_color)
             "DarkBlue" -> setBackgroundResource(R.drawable.button_color)
-            else -> setBackgroundResource(R.drawable.dark_button_color)
+            else -> setBackgroundResource(R.drawable.clicked_default_button)
         }
     }
 
