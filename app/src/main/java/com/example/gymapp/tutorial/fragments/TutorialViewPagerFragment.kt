@@ -48,4 +48,8 @@ class TutorialViewPagerFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    companion object {
+        const val PACKAGE_NAME = "com.example.gymapp"
+    }
 }
