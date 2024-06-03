@@ -32,7 +32,6 @@ class ViewPagerAdapter(fragmentActivity: FragmentActivity) :
         return fragment
     }
 
-    fun getFragmentAtPosition(position: Int): Fragment? = fragments.get(position)
 
     companion object{
         const val CHARTS_FRAGMENT = 0

@@ -42,11 +42,11 @@ open class BaseActivity : AppCompatActivity() {
     protected fun loadTheme() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        when (sharedPreferences.getString("theme", "")) {
+        when (sharedPreferences.getString("theme", "Default")) {
             "Default" -> setTheme(R.style.Theme_Default)
             "Dark" -> setTheme(R.style.Theme_Dark)
             "DarkBlue" -> setTheme(R.style.Theme_DarkBlue)
-            else -> setTheme(R.style.Theme_Dark)
+            else -> setTheme(R.style.Theme_Default)
         }
     }
 

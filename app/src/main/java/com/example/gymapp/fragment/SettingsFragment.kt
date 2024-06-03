@@ -25,11 +25,8 @@ class SettingsFragment : PreferenceFragmentCompat(){
         val feedbackPreference: Preference? = findPreference("feedback")
 
         feedbackPreference?.setOnPreferenceClickListener {
-            // Define your feedback email address
             val feedbackEmailAddress = "janos.macbak@gmail.com"
-            // Define the email subject
-            val subject = "Feedback for YourApp"
-            // Define the default email body text
+            val subject = "Feedback for LiftHub"
             val bodyText = """
             Hi there,
 
@@ -40,20 +37,15 @@ class SettingsFragment : PreferenceFragmentCompat(){
             Thank you.
         """.trimIndent()
 
-            // Create an intent to open an email client
             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:") // Only email apps should handle this
+                data = Uri.parse("mailto:")
                 putExtra(Intent.EXTRA_EMAIL, arrayOf(feedbackEmailAddress))
                 putExtra(Intent.EXTRA_SUBJECT, subject)
                 putExtra(Intent.EXTRA_TEXT, bodyText)
             }
 
-            // Verify that the intent will resolve to an activity
-            if (intent.resolveActivity(requireActivity().packageManager) != null) {
-                startActivity(intent)
-            } else {
-                Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show()
-            }
+            val chooserIntent = Intent.createChooser(intent, "Choose app")
+            startActivity(chooserIntent)
             true
         }
 
