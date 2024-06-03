@@ -1,5 +1,6 @@
 package com.example.gymapp.activity
 
+import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
@@ -14,6 +15,7 @@ import com.example.gymapp.persistence.ExercisesDataBaseHelper
 import com.example.gymapp.persistence.RoutinesDataBaseHelper
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
 import com.example.gymapp.persistence.WorkoutSeriesDataBaseHelper
+import com.example.gymapp.tutorial.fragments.StartWorkoutSlide
 
 
 class MainActivity : BaseActivity() {
@@ -57,7 +59,7 @@ class MainActivity : BaseActivity() {
             true
         }
 
-        viewPager.setCurrentItem(2, false)
+        viewPager.setCurrentItem(ViewPagerAdapter.HOME_FRAGMENT, false)
         planDataBase.onCreate(planDataBase.readableDatabase)
         routinesDataBase.onCreate(routinesDataBase.readableDatabase)
         exercisesDataBase.onCreate(exercisesDataBase.readableDatabase)

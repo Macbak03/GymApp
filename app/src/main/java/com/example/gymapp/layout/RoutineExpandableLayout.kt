@@ -211,10 +211,10 @@ class RoutineExpandableLayout(
     }
 
     private fun handleSeriesException() {
-        if (repsEditText.text.isNullOrBlank()) {
+        if (seriesEditText.text.isNullOrBlank()) {
             throw ValidationException("series cannot be empty", R.id.editTextSeries)
         }
-        if (repsEditText.text.toString().toIntOrNull() == null) {
+        if (seriesEditText.text.toString().toIntOrNull() == null) {
             throw ValidationException("series must be a number", R.id.editTextSeries)
         }
     }
