@@ -1,5 +1,6 @@
 package com.example.gymapp.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -7,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -19,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.preference.PreferenceManager
+import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.R
 import com.example.gymapp.chart.CustomMarkerLabelFormatter
 import com.example.gymapp.persistence.WorkoutHistoryDatabaseHelper
@@ -50,6 +53,8 @@ class ChartsFragment : Fragment() {
     private lateinit var historyDataBase: WorkoutHistoryDatabaseHelper
     private lateinit var workoutSeriesDataBase: WorkoutSeriesDataBaseHelper
 
+    private lateinit var viewPager: ViewPager2
+
     private lateinit var lineChartLoad: CartesianChartView
     private lateinit var customMarker: MarkerComponent
 
@@ -69,6 +74,7 @@ class ChartsFragment : Fragment() {
     private var trainingCount = 0
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -88,7 +94,15 @@ class ChartsFragment : Fragment() {
 
             var selectedItem: String
 
-            val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, exercises)
+            val adapter =
+                ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, exercises)
+
+            viewPager = requireActivity().findViewById(R.id.viewPager)
+
+            lineChartLoad.setOnTouchListener { v, event ->
+                handleSwiping(event)
+                false
+            }
 
             buttonLast5 = findViewById(R.id.buttonLast5Workouts)
             buttonLast15 = findViewById(R.id.buttonLast15Workouts)
@@ -131,9 +145,10 @@ class ChartsFragment : Fragment() {
 
                 })
 
-                setOnTouchListener { _, _ ->
+                setOnTouchListener { _, event ->
                     performClick()
                     showDropDown()
+                    handleSwiping(event)
                     false
                 }
 
@@ -181,7 +196,7 @@ class ChartsFragment : Fragment() {
 
             buttonAll.apply {
                 setOnClickListener {
-                    setZoom(trainingCount.toFloat(), ceil(trainingCount.toFloat()/5f).toInt(), 0)
+                    setZoom(trainingCount.toFloat(), ceil(trainingCount.toFloat() / 5f).toInt(), 0)
                     it.setClickedBackground()
                     buttonLast5.setUnclickedBackground()
                     buttonLast15.setUnclickedBackground()
@@ -198,22 +213,27 @@ class ChartsFragment : Fragment() {
     override fun onResume() {
         val selectedExercise = autoCompleteTextView.text.toString()
         super.onResume()
+
+        /* Handler(Looper.getMainLooper()).postDelayed({
+             viewPager = requireActivity().findViewById(R.id.viewPager)
+             viewPager.isUserInputEnabled = false
+         }, 200)
+ */
         view?.findViewById<ComposeView>(R.id.composeView)?.setContent {
             customMarker = rememberMarker()
         }
 
-            if(exercises.contains(selectedExercise))
-            {
-                loadingBar.visibility = View.VISIBLE
-                Handler(Looper.getMainLooper()).postDelayed({
+        if (exercises.contains(selectedExercise)) {
+            loadingBar.visibility = View.VISIBLE
+            Handler(Looper.getMainLooper()).postDelayed({
                 statButtons.visibility = View.VISIBLE
                 setChart(selectedExercise)
-                }, 1000)
-                loadingBar.visibility = View.GONE
-            }else{
-                lineChartLoad.visibility = View.GONE
-                statButtons.visibility = View.GONE
-            }
+            }, 1000)
+            loadingBar.visibility = View.GONE
+        } else {
+            lineChartLoad.visibility = View.GONE
+            statButtons.visibility = View.GONE
+        }
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
     }
 
@@ -266,7 +286,8 @@ class ChartsFragment : Fragment() {
                 maxY = maxLoadValue.toFloat()
             )
 
-            val markerFormatter = CustomMarkerLabelFormatter(repsValues, loadValues, defaultWeightUnit)
+            val markerFormatter =
+                CustomMarkerLabelFormatter(repsValues, loadValues, defaultWeightUnit)
             customMarker.labelFormatter = markerFormatter
 
             val scrollHandler = ScrollHandler(initialScroll = Scroll.Absolute.End)
@@ -295,13 +316,13 @@ class ChartsFragment : Fragment() {
 
     }
 
-    private fun adaptLoadToUnit(exerciseId: Int): Float{
+    private fun adaptLoadToUnit(exerciseId: Int): Float {
         val multiplier = 2.205f
         var load = workoutSeriesDataBase.getChartData(exerciseId).second
         val unit = historyDataBase.getLoadUnit(exerciseId)
-        if (defaultWeightUnit.toString() == "kg" && unit == "lbs"){
+        if (defaultWeightUnit.toString() == "kg" && unit == "lbs") {
             load /= multiplier
-        }else if(defaultWeightUnit.toString() == "lbs" && unit == "kg"){
+        } else if (defaultWeightUnit.toString() == "lbs" && unit == "kg") {
             load *= multiplier
         }
         return load
@@ -309,7 +330,7 @@ class ChartsFragment : Fragment() {
 
     private fun getMinValue(data: List<Float>): Int {
         val min = data.min()
-        if(min <= 15){
+        if (min <= 15) {
             return 0
         }
         val offset = min * 0.1
@@ -320,9 +341,9 @@ class ChartsFragment : Fragment() {
         val roundStep = 10
         val step = 5
         val max = data.max()
-        return if(max <= 15){
+        return if (max <= 15) {
             (max + step).toInt().roundToClosest(roundStep)
-        } else{
+        } else {
             val offset = max * 0.1
             (max + offset + step).toInt().roundToClosest(roundStep)
         }
@@ -335,7 +356,7 @@ class ChartsFragment : Fragment() {
         return if (this - lower < upper - this) lower else upper
     }
 
-    private fun View.setClickedBackground(){
+    private fun View.setClickedBackground() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         when (sharedPreferences.getString("theme", "")) {
             "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
@@ -345,7 +366,7 @@ class ChartsFragment : Fragment() {
         }
     }
 
-    private fun View.setUnclickedBackground(){
+    private fun View.setUnclickedBackground() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         when (sharedPreferences.getString("theme", "")) {
             "Default" -> setBackgroundResource(R.drawable.default_button_color)
@@ -355,18 +376,18 @@ class ChartsFragment : Fragment() {
         }
     }
 
-    private fun setEnabledButtons(itemCount: Int){
-        if(itemCount <= 5){
+    private fun setEnabledButtons(itemCount: Int) {
+        if (itemCount <= 5) {
             buttonLast5.isEnabled = true
             buttonLast15.isEnabled = false
             buttonLast30.isEnabled = false
             buttonAll.isEnabled = false
-        } else if(itemCount <= 15){
+        } else if (itemCount <= 15) {
             buttonLast5.isEnabled = true
             buttonLast15.isEnabled = true
             buttonLast30.isEnabled = false
             buttonAll.isEnabled = false
-        } else if(itemCount <= 30){
+        } else if (itemCount <= 30) {
             buttonLast5.isEnabled = true
             buttonLast15.isEnabled = true
             buttonLast30.isEnabled = true
@@ -374,23 +395,35 @@ class ChartsFragment : Fragment() {
         }
     }
 
-    private fun setZoom(elements: Float, spacing: Int, offset: Int){
+    private fun setZoom(elements: Float, spacing: Int, offset: Int) {
         val zoomHandler = ZoomHandler(initialZoom = Zoom.x(elements))
         lineChartLoad.zoomHandler = zoomHandler
         lineChartLoad.scrollHandler = ScrollHandler(initialScroll = Scroll.Absolute.End)
-        (lineChartLoad.chart?.bottomAxis as HorizontalAxis?)?.itemPlacer = AxisItemPlacer.Horizontal.default(
-            spacing = spacing, offset = offset
-        )
+        (lineChartLoad.chart?.bottomAxis as HorizontalAxis?)?.itemPlacer =
+            AxisItemPlacer.Horizontal.default(
+                spacing = spacing, offset = offset
+            )
     }
 
-    private fun loadUnitSettings(){
+    private fun loadUnitSettings() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        when(sharedPreferences.getString("unit", ""))
-        {
+        when (sharedPreferences.getString("unit", "")) {
             "kg" -> defaultWeightUnit = WeightUnit.kg
             "lbs" -> defaultWeightUnit = WeightUnit.lbs
         }
 
+    }
+
+    private fun handleSwiping(event: MotionEvent) {
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                viewPager.setUserInputEnabled(false)
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                viewPager.setUserInputEnabled(true)
+            }
+        }
     }
 
 }
