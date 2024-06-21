@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/tutorialViewPagerFragment"
-        android:name="com.lifthub.lifthubandroid.tutorial.fragments.TutorialViewPagerFragment"
+        android:name="com.pl.Maciejbak.tutorial.fragments.TutorialViewPagerFragment"
         android:label="fragment_tutorial_view_pager"
         tools:layout="@layout/fragment_tutorial_view_pager" />
     <fragment
         android:id="@+id/splashFragment"
-        android:name="com.lifthub.lifthubandroid.fragment.SplashFragment"
+        android:name="com.pl.Maciejbak.fragment.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash" >
         <action
