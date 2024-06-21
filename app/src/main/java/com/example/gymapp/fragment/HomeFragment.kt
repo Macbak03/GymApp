@@ -43,6 +43,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
+
     private lateinit var plansDataBase: PlansDataBaseHelper
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
     private lateinit var spinner: DynamicSizeSpinner

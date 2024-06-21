@@ -54,10 +54,6 @@ class TimerActivity : BaseActivity() {
             onTimerFinished()
             handleTimePickerStatus()
         }
-        binding.buttonTimerStop.setOnClickListener {
-            NotificationUtil.audioPlayer.stopSound()
-            it.visibility = View.GONE
-        }
 
         binding.numberPickerMinutes.minValue = 0
         binding.numberPickerMinutes.maxValue = 59
@@ -189,7 +185,6 @@ class TimerActivity : BaseActivity() {
 
         if (secondsRemaining <= 0) {
             onTimerFinished()
-            binding.buttonTimerStop.visibility = View.VISIBLE
         } else if (timerState == TimerState.Running) {
             startTimer()
         }
@@ -216,7 +211,6 @@ class TimerActivity : BaseActivity() {
 
     private fun playAudio() {
         NotificationUtil.audioPlayer.playSound(this, R.raw.timer_alarm)
-        binding.buttonTimerStop.visibility = View.VISIBLE
     }
 
     private fun startTimer() {

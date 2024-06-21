@@ -20,6 +20,7 @@ import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.example.gymapp.R
 import com.example.gymapp.activity.BaseActivity
 import com.example.gymapp.activity.TrainingPlanActivity

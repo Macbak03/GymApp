@@ -10,6 +10,6 @@
             path="." />
         <include
             domain="database"
-            path="GymApp.db" />
+            path="GymApp" />
     </cloud-backup>
 </data-extraction-rules>
