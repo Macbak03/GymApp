@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.lifthub.lifthubandroid"
+    namespace = "com.pl.Maciejbak"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lifthub.lifthubandroid"
+        applicationId = "com.pl.Maciejbak"
         minSdk = 26
         targetSdk = 33
         versionCode = 1
