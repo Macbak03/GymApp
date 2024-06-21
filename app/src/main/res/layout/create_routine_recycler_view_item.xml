@@ -6,12 +6,12 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <com.example.gymapp.layout.RoutineExpandableTitleLayout
+    <com.lifthub.lifthubandroid.layout.RoutineExpandableTitleLayout
         android:id="@+id/exerciseTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <com.example.gymapp.layout.RoutineExpandableLayout
+    <com.lifthub.lifthubandroid.layout.RoutineExpandableLayout
         android:id="@+id/exerciseDetails"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

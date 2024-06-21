@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.example.gymapp",
+  "applicationId": "com.lifthub.lifthubandroid",
   "variantName": "release",
   "elements": [
     {

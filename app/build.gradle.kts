@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gymapp"
+    namespace = "com.lifthub.lifthubandroid"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.gymapp"
+        applicationId = "com.lifthub.lifthubandroid"
         minSdk = 26
         targetSdk = 33
         versionCode = 1

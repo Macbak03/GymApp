@@ -28,7 +28,7 @@
             android:textStyle="bold"
             android:textSize="25sp" />
 
-        <com.example.gymapp.layout.DynamicSizeSpinner
+        <com.lifthub.lifthubandroid.layout.DynamicSizeSpinner
             android:id="@+id/spinnerTrainingPlans"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
