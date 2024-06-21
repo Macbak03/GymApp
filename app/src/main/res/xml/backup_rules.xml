@@ -11,5 +11,5 @@
         path="." />
     <include
         domain="database"
-        path="GymApp.db" />
+        path="GymApp" />
 </full-backup-content>

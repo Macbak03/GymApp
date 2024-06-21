@@ -213,12 +213,6 @@ class ChartsFragment : Fragment() {
     override fun onResume() {
         val selectedExercise = autoCompleteTextView.text.toString()
         super.onResume()
-
-        /* Handler(Looper.getMainLooper()).postDelayed({
-             viewPager = requireActivity().findViewById(R.id.viewPager)
-             viewPager.isUserInputEnabled = false
-         }, 200)
- */
         view?.findViewById<ComposeView>(R.id.composeView)?.setContent {
             customMarker = rememberMarker()
         }
