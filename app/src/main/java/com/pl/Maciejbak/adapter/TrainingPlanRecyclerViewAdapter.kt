@@ -52,6 +52,7 @@ class TrainingPlanRecyclerViewAdapter(private val routines: MutableList<Training
         deletedRoutines.add(routines[position].routineName)
         routines.removeAt(position)
         notifyItemRemoved(position)
+        notifyItemRangeChanged(position, routines.size)
     }
 
     fun getDeletedRoutines() : MutableList<String>

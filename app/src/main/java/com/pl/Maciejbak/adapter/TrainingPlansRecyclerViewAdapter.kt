@@ -76,6 +76,7 @@ class TrainingPlansRecyclerViewAdapter(private val trainingPlans: MutableList<Tr
         deletedTrainingPlan = trainingPlans[position].name
         trainingPlans.removeAt(position)
         notifyItemRemoved(position)
+        notifyItemRangeChanged(position, trainingPlans.size)
     }
 
     fun getDeletedPlans() : String
