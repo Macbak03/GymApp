@@ -10,10 +10,10 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.pl.Maciejbak"
+        applicationId = "pl.Maciejbak"
         minSdk = 26
         targetSdk = 33
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

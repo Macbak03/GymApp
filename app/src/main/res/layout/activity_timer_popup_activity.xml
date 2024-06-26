@@ -26,7 +26,7 @@
             android:layout_marginTop="10dp"
             android:layout_height="40dp"
             android:text="Stop"
-            android:background="@drawable/poput_button"
+            android:background="@drawable/popup_button"
             android:textColor="#3E75D4"/>
 
     </LinearLayout>
