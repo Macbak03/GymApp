@@ -38,7 +38,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import java.io.File
 
-class WorkoutActivity : BaseActivity() {
+class WorkoutActivity : WorkoutBaseActivity() {
 
     private lateinit var binding: ActivityWorkoutBinding
 
@@ -48,21 +48,16 @@ class WorkoutActivity : BaseActivity() {
     private var workout: MutableList<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>> =
         ArrayList()
     private var workoutHints: MutableList<WorkoutHints> = ArrayList()
-    private var routineName: String? = null
-    private var planName: String? = null
-
-    private var isCorrectlyClosed = false
-    private var isTerminated = true
-
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             workoutExpandableListAdapter.saveToFile()
             isTerminated = false
             val resultIntent = Intent()
-            resultIntent.putExtra(HomeFragment.ROUTINE_NAME, binding.textViewCurrentWorkout.text)
+            val currentWorkoutName = binding.textViewCurrentWorkout.text
+            resultIntent.putExtra(HomeFragment.ROUTINE_NAME, currentWorkoutName)
             val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
-            prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
+            prefs.edit().putString("ROUTINE_NAME", currentWorkoutName.toString())
                 .apply()
             setResult(RESULT_CANCELED, resultIntent)
             isEnabled = false
@@ -110,16 +105,7 @@ class WorkoutActivity : BaseActivity() {
         binding.buttonTimer.apply {
             setTimerButtonBackground()
             setOnClickListener {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    showPermissionExplanation()
-                    if (this@WorkoutActivity.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()) {
-                        val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
-                        startActivity(explicitIntent)
-                    }
-                } else {
-                    val explicitIntent = Intent(applicationContext, TimerActivity::class.java)
-                    startActivity(explicitIntent)
-                }
+               openTimerActivity()
             }
         }
 
@@ -129,21 +115,6 @@ class WorkoutActivity : BaseActivity() {
             onBackPressedCallback.handleOnBackPressed()
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { view, insets ->
-            val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-            view.updatePadding(bottom = bottom)
-            insets
-        }
-    }
-
-    private fun View.setTimerButtonBackground(){
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-        when (sharedPreferences.getString("theme", "")) {
-            "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
-            "Dark" -> setBackgroundResource(R.drawable.dark_button_color)
-            "DarkBlue" -> setBackgroundResource(R.drawable.button_color)
-            else -> setBackgroundResource(R.drawable.clicked_default_button)
-        }
     }
 
 
@@ -173,23 +144,6 @@ class WorkoutActivity : BaseActivity() {
             }
         }
         return super.dispatchTouchEvent(event)
-    }
-
-    private fun showPermissionExplanation() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            if (!this.getSystemService(AlarmManager::class.java).canScheduleExactAlarms()) {
-                android.app.AlertDialog.Builder(this)
-                    .setTitle("Permission Needed")
-                    .setMessage("This function requires the ability to schedule exact alarms to function properly. Please allow this permission in the settings.")
-                    .setPositiveButton("Settings") { _, _ ->
-                        val intent =
-                            Intent(android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
-                        startActivity(intent)
-                    }
-                    .setNegativeButton("Cancel", null)
-                    .show()
-            }
-        }
     }
 
     private fun loadRoutine(planId: Int?) {
@@ -299,21 +253,6 @@ class WorkoutActivity : BaseActivity() {
             }
         } catch (exception: Exception) {
             exception.printStackTrace()
-        }
-    }
-
-    private fun showCancelDialog() {
-        val builder = this.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
-        with(builder) {
-            this.setTitle("Are you sure you want to cancel this training? It won't be saved.")
-            this.setPositiveButton("Yes") { _, _ ->
-                setResult(RESULT_OK)
-                isCorrectlyClosed = true
-                isTerminated = false
-                finish()
-            }
-            this.setNegativeButton("No") { _, _ -> }
-            this.show()
         }
     }
 

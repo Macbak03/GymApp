@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <EditText
+            android:id="@+id/editTextExerciseName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Exercise name"
+            android:textSize="24sp"
+            android:layout_weight="1"
+            android:layout_marginStart="35dp"
+            android:layout_marginEnd="15dp"
+            android:textAlignment="viewStart"
+            android:textStyle="bold"/>
+
+        <FrameLayout
+            android:id="@+id/buttonAddExercise"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="10dp">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/baseline_add_circle_24"
+                android:layout_gravity="center"/>
+        </FrameLayout>
+    </LinearLayout>
+
+</LinearLayout>
