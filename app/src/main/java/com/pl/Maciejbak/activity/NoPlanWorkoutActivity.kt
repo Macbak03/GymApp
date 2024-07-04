@@ -53,14 +53,15 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         loadWorkout()
 
         expandableListView = binding.expandableListViewWorkout
-        noPlanWorkoutExpandableListAdapter = NoPlanWorkoutExpandableListAdapter(this, workout)
+        noPlanWorkoutExpandableListAdapter =
+            NoPlanWorkoutExpandableListAdapter(this, workout, weightUnit)
         expandableListView.setAdapter(noPlanWorkoutExpandableListAdapter)
 
-/*        binding.buttonSaveWorkout.setOnClickListener {
-            val customDate = CustomDate()
-            val date = customDate.getDate()
-            saveWorkoutToHistory(date)
-        }*/
+        /*        binding.buttonSaveWorkout.setOnClickListener {
+                    val customDate = CustomDate()
+                    val date = customDate.getDate()
+                    saveWorkoutToHistory(date)
+                }*/
 
         binding.buttonCancelWorkout.setOnClickListener {
             showCancelDialog()
@@ -69,7 +70,7 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         binding.buttonTimer.apply {
             setTimerButtonBackground()
             setOnClickListener {
-               openTimerActivity()
+                openTimerActivity()
             }
         }
 

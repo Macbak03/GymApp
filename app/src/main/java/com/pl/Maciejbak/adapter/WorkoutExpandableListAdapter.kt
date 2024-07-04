@@ -46,7 +46,7 @@ open class WorkoutExpandableListAdapter(
         initWorkoutSession()
     }
 
-    protected fun initWorkoutSession() {
+    private fun initWorkoutSession() {
         workout.forEachIndexed { index, pair ->
             val series = pair.second
             val exercise = pair.first
