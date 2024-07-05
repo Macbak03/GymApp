@@ -25,7 +25,6 @@ import com.pl.Maciejbak.model.workout.WorkoutSessionSet
 import com.google.gson.Gson
 import java.io.File
 import java.io.FileWriter
-import kotlin.math.exp
 
 open class WorkoutExpandableListAdapter(
     private val context: Context,
@@ -161,7 +160,7 @@ open class WorkoutExpandableListAdapter(
     }
 
 
-    fun saveToFile() {
+    fun saveSessionToFile() {
         val gson = Gson()
         val jsonData = gson.toJson(workoutSession)
 

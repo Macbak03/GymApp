@@ -53,19 +53,7 @@ class NoPlanWorkoutExpandableTitleLayout(
         try {
             if (exerciseAttributes != null) {
                 exerciseNameEditText.setText(exerciseAttributes.exerciseName)
-                workoutExerciseDraft =
-                    WorkoutExerciseDraft(
-                        exerciseAttributes.exerciseName,
-                        exerciseAttributes.pause,
-                        exerciseAttributes.pauseUnit,
-                        exerciseAttributes.reps,
-                        exerciseAttributes.series,
-                        exerciseAttributes.intensity,
-                        exerciseAttributes.intensityIndex,
-                        exerciseAttributes.pace,
-                        null,
-                        exerciseAttributes.isChecked,
-                    )
+                workoutExerciseDraft = exerciseAttributes
             }
         } finally {
             customAttributesStyle.recycle()

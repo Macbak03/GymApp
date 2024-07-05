@@ -1,4 +1,4 @@
-package com.pl.Maciejbak.model
+package com.pl.Maciejbak.model.json
 
 import com.pl.Maciejbak.model.workout.WorkoutSessionSet
 import com.google.gson.JsonDeserializationContext
@@ -7,7 +7,7 @@ import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
 import java.lang.reflect.Type
 
-class CustomPairDeserializer : JsonDeserializer<List<Pair<Int, List<WorkoutSessionSet>>>> {
+class WorkoutSessionSetListDeserializer : JsonDeserializer<List<Pair<Int, List<WorkoutSessionSet>>>> {
     override fun deserialize(
         json: JsonElement?,
         typeOfT: Type?,

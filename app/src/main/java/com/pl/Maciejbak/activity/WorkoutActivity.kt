@@ -1,31 +1,22 @@
 package com.pl.Maciejbak.activity
 
-import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
-import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
-import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.ExpandableListView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.updatePadding
-import androidx.preference.PreferenceManager
-import com.pl.Maciejbak.R
 import com.pl.Maciejbak.adapter.WorkoutExpandableListAdapter
 import com.pl.Maciejbak.databinding.ActivityWorkoutBinding
 import com.pl.Maciejbak.exception.ValidationException
 import com.pl.Maciejbak.fragment.HomeFragment
 import com.pl.Maciejbak.fragment.StartWorkoutMenuFragment
-import com.pl.Maciejbak.model.CustomPairDeserializer
-import com.pl.Maciejbak.model.WorkoutSessionSetDeserializer
+import com.pl.Maciejbak.model.json.WorkoutSessionSetListDeserializer
+import com.pl.Maciejbak.model.json.WorkoutSessionSetDeserializer
 import com.pl.Maciejbak.model.workout.CustomDate
 import com.pl.Maciejbak.model.workout.WorkoutSeriesDraft
 import com.pl.Maciejbak.model.workout.WorkoutExerciseDraft
@@ -51,7 +42,7 @@ class WorkoutActivity : WorkoutBaseActivity() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            workoutExpandableListAdapter.saveToFile()
+            workoutExpandableListAdapter.saveSessionToFile()
             isTerminated = false
             val resultIntent = Intent()
             val currentWorkoutName = binding.textViewCurrentWorkout.text
@@ -126,7 +117,7 @@ class WorkoutActivity : WorkoutBaseActivity() {
         } else if (isTerminated) {
             prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
                 .apply()
-            workoutExpandableListAdapter.saveToFile()
+            workoutExpandableListAdapter.saveSessionToFile()
         }
     }
 
@@ -228,7 +219,7 @@ class WorkoutActivity : WorkoutBaseActivity() {
                 .registerTypeAdapter(WorkoutSessionSet::class.java, WorkoutSessionSetDeserializer())
                 .registerTypeAdapter(
                     object : TypeToken<List<Pair<Int, List<WorkoutSessionSet>>>>() {}.type,
-                    CustomPairDeserializer()
+                    WorkoutSessionSetListDeserializer()
                 )
                 .create()
 

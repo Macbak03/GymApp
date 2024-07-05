@@ -7,8 +7,10 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseExpandableListAdapter
 import android.widget.EditText
 import android.widget.ExpandableListView
+import com.google.gson.Gson
 import com.pl.Maciejbak.R
 import com.pl.Maciejbak.layout.NoPlanWorkoutExpandableLayout
 import com.pl.Maciejbak.layout.NoPlanWorkoutExpandableTitleLayout
@@ -19,13 +21,15 @@ import com.pl.Maciejbak.model.workout.NoPlanWorkoutSessionExercise
 import com.pl.Maciejbak.model.workout.WorkoutExerciseDraft
 import com.pl.Maciejbak.model.workout.WorkoutSeriesDraft
 import com.pl.Maciejbak.model.workout.WorkoutSessionSet
+import java.io.File
+import java.io.FileWriter
 
 
 class NoPlanWorkoutExpandableListAdapter(
     private val context: Context,
     private val workout: MutableList<Pair<WorkoutExerciseDraft, MutableList<WorkoutSeriesDraft>>>,
     private val weightUnit: WeightUnit
-) : WorkoutExpandableListAdapter(context, workout) {
+) : BaseExpandableListAdapter() {
 
     private val workoutSession =
         ArrayList<Pair<Int, NoPlanWorkoutSessionExercise>>()
@@ -34,7 +38,7 @@ class NoPlanWorkoutExpandableListAdapter(
         initWorkoutSession()
     }
 
-    private fun initWorkoutSession(){
+    private fun initWorkoutSession() {
         workout.forEachIndexed { index, pair ->
             val series = pair.second
             val exercise = pair.first
@@ -57,7 +61,8 @@ class NoPlanWorkoutExpandableListAdapter(
                     workoutSessionSets.add(workoutSessionSet)
                 }
             }
-            val workoutSessionExercise = NoPlanWorkoutSessionExercise(index, exercise.exerciseName, workoutSessionSets)
+            val workoutSessionExercise =
+                NoPlanWorkoutSessionExercise(index, exercise.exerciseName, workoutSessionSets)
             workoutSession.add(Pair(index, workoutSessionExercise))
         }
     }
@@ -101,9 +106,16 @@ class NoPlanWorkoutExpandableListAdapter(
 
         val repsEditText = noPlanWorkoutExpandableLayout?.getRepsEditText()
         val weightEditText = noPlanWorkoutExpandableLayout?.getWeightEditText()
-        updateSessionSetList(repsEditText, weightEditText, noteEditText, listPosition, expandedListPosition)
+        updateSessionSetList(
+            repsEditText,
+            weightEditText,
+            noteEditText,
+            listPosition,
+            expandedListPosition
+        )
 
         val addSetButton = noPlanWorkoutExpandableLayout?.getAddSetButton()
+        addSetButton?.visibility = if (isLastChild) View.VISIBLE else View.GONE
         addSetButton?.setOnClickListener {
             addSet(listPosition)
         }
@@ -149,6 +161,8 @@ class NoPlanWorkoutExpandableListAdapter(
 
 
         val addExerciseButton = noPlanWorkoutExpandableTitleLayout?.getAddExerciseButton()
+        addExerciseButton?.visibility =
+            if (listPosition < workout.size - 1) View.GONE else View.VISIBLE
         addExerciseButton?.setOnClickListener {
             addExercise()
         }
@@ -165,18 +179,19 @@ class NoPlanWorkoutExpandableListAdapter(
         val seriesList = ArrayList<WorkoutSeriesDraft>()
         seriesList.add(WorkoutSeriesDraft("", "", weightUnit, false))
         val defaultExerciseName = ""
+        val defaultWorkoutValue = "0"
         workout.add(
             Pair(
                 WorkoutExerciseDraft(
                     defaultExerciseName,
-                    null,
+                    defaultWorkoutValue,
                     TimeUnit.s,
-                    null,
-                    null,
-                    null,
+                    defaultWorkoutValue,
+                    defaultWorkoutValue,
+                    defaultWorkoutValue,
                     IntensityIndex.RPE,
-                    null,
-                    null,
+                    defaultWorkoutValue,
+                    "",
                     false
                 ), seriesList
             )
@@ -194,7 +209,7 @@ class NoPlanWorkoutExpandableListAdapter(
         val set = WorkoutSeriesDraft("", "", weightUnit, false)
         workout[listPosition].second.add(set)
         val childId = workout[listPosition].second.size - 1
-        val sessionSet = WorkoutSessionSet(listPosition, childId, "", "", "", false)
+        val sessionSet = WorkoutSessionSet(listPosition, childId, "", "", workout[listPosition].first.note, false)
         workoutSession[listPosition].second.workoutSessionExerciseSets.add(sessionSet)
         notifyDataSetChanged()
     }
@@ -255,6 +270,20 @@ class NoPlanWorkoutExpandableListAdapter(
             }
 
         })
+    }
+
+    fun saveNoPlanSessionToFile() {
+        val gson = Gson()
+        val jsonData = gson.toJson(workoutSession)
+
+        try {
+            val file = File(context.filesDir, "workout_session.json")
+            val writer = FileWriter(file, false)
+            writer.write(jsonData)
+            writer.close()
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+        }
     }
 
     override fun hasStableIds(): Boolean {

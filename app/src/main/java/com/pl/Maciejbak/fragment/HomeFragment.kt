@@ -37,6 +37,7 @@ import com.pl.Maciejbak.persistence.RoutinesDataBaseHelper
 import com.pl.Maciejbak.persistence.WorkoutHistoryDatabaseHelper
 import com.pl.Maciejbak.viewModel.ActivityResultData
 import com.pl.Maciejbak.viewModel.SharedViewModel
+import kotlin.math.exp
 
 
 class HomeFragment : Fragment(), FragmentAnimator {
@@ -52,6 +53,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
     private var isUnsaved = false
     private var routineNameResult: String? = null
+    private var isNewWorkoutStartedWithoutCancel = false
 
 
     companion object {
@@ -60,6 +62,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         const val FORMATTED_DATE = "com.pl.Maciejbak.formatteddate"
         const val RAW_DATE = "com.pl.Maciejbak.rawdate"
         const val IS_UNSAVED = "com.pl.Maciejbak.isunsaved"
+        const val IS_NEW_WORKOUT_STARTED_WITHOUT_CANCEL = "com.pl.Maciejbak.newworkoutnocancel"
 
         const val NO_TRAINING_PLAN_OPTION = "No training plan"
 
@@ -142,6 +145,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
     override fun onResume() {
         super.onResume()
         buttonReturn.setReturnButtonColor()
+        isNewWorkoutStartedWithoutCancel = false
         setLastTraining()
         initSpinnerData()
         if (!plansDataBase.isTableNotEmpty()) {
@@ -311,6 +315,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
         explicitIntent.putExtra(IS_UNSAVED, isUnsaved)
         explicitIntent.putExtra(PLAN_NAME, planName)
         explicitIntent.putExtra(ROUTINE_NAME, routineNameResult)
+        explicitIntent.putExtra(RAW_DATE, CustomDate().getDate())
+        explicitIntent.putExtra(IS_NEW_WORKOUT_STARTED_WITHOUT_CANCEL, isNewWorkoutStartedWithoutCancel)
         startWorkoutActivityForResult.launch(explicitIntent)
     }
 
@@ -382,6 +388,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
             this?.setTitle(" ")
             this?.setPositiveButton("Yes") { _, _ ->
                 if (isNoPlanOptionSelected()) {
+                    isNewWorkoutStartedWithoutCancel = true
                     startWorkout(Intent(context, NoPlanWorkoutActivity::class.java))
                 } else {
                     openStartWorkoutMenuFragment()
