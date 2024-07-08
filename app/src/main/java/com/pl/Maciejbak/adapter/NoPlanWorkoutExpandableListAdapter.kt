@@ -2,6 +2,8 @@ package com.pl.Maciejbak.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
@@ -38,6 +40,7 @@ class NoPlanWorkoutExpandableListAdapter(
 
     private val workoutSession =
         ArrayList<Pair<Int, NoPlanWorkoutSessionExercise>>()
+    private val handler = Handler(Looper.getMainLooper())
 
     init {
         initWorkoutSession()
@@ -104,6 +107,19 @@ class NoPlanWorkoutExpandableListAdapter(
             expandedListPosition + 1
         )
 
+        val addSetButton = noPlanWorkoutExpandableLayout?.getAddSetButton()
+        addSetButton?.visibility = if (isLastChild) View.VISIBLE else View.INVISIBLE
+        addSetButton?.setOnClickListener {
+            addSet(listPosition)
+        }
+
+        val removeSetButton = noPlanWorkoutExpandableLayout?.getRemoveSetButton()
+        removeSetButton?.visibility =
+            if (getChildrenCount(listPosition) == 1) View.INVISIBLE else View.VISIBLE
+        removeSetButton?.setOnClickListener {
+            removeSet(listPosition, expandedListPosition)
+        }
+
         val noteEditText = noPlanWorkoutExpandableLayout?.getNoteEditText()
 
         noteEditText?.visibility = if (isLastChild) View.VISIBLE else View.GONE
@@ -118,12 +134,6 @@ class NoPlanWorkoutExpandableListAdapter(
             listPosition,
             expandedListPosition
         )
-
-        val addSetButton = noPlanWorkoutExpandableLayout?.getAddSetButton()
-        addSetButton?.visibility = if (isLastChild) View.VISIBLE else View.GONE
-        addSetButton?.setOnClickListener {
-            addSet(listPosition)
-        }
 
         return view
     }
@@ -161,21 +171,27 @@ class NoPlanWorkoutExpandableListAdapter(
         val noPlanWorkoutExpandableTitleLayout = view as NoPlanWorkoutExpandableTitleLayout?
         noPlanWorkoutExpandableTitleLayout?.setExerciseAttributes(exercise)
 
-        val exerciseNameEditText = noPlanWorkoutExpandableTitleLayout?.getExerciseNameEditText()
-        updateSessionExerciseList(exerciseNameEditText, listPosition)
-
-
         val addExerciseButton = noPlanWorkoutExpandableTitleLayout?.getAddExerciseButton()
         addExerciseButton?.visibility =
-            if (listPosition < workout.size - 1) View.GONE else View.VISIBLE
+            if (listPosition < workout.size - 1) View.INVISIBLE else View.VISIBLE
         addExerciseButton?.setOnClickListener {
             addExercise()
+        }
+
+        val removeExerciseButton = noPlanWorkoutExpandableTitleLayout?.getRemoveExerciseButton()
+        removeExerciseButton?.visibility =
+            if (groupCount == 1) View.INVISIBLE else View.VISIBLE
+        removeExerciseButton?.setOnClickListener {
+            removeExercise(listPosition)
         }
 
         view?.setOnClickListener {
             if (isExpanded) (parent as ExpandableListView).collapseGroup(listPosition)
             else (parent as ExpandableListView).expandGroup(listPosition, true)
         }
+
+        val exerciseNameEditText = noPlanWorkoutExpandableTitleLayout?.getExerciseNameEditText()
+        updateSessionExerciseList(exerciseNameEditText, listPosition)
 
         return view
     }
@@ -215,8 +231,27 @@ class NoPlanWorkoutExpandableListAdapter(
         val set = WorkoutSeriesDraft("", "", weightUnit, false)
         workout[listPosition].second.add(set)
         val childId = workout[listPosition].second.size - 1
-        val sessionSet = WorkoutSessionSet(listPosition, childId, "", "", workout[listPosition].first.note, false)
+        val sessionSet = WorkoutSessionSet(
+            listPosition,
+            childId,
+            "",
+            "",
+            workout[listPosition].first.note,
+            false
+        )
         workoutSession[listPosition].second.workoutSessionExerciseSets.add(sessionSet)
+        notifyDataSetChanged()
+    }
+
+    private fun removeExercise(listPosition: Int) {
+        workout.removeAt(listPosition)
+        workoutSession.removeAt(listPosition)
+        notifyDataSetChanged()
+    }
+
+    private fun removeSet(listPosition: Int, expandedListPosition: Int) {
+        workout[listPosition].second.removeAt(expandedListPosition)
+        workoutSession[listPosition].second.workoutSessionExerciseSets.removeAt(expandedListPosition)
         notifyDataSetChanged()
     }
 
@@ -226,14 +261,16 @@ class NoPlanWorkoutExpandableListAdapter(
     ) {
         exerciseNameEditText?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-
             override fun afterTextChanged(s: Editable?) {
-                val exerciseName = workout[listPosition].first.exerciseName
-                workoutSession[listPosition].second.exerciseName = exerciseName
+                handler.postDelayed({
+                    if (listPosition in 0 until workout.size) {
+                        val exerciseName = workout[listPosition].first.exerciseName
+                        workoutSession[listPosition].second.exerciseName =
+                            exerciseName //delay update so view will have time to refresh
+                    }
+                }, 100)
             }
-
         })
     }
 
@@ -248,33 +285,40 @@ class NoPlanWorkoutExpandableListAdapter(
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                val reps = workout[listPosition].second[expandedListPosition].actualReps
-                workoutSession[listPosition].second.workoutSessionExerciseSets[expandedListPosition].actualReps =
-                    reps
+                handler.postDelayed({
+                    if (listPosition in 0 until workout.size) {
+                        val reps = workout[listPosition].second[expandedListPosition].actualReps
+                        workoutSession[listPosition].second.workoutSessionExerciseSets[expandedListPosition].actualReps =
+                            reps
+                    }
+                }, 100)
             }
-
         })
-
         weightEditText?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                val load = workout[listPosition].second[expandedListPosition].load
-                workoutSession[listPosition].second.workoutSessionExerciseSets[expandedListPosition].load =
-                    load
+                handler.postDelayed({
+                    if (listPosition in 0 until workout.size) {
+                        val load = workout[listPosition].second[expandedListPosition].load
+                        workoutSession[listPosition].second.workoutSessionExerciseSets[expandedListPosition].load =
+                            load
+                    }
+                }, 100)
             }
-
         })
-
         noteEditText?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                val note = workout[listPosition].first.note
-                workoutSession[listPosition].second.workoutSessionExerciseSets[expandedListPosition].note =
-                    note
+                handler.postDelayed({
+                    if (listPosition in 0 until workout.size) {
+                        val note = workout[listPosition].first.note
+                        workoutSession[listPosition].second.workoutSessionExerciseSets[expandedListPosition].note =
+                            note
+                    }
+                }, 100)
             }
-
         })
     }
 

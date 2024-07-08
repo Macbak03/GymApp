@@ -18,6 +18,7 @@ class NoPlanWorkoutExpandableTitleLayout(
     private var workoutExerciseDraft: WorkoutExerciseDraft? = null
     private val addExerciseButton: FrameLayout
     private val exerciseNameEditText: EditText
+    private val removeExerciseButton: FrameLayout
 
     init {
         inflate(context, R.layout.no_plan_workout_expandable_title_layout, this)
@@ -30,6 +31,7 @@ class NoPlanWorkoutExpandableTitleLayout(
 
         addExerciseButton = findViewById(R.id.buttonAddExercise)
         exerciseNameEditText = findViewById(R.id.editTextExerciseName)
+        removeExerciseButton = findViewById(R.id.buttonRemoveExercise)
 
         exerciseNameEditText.addTextChangedListener(object: TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -70,5 +72,9 @@ class NoPlanWorkoutExpandableTitleLayout(
 
     fun getAddExerciseButton(): FrameLayout {
         return this.addExerciseButton
+    }
+
+    fun getRemoveExerciseButton(): FrameLayout {
+        return this.removeExerciseButton
     }
 }

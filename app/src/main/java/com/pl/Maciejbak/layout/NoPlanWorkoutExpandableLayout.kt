@@ -22,6 +22,7 @@ class NoPlanWorkoutExpandableLayout(
     private val weightEditText: EditText
     private val noteEditText: EditText
     private val addSetButton: FrameLayout
+    private val removeSetButton: FrameLayout
     private var workoutSeriesDraft: WorkoutSeriesDraft? = null
     private var workoutExerciseDraft: WorkoutExerciseDraft? = null
 
@@ -41,6 +42,7 @@ class NoPlanWorkoutExpandableLayout(
         weightEditText = findViewById(R.id.editTextWorkoutWeight)
         noteEditText = findViewById(R.id.editTextNote)
         addSetButton = findViewById(R.id.buttonAddSet)
+        removeSetButton = findViewById(R.id.buttonRemoveSet)
 
 
         repsEditText.addTextChangedListener(object : TextWatcher {
@@ -125,5 +127,7 @@ class NoPlanWorkoutExpandableLayout(
         return this.addSetButton
     }
 
-
+    fun getRemoveSetButton(): FrameLayout {
+        return this.removeSetButton
+    }
 }

@@ -75,7 +75,11 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         binding.buttonSaveWorkout.setOnClickListener {
             val customDate = CustomDate()
             val date = customDate.getDate()
-            saveWorkoutToHistory(date)
+            try {
+                saveWorkoutToHistory(date)
+            } catch (validationException: ValidationException){
+                Toast.makeText(this, validationException.message, Toast.LENGTH_LONG).show()
+            }
         }
 
         binding.buttonCancelWorkout.setOnClickListener {
@@ -201,7 +205,10 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         if (routineName != null && planName != null) {
             val planName = this.planName
             val routineName = this.routineName
-            if (planName != null && routineName != null) {
+            if (routineName.isNullOrBlank()){
+                throw ValidationException("Workout name cannot be empty")
+            }
+            if (planName != null) {
                 try {
                     val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
                     workoutHistoryDatabase.addNoPlanExercises(
