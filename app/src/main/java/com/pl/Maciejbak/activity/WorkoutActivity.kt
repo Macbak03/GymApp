@@ -78,7 +78,7 @@ class WorkoutActivity : WorkoutBaseActivity() {
 
 
         expandableListView = binding.expandableListViewWorkout
-        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout, workoutHints, expandableListView)
+        workoutExpandableListAdapter = WorkoutExpandableListAdapter(this, workout, workoutHints, expandableListView, planName)
         expandableListView.setAdapter(workoutExpandableListAdapter)
 
 

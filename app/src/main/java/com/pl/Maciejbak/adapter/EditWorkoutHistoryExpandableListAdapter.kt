@@ -15,8 +15,8 @@ import com.pl.Maciejbak.model.workout.WorkoutSeriesDraft
 
 class EditWorkoutHistoryExpandableListAdapter(
     private val context: Context,
-    private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>
-
+    private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>,
+    private val planName: String?
 ) : BaseExpandableListAdapter() {
     override fun getChild(listPosition: Int, expandedListPosition: Int): Any {
         return workout[listPosition].second[expandedListPosition]
@@ -84,7 +84,7 @@ class EditWorkoutHistoryExpandableListAdapter(
         }
         val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
-        workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
+        workoutExpandableTitleLayout?.setExerciseAttributes(exercise, planName)
         return view
     }
 

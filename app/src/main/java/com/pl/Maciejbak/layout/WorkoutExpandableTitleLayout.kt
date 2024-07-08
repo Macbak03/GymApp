@@ -2,9 +2,11 @@ package com.pl.Maciejbak.layout
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.pl.Maciejbak.R
+import com.pl.Maciejbak.fragment.HomeFragment
 import com.pl.Maciejbak.model.workout.WorkoutExerciseDraft
 
 class WorkoutExpandableTitleLayout(
@@ -25,7 +27,7 @@ class WorkoutExpandableTitleLayout(
         customAttributesStyle.recycle()
     }
 
-    fun setExerciseAttributes(exerciseAttributes: WorkoutExerciseDraft?) {
+    fun setExerciseAttributes(exerciseAttributes: WorkoutExerciseDraft?, planName: String?) {
         val customAttributesStyle = context.obtainStyledAttributes(
             attributes,
             R.styleable.WorkoutExpandableTitleLayout,
@@ -48,6 +50,14 @@ class WorkoutExpandableTitleLayout(
                 intensity.text = exerciseAttributes.intensity
                 pace.text = exerciseAttributes.pace
                 intensityIndex.text = exerciseAttributes.intensityIndex.toString()
+                if (planName == HomeFragment.NO_TRAINING_PLAN_OPTION){
+                    val noPlanAttributeValue = "-"
+                    pause.text = noPlanAttributeValue
+                    pauseUnit.visibility = View.GONE
+                    series.text = noPlanAttributeValue
+                    intensity.text = noPlanAttributeValue
+                    pace.text = noPlanAttributeValue
+                }
                 workoutExerciseDraft =
                     WorkoutExerciseDraft(
                         exerciseAttributes.exerciseName,

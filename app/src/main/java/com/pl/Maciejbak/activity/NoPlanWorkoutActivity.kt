@@ -3,17 +3,20 @@ package com.pl.Maciejbak.activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.ExpandableListView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.preference.PreferenceManager
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.pl.Maciejbak.adapter.NoPlanWorkoutExpandableListAdapter
 import com.pl.Maciejbak.databinding.ActivityNoPlanWorkoutBinding
+import com.pl.Maciejbak.exception.ValidationException
 import com.pl.Maciejbak.fragment.HomeFragment
 import com.pl.Maciejbak.model.json.NoPlanWorkoutSessionSetListDeserializer
 import com.pl.Maciejbak.model.json.WorkoutSessionSetDeserializer
-import com.pl.Maciejbak.model.json.WorkoutSessionSetListDeserializer
 import com.pl.Maciejbak.model.routine.IntensityIndex
 import com.pl.Maciejbak.model.routine.TimeUnit
 import com.pl.Maciejbak.model.routine.WeightUnit
@@ -22,6 +25,7 @@ import com.pl.Maciejbak.model.workout.NoPlanWorkoutSessionExercise
 import com.pl.Maciejbak.model.workout.WorkoutExerciseDraft
 import com.pl.Maciejbak.model.workout.WorkoutSeriesDraft
 import com.pl.Maciejbak.model.workout.WorkoutSessionSet
+import com.pl.Maciejbak.persistence.WorkoutHistoryDatabaseHelper
 import java.io.File
 
 class NoPlanWorkoutActivity : WorkoutBaseActivity() {
@@ -34,6 +38,7 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
 
     private var weightUnit = WeightUnit.kg
     private val defaultWorkoutValue = "0"
+    private val defaultPaceValue = "0000"
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -60,16 +65,18 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
 
         loadWorkout()
 
+        planName = HomeFragment.NO_TRAINING_PLAN_OPTION
+
         expandableListView = binding.expandableListViewWorkout
         noPlanWorkoutExpandableListAdapter =
             NoPlanWorkoutExpandableListAdapter(this, workout, weightUnit)
         expandableListView.setAdapter(noPlanWorkoutExpandableListAdapter)
 
-        /*        binding.buttonSaveWorkout.setOnClickListener {
-                    val customDate = CustomDate()
-                    val date = customDate.getDate()
-                    saveWorkoutToHistory(date)
-                }*/
+        binding.buttonSaveWorkout.setOnClickListener {
+            val customDate = CustomDate()
+            val date = customDate.getDate()
+            saveWorkoutToHistory(date)
+        }
 
         binding.buttonCancelWorkout.setOnClickListener {
             showCancelDialog()
@@ -87,6 +94,15 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         binding.goBackButton.setOnClickListener {
             onBackPressedCallback.handleOnBackPressed()
         }
+
+        binding.editTextWorkoutName.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                routineName = s.toString()
+            }
+
+        })
     }
 
     override fun onStop() {
@@ -111,7 +127,7 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
             defaultWorkoutValue,
             defaultWorkoutValue,
             IntensityIndex.RPE,
-            defaultWorkoutValue,
+            defaultPaceValue,
             "",
             false
         )
@@ -125,6 +141,9 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         if (isUnsaved && !isNewWorkoutWithoutCancel) {
             workout.clear()
             restoreFromFile()
+            val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
+            routineName = prefs.getString("ROUTINE_NAME", "")
+            binding.editTextWorkoutName.setText(routineName)
         }
     }
 
@@ -156,7 +175,7 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
                     defaultWorkoutValue,
                     defaultWorkoutValue,
                     IntensityIndex.RPE,
-                    defaultWorkoutValue,
+                    defaultPaceValue,
                     "",
                     false,
                 )
@@ -178,12 +197,36 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         }
     }
 
+    private fun saveWorkoutToHistory(date: String) {
+        if (routineName != null && planName != null) {
+            val planName = this.planName
+            val routineName = this.routineName
+            if (planName != null && routineName != null) {
+                try {
+                    val workoutHistoryDatabase = WorkoutHistoryDatabaseHelper(this, null)
+                    workoutHistoryDatabase.addNoPlanExercises(
+                        noPlanWorkoutExpandableListAdapter,
+                        date,
+                        planName,
+                        routineName
+                    )
+                    Toast.makeText(this, "Workout Saved!", Toast.LENGTH_SHORT).show()
+                    setResult(RESULT_OK)
+                    isCorrectlyClosed = true
+                    isTerminated = false
+                    finish()
+                } catch (exception: ValidationException) {
+                    Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
     private fun loadUnitSettings() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         when (sharedPreferences.getString("unit", "")) {
             "kg" -> weightUnit = WeightUnit.kg
             "lbs" -> weightUnit = WeightUnit.lbs
         }
-
     }
 }

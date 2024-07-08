@@ -12,13 +12,18 @@ import android.widget.EditText
 import android.widget.ExpandableListView
 import com.google.gson.Gson
 import com.pl.Maciejbak.R
+import com.pl.Maciejbak.exception.ValidationException
 import com.pl.Maciejbak.layout.NoPlanWorkoutExpandableLayout
 import com.pl.Maciejbak.layout.NoPlanWorkoutExpandableTitleLayout
+import com.pl.Maciejbak.model.routine.Exercise
+import com.pl.Maciejbak.model.routine.ExerciseDraft
 import com.pl.Maciejbak.model.routine.IntensityIndex
 import com.pl.Maciejbak.model.routine.TimeUnit
 import com.pl.Maciejbak.model.routine.WeightUnit
 import com.pl.Maciejbak.model.workout.NoPlanWorkoutSessionExercise
+import com.pl.Maciejbak.model.workout.WorkoutExercise
 import com.pl.Maciejbak.model.workout.WorkoutExerciseDraft
+import com.pl.Maciejbak.model.workout.WorkoutSeries
 import com.pl.Maciejbak.model.workout.WorkoutSeriesDraft
 import com.pl.Maciejbak.model.workout.WorkoutSessionSet
 import java.io.File
@@ -28,7 +33,7 @@ import java.io.FileWriter
 class NoPlanWorkoutExpandableListAdapter(
     private val context: Context,
     private val workout: MutableList<Pair<WorkoutExerciseDraft, MutableList<WorkoutSeriesDraft>>>,
-    private val weightUnit: WeightUnit
+    private val weightUnit: WeightUnit,
 ) : BaseExpandableListAdapter() {
 
     private val workoutSession =
@@ -180,6 +185,7 @@ class NoPlanWorkoutExpandableListAdapter(
         seriesList.add(WorkoutSeriesDraft("", "", weightUnit, false))
         val defaultExerciseName = ""
         val defaultWorkoutValue = "0"
+        val defaultPaceValue = "0000"
         workout.add(
             Pair(
                 WorkoutExerciseDraft(
@@ -190,7 +196,7 @@ class NoPlanWorkoutExpandableListAdapter(
                     defaultWorkoutValue,
                     defaultWorkoutValue,
                     IntensityIndex.RPE,
-                    defaultWorkoutValue,
+                    defaultPaceValue,
                     "",
                     false
                 ), seriesList
@@ -284,6 +290,64 @@ class NoPlanWorkoutExpandableListAdapter(
         } catch (exception: Exception) {
             exception.printStackTrace()
         }
+    }
+
+    fun getNoPlanWorkoutGroup(): ArrayList<WorkoutExercise> {
+        val workout = ArrayList<WorkoutExercise>()
+        for (i: Int in 0 until groupCount) {
+            val noPlanWorkoutExpandableTitleLayout =
+                getGroupView(i, true, null, null) as NoPlanWorkoutExpandableTitleLayout?
+            val workoutExerciseDraft = noPlanWorkoutExpandableTitleLayout?.getWorkoutExerciseDraft()
+            val workoutExpandableLayout =
+                getChildView(
+                    i,
+                    getChildrenCount(i) - 1,
+                    true,
+                    null,
+                    null
+                ) as NoPlanWorkoutExpandableLayout?
+            val noPlanWorkoutSeriesDraft = workoutExpandableLayout?.getWorkoutSeriesDraft()
+            val note = workoutExpandableLayout?.getNote()
+            if (workoutExerciseDraft != null && noPlanWorkoutSeriesDraft != null) {
+                val exerciseDraft = ExerciseDraft(
+                    (i + 1).toLong(),
+                    workoutExerciseDraft.exerciseName,
+                    workoutExerciseDraft.pause,
+                    workoutExerciseDraft.pauseUnit,
+                    "0",
+                    noPlanWorkoutSeriesDraft.loadUnit,
+                    workoutExerciseDraft.series,
+                    workoutExerciseDraft.reps,
+                    workoutExerciseDraft.intensity,
+                    workoutExerciseDraft.intensityIndex,
+                    workoutExerciseDraft.pace,
+                    true
+                )
+                val exercise: Exercise? = try {
+                    exerciseDraft.toExercise()
+                } catch (exception: ValidationException) {
+                    null
+                }
+                if (exercise != null) {
+                    workout.add(WorkoutExercise(exercise, i + 1, note))
+                }
+            }
+        }
+        return workout
+    }
+
+    fun getNoPlanWorkoutSeries(exerciseIndex: Int): ArrayList<WorkoutSeries> {
+        val series = ArrayList<WorkoutSeries>()
+        for (i: Int in 0 until getChildrenCount(exerciseIndex)) {
+            val noPlanWorkoutExpandableLayout =
+                getChildView(exerciseIndex, i, false, null, null) as NoPlanWorkoutExpandableLayout?
+            val workoutSeries: WorkoutSeries? =
+                noPlanWorkoutExpandableLayout?.getWorkoutSeriesDraft()?.toWorkoutSeries(i + 1)
+            if (workoutSeries != null) {
+                series.add(workoutSeries)
+            }
+        }
+        return series
     }
 
     override fun hasStableIds(): Boolean {

@@ -30,13 +30,9 @@ open class WorkoutExpandableListAdapter(
     private val context: Context,
     private val workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>,
     private var workoutHints: List<WorkoutHints>,
-    private var expandableList: ExpandableListView?
+    private var expandableList: ExpandableListView?,
+    private val planName: String?
 ) : BaseExpandableListAdapter() {
-
-    constructor(
-        context: Context,
-        workout: List<Pair<WorkoutExerciseDraft, List<WorkoutSeriesDraft>>>
-    ) : this(context, workout, emptyList(), null)
 
     private val workoutSession = ArrayList<Pair<Int, List<WorkoutSessionSet>>>()
 
@@ -205,7 +201,7 @@ open class WorkoutExpandableListAdapter(
         }
         val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val workoutExpandableTitleLayout = view as WorkoutExpandableTitleLayout?
-        workoutExpandableTitleLayout?.setExerciseAttributes(exercise)
+        workoutExpandableTitleLayout?.setExerciseAttributes(exercise, planName)
 
 
         view?.setOnClickListener {
