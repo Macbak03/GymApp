@@ -13,6 +13,7 @@ import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
@@ -20,12 +21,14 @@ import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.pl.Maciejbak.R
 import com.pl.Maciejbak.activity.HistoryDetailsActivity
+import com.pl.Maciejbak.activity.NoPlanWorkoutActivity
 import com.pl.Maciejbak.activity.TrainingPlanActivity
 import com.pl.Maciejbak.activity.WorkoutActivity
 import com.pl.Maciejbak.adapter.SpinnerArrayAdapter
 import com.pl.Maciejbak.adapter.ViewPagerAdapter
 import com.pl.Maciejbak.animation.FragmentAnimator
 import com.pl.Maciejbak.databinding.FragmentHomeBinding
+import com.pl.Maciejbak.exception.ValidationException
 import com.pl.Maciejbak.layout.DynamicSizeSpinner
 import com.pl.Maciejbak.model.trainingPlans.TrainingPlan
 import com.pl.Maciejbak.model.workout.CustomDate
@@ -34,6 +37,7 @@ import com.pl.Maciejbak.persistence.RoutinesDataBaseHelper
 import com.pl.Maciejbak.persistence.WorkoutHistoryDatabaseHelper
 import com.pl.Maciejbak.viewModel.ActivityResultData
 import com.pl.Maciejbak.viewModel.SharedViewModel
+import kotlin.math.exp
 
 
 class HomeFragment : Fragment(), FragmentAnimator {
@@ -45,10 +49,11 @@ class HomeFragment : Fragment(), FragmentAnimator {
     private var trainingPlansNames: MutableList<TrainingPlan> = ArrayList()
     private lateinit var spinner: DynamicSizeSpinner
     private lateinit var buttonReturn: Button
-    private val SPINNER_PREF_KEY = "selectedSpinnerItem"
+
 
     private var isUnsaved = false
     private var routineNameResult: String? = null
+    private var isNewWorkoutStartedWithoutCancel = false
 
 
     companion object {
@@ -57,6 +62,12 @@ class HomeFragment : Fragment(), FragmentAnimator {
         const val FORMATTED_DATE = "com.pl.Maciejbak.formatteddate"
         const val RAW_DATE = "com.pl.Maciejbak.rawdate"
         const val IS_UNSAVED = "com.pl.Maciejbak.isunsaved"
+        const val IS_NEW_WORKOUT_STARTED_WITHOUT_CANCEL = "com.pl.Maciejbak.newworkoutnocancel"
+
+        const val NO_TRAINING_PLAN_OPTION = "No training plan"
+
+        private const val SELECTED_SPINNER_ITEM_ID = "com.pl.Maciejbak.selectedSpinnerItem"
+        private const val IS_WORKOUT_UNSAVED_ID = "com.pl.Maciejbak.isWorkoutUnsaved"
     }
 
     private val startWorkoutActivityForResult =
@@ -87,19 +98,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
 
         plansDataBase = PlansDataBaseHelper(requireContext(), null)
-        val trainingPlanNamesString = plansDataBase.getColumn(
-            PlansDataBaseHelper.TABLE_NAME,
-            PlansDataBaseHelper.PLAN_NAME_COLUMN,
-            PlansDataBaseHelper.PLAN_ID_COLUMN
-        )
-        trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
-        if (!plansDataBase.isTableNotEmpty()) {
-            val noneTrainingPlanFound = "Create your first plan"
-            binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFound
-            spinner.visibility = View.GONE
-        } else {
-            spinner.visibility = View.VISIBLE
-        }
+
+        initSpinnerData()
         initSpinner()
 
         buttonReturn = binding.buttonReturnToWorkout
@@ -124,59 +124,37 @@ class HomeFragment : Fragment(), FragmentAnimator {
         }
 
 
-
         val routinesDataBase = RoutinesDataBaseHelper(requireContext(), null)
         binding.buttonStartWorkout.setOnClickListener {
-            if (!plansDataBase.isTableNotEmpty()) {
-                openTrainingPlansFragment()
-            } else if (spinner.selectedItem != null) {
-                val planName = spinner.selectedItem.toString()
-                val planId = plansDataBase.getPlanId(planName)
-                if (planId != null && !routinesDataBase.isPlanNotEmpty(planId.toString())) {
-                    openRoutinesActivity(planName)
-                } else {
-                    if (isUnsaved) {
-                        showWarningDialog()
-                    } else {
-                        openStartWorkoutMenuFragment()
-                    }
-
-                }
+            try {
+                checkSpinnerSelection(routinesDataBase)
+            } catch (validationException: ValidationException) {
+                Toast.makeText(requireContext(), validationException.message, Toast.LENGTH_SHORT)
+                    .show()
             }
         }
         binding.buttonReturnToWorkout.setOnClickListener {
-            val explicitIntent = Intent(context, WorkoutActivity::class.java)
-            val planName = spinner.selectedItem.toString()
-            explicitIntent.putExtra(IS_UNSAVED, isUnsaved)
-            explicitIntent.putExtra(PLAN_NAME, planName)
-            explicitIntent.putExtra(ROUTINE_NAME, routineNameResult)
-            startWorkoutActivityForResult.launch(explicitIntent)
+            if (isNoPlanOptionSelected()) {
+                startWorkout(Intent(context, NoPlanWorkoutActivity::class.java))
+            } else {
+                startWorkout(Intent(context, WorkoutActivity::class.java))
+            }
         }
     }
 
     override fun onResume() {
         super.onResume()
         buttonReturn.setReturnButtonColor()
+        isNewWorkoutStartedWithoutCancel = false
         setLastTraining()
-        val trainingPlanNamesString = plansDataBase.getColumn(
-            PlansDataBaseHelper.TABLE_NAME,
-            PlansDataBaseHelper.PLAN_NAME_COLUMN,
-            PlansDataBaseHelper.PLAN_ID_COLUMN
-        )
-        val textView = binding.textViewCurrentTrainingPlan
-        trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
+        initSpinnerData()
         if (!plansDataBase.isTableNotEmpty()) {
-            val noneTrainingPlanFound = "Create your first plan"
-
-            textView.text = noneTrainingPlanFound
-            spinner.visibility = View.GONE
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE
             isUnsaved = false
         } else {
             val planFound = "Current plan:"
-            textView.text = planFound
-            spinner.visibility = View.VISIBLE
+            binding.textViewCurrentTrainingPlan.text = planFound
         }
         initSpinner()
     }
@@ -186,14 +164,47 @@ class HomeFragment : Fragment(), FragmentAnimator {
         _binding = null
     }
 
-    private fun checkOnWorkoutTerminatePreferences(){
-        if(!routineNameResult.isNullOrBlank())
-        {
+    private fun isNoPlanOptionSelected(): Boolean {
+        return spinner.selectedItem.toString() == NO_TRAINING_PLAN_OPTION
+    }
+
+    private fun checkSpinnerSelection(routinesDataBase: RoutinesDataBaseHelper) {
+        if (spinner.selectedItem == null) {
+            throw ValidationException("No training plan selected")
+        }
+        if (!isNoPlanOptionSelected()) {
+            val planName = spinner.selectedItem.toString()
+            val planId = plansDataBase.getPlanId(planName)
+            if (planId != null && !routinesDataBase.isPlanNotEmpty(planId.toString())) {
+                openRoutinesActivity(planName)
+            } else {
+                handleNewWorkoutBasedOnSavedStatus()
+            }
+        } else {
+            handleNewWorkoutBasedOnSavedStatus()
+        }
+    }
+
+    private fun handleNewWorkoutBasedOnSavedStatus() {
+        if (isUnsaved) {
+            showWarningDialog()
+        } else {
+            if (isNoPlanOptionSelected()) {
+                startWorkout(Intent(context, NoPlanWorkoutActivity::class.java))
+            } else {
+                openStartWorkoutMenuFragment()
+            }
+        }
+    }
+
+
+    private fun checkOnWorkoutTerminatePreferences() {
+        if (!routineNameResult.isNullOrBlank()) {
             isUnsaved = true
         }
     }
 
-    private fun View.setReturnButtonColor(){
+    private fun View.setReturnButtonColor() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
         when (sharedPreferences.getString("theme", "")) {
             "Default" -> setBackgroundResource(R.drawable.clicked_default_button)
@@ -203,7 +214,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         }
     }
 
-    private fun getSavedRoutineName(){
+    private fun getSavedRoutineName() {
         val prefs = activity?.getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
         routineNameResult = prefs?.getString("ROUTINE_NAME", "")
     }
@@ -224,9 +235,23 @@ class HomeFragment : Fragment(), FragmentAnimator {
         }
     }
 
+    private fun initSpinnerData() {
+        val trainingPlanNamesString = plansDataBase.getColumn(
+            PlansDataBaseHelper.TABLE_NAME,
+            PlansDataBaseHelper.PLAN_NAME_COLUMN,
+            PlansDataBaseHelper.PLAN_ID_COLUMN
+        )
+        trainingPlanNamesString.add(0, NO_TRAINING_PLAN_OPTION)
+        trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
+        if (!plansDataBase.isTableNotEmpty()) {
+            val noneTrainingPlanFoundMessage = "Create your first plan"
+            binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFoundMessage
+        }
+    }
+
     private fun initSpinner() {
-        val adapter = SpinnerArrayAdapter(requireContext(), R.layout.spinner_header, trainingPlansNames)
-        //adapter.setDropDownViewResource(R.layout.spinner_item)
+        val adapter =
+            SpinnerArrayAdapter(requireContext(), R.layout.spinner_header, trainingPlansNames)
         spinner.adapter = adapter
 
         val savedSelection = loadSpinnerSelection()
@@ -251,7 +276,6 @@ class HomeFragment : Fragment(), FragmentAnimator {
                         saveSpinnerSelection(item.toString())
                     }
                 }
-
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
@@ -260,20 +284,20 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
     private fun saveSpinnerSelection(selectedItem: String) {
         val sharedPreferences =
-            requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            requireActivity().getPreferences(Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putString(SPINNER_PREF_KEY, selectedItem)
+        editor.putString(SELECTED_SPINNER_ITEM_ID, selectedItem)
         editor.apply()
     }
 
     private fun loadSpinnerSelection(): String {
         val sharedPreferences =
-            requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        return sharedPreferences.getString(SPINNER_PREF_KEY, "") ?: ""
+            requireActivity().getPreferences(Context.MODE_PRIVATE)
+        return sharedPreferences.getString(SELECTED_SPINNER_ITEM_ID, NO_TRAINING_PLAN_OPTION)
+            ?: NO_TRAINING_PLAN_OPTION
     }
 
     private fun openTrainingPlansFragment() {
-
         val viewPager = requireActivity().findViewById<ViewPager2>(R.id.viewPager)
         val adapter = ViewPagerAdapter(requireActivity())
         viewPager.adapter = adapter
@@ -284,6 +308,16 @@ class HomeFragment : Fragment(), FragmentAnimator {
         val explicitIntent = Intent(context, TrainingPlanActivity::class.java)
         explicitIntent.putExtra(TrainingPlansFragment.NEXT_SCREEN, planName)
         startActivity(explicitIntent)
+    }
+
+    private fun startWorkout(explicitIntent: Intent) {
+        val planName = spinner.selectedItem.toString()
+        explicitIntent.putExtra(IS_UNSAVED, isUnsaved)
+        explicitIntent.putExtra(PLAN_NAME, planName)
+        explicitIntent.putExtra(ROUTINE_NAME, routineNameResult)
+        explicitIntent.putExtra(RAW_DATE, CustomDate().getDate())
+        explicitIntent.putExtra(IS_NEW_WORKOUT_STARTED_WITHOUT_CANCEL, isNewWorkoutStartedWithoutCancel)
+        startWorkoutActivityForResult.launch(explicitIntent)
     }
 
     private fun setLastTraining() {
@@ -319,9 +353,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
 
-        val keyBool = "is_unsaved"
-
-        editor.putBoolean(keyBool, boolValue)
+        editor.putBoolean(IS_WORKOUT_UNSAVED_ID, boolValue)
 
         editor.apply()
     }
@@ -329,9 +361,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
     private fun loadResult() {
         val sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
 
-        val keyBool = "is_unsaved"
-
-        isUnsaved = sharedPreferences.getBoolean(keyBool, false)
+        isUnsaved = sharedPreferences.getBoolean(IS_WORKOUT_UNSAVED_ID, false)
     }
 
     private fun observeViewModel() {
@@ -357,7 +387,12 @@ class HomeFragment : Fragment(), FragmentAnimator {
         with(builder) {
             this?.setTitle(" ")
             this?.setPositiveButton("Yes") { _, _ ->
-                openStartWorkoutMenuFragment()
+                if (isNoPlanOptionSelected()) {
+                    isNewWorkoutStartedWithoutCancel = true
+                    startWorkout(Intent(context, NoPlanWorkoutActivity::class.java))
+                } else {
+                    openStartWorkoutMenuFragment()
+                }
             }
             this?.setNegativeButton("No") { _, _ -> }
             this?.setView(dialogLayout)

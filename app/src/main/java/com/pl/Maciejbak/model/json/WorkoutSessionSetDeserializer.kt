@@ -1,4 +1,4 @@
-package com.pl.Maciejbak.model
+package com.pl.Maciejbak.model.json
 
 import com.pl.Maciejbak.model.workout.WorkoutSessionSet
 import com.google.gson.JsonDeserializationContext

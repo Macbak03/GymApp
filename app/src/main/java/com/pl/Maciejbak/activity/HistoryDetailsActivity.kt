@@ -45,7 +45,7 @@ class HistoryDetailsActivity : BaseActivity() {
         }
 
         expandableListView = binding.expandableListViewHistoryDetails
-        workoutExpandableListAdapter = WorkoutHistoryExpandableListAdapter(this, workout)
+        workoutExpandableListAdapter = WorkoutHistoryExpandableListAdapter(this, workout, planName)
         expandableListView.setAdapter(workoutExpandableListAdapter)
 
         binding.goBackButton.setOnClickListener {
