@@ -32,4 +32,128 @@
         <item>RPE</item>
         <item>RIR</item>
     </string-array>
+
+    <string-array name="exercises_base">
+        <item>Bench press</item>
+        <item>Dumbbell bench press</item>
+        <item>Decline bench press</item>
+        <item>Decline dumbbell bench press</item>
+        <item>Incline bench press</item>
+        <item>Incline dumbbell bench press</item>
+        <item>Close grip bench press</item>
+        <item>Dumbbell flys</item>
+        <item>Incline dumbbell flys</item>
+        <item>Decline dumbbell flys</item>
+        <item>Benched cable flys</item>
+        <item>Pec deck butterfly</item>
+        <item>Smith machine bench press</item>
+        <item>Smith machine incline bench press</item>
+        <item>Smith machine OHP</item>
+        <item>Smith machine seated OHP</item>
+        <item>Cable crossovers (from top to bottom)</item>
+        <item>Cable crossovers (from bottom to top)</item>
+        <item>Pull ups</item>
+        <item>Chin ups</item>
+        <item>Barbell row</item>
+        <item>One arm dumbbell row</item>
+        <item>Bent over row</item>
+        <item>Cable pullovers</item>
+        <item>Dumbbell pullovers</item>
+        <item>Lat pull down</item>
+        <item>Face pull</item>
+        <item>Deadlift</item>
+        <item>Deadlift sumo</item>
+        <item>Rumanian deadlift</item>
+        <item>Stiff leg deadlift</item>
+        <item>Hammer strength row</item>
+        <item>Overhead press</item>
+        <item>Dumbbell overhead press</item>
+        <item>Dumbbell lateral raises</item>
+        <item>Dumbbell front raises</item>
+        <item>Bent over dumbbell lateral raises</item>
+        <item>Arnold press</item>
+        <item>Cable reverse fly</item>
+        <item>Rear delt machine</item>
+        <item>Cable lateral raises</item>
+        <item>Barbell squat</item>
+        <item>Barbell front squat</item>
+        <item>Bulgarian squat</item>
+        <item>Lunges</item>
+        <item>Barbell lunges</item>
+        <item>Dumbbell lunges</item>
+        <item>Leg press</item>
+        <item>Smith machine squat</item>
+        <item>Cyclist squat</item>
+        <item>Hack squat</item>
+        <item>Pendulum squat</item>
+        <item>Single leg deadlift</item>
+        <item>Standing calf raises</item>
+        <item>Seated calf raises</item>
+        <item>Dumbbell calf raises</item>
+        <item>Barbell calf raises</item>
+        <item>Seated leg curls</item>
+        <item>Lying leg curls</item>
+        <item>Spider curls</item>
+        <item>Leg extensions</item>
+        <item>Sit-ups</item>
+        <item>Plank</item>
+        <item>Russian twists</item>
+        <item>Mountain climbers</item>
+        <item>Leg raises</item>
+        <item>Flutter kicks</item>
+        <item>Bicycle crunches</item>
+        <item>Press ups</item>
+        <item>Dips</item>
+        <item>Barbell scull crushers</item>
+        <item>Dumbbell scull crushers</item>
+        <item>V-bar push-downs</item>
+        <item>Katana extensions</item>
+        <item>Rope triceps extensions</item>
+        <item>Triceps extensions</item>
+        <item>Barbell curl</item>
+        <item>Dumbbell curl</item>
+        <item>Hammer curl</item>
+        <item>Machine preacher curl</item>
+        <item>One arm dumbbell preacher curl</item>
+        <item>EZ bar preacher curl</item>
+        <item>Incline dumbbell curl</item>
+        <item>Cable curl</item>
+        <item>V-bar cable curl</item>
+        <item>Reverse grip barbell curl</item>
+        <item>Dragon flag</item>
+        <item>Superman</item>
+        <item>L-sit</item>
+        <item>Hanging leg raises</item>
+        <item>Glute bridge</item>
+        <item>Hip thrust</item>
+        <item>Scapular pull ups</item>
+        <item>Shrugs</item>
+        <item>Farmer\'s walks</item>
+        <item>Battle ropes</item>
+        <item>Turkish get-up</item>
+        <item>Kettlebell swing</item>
+        <item>Renegade rows</item>
+        <item>Pallof press</item>
+        <item>Cable woodchopper</item>
+        <item>V-ups</item>
+        <item>Toe touches</item>
+        <item>Crunches</item>
+        <item>Reverse crunches</item>
+        <item>Scissor kicks</item>
+        <item>Cable crunches</item>
+        <item>Ab rollout</item>
+        <item>Hollow body hold</item>
+        <item>Dumbbell side bends</item>
+        <item>Knee tucks</item>
+        <item>Windshield wipers</item>
+        <item>Dead bug</item>
+        <item>Bird-dog</item>
+        <item>Hanging knee raises</item>
+        <item>Jackknife sit-ups</item>
+        <item>Stability ball pikes</item>
+        <item>Standing oblique crunches</item>
+        <item>Standing cable twists</item>
+        <item>Medicine ball slams</item>
+        <item>Medicine ball sit-ups</item>
+    </string-array>
 </resources>

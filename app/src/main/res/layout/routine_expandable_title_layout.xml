@@ -17,7 +17,7 @@
         android:background="@drawable/baseline_expand_more_24"
         android:rotation="-90" />
 
-    <EditText
+    <AutoCompleteTextView
         android:id="@+id/editTextExerciseName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -27,7 +27,12 @@
         android:hint="Exercise name"
         android:textSize="22sp"
         android:textStyle="bold"
-        android:singleLine="true"/>
+        android:singleLine="true"
+        android:overScrollMode="ifContentScrolls"
+        android:scrollHorizontally="true"
+        android:scrollbarStyle="insideOverlay"
+        android:scrollbars="horizontal"
+        android:maxLines="1"/>
 
     <FrameLayout
         android:id="@+id/imageButtonMove"

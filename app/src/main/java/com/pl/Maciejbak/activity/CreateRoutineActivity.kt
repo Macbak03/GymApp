@@ -9,8 +9,10 @@ import android.view.MotionEvent
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -139,11 +141,8 @@ class CreateRoutineActivity : BaseActivity() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-
-            goBackToTrainingPlanActivity()
-
+            showWarningDialog()
             isEnabled = false
-            onBackPressedDispatcher.onBackPressed()
         }
     }
 
@@ -295,6 +294,24 @@ class CreateRoutineActivity : BaseActivity() {
             } catch (exception: ValidationException) {
                 Toast.makeText(this, exception.message, Toast.LENGTH_LONG).show()
             }
+        }
+    }
+
+    private fun showWarningDialog(){
+        val builder = this.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
+        val dialogLayout = layoutInflater.inflate(R.layout.text_view_dialog_layout, null)
+        val textView = dialogLayout.findViewById<TextView>(R.id.textViewDialog)
+        val message = "Are you sure you want to go back? Created routine won't be saved."
+        textView.text = message
+        with(builder) {
+            this.setTitle("\n")
+            this.setPositiveButton("Yes") { _, _ ->
+                goBackToTrainingPlanActivity()
+                onBackPressedDispatcher.onBackPressed()
+            }
+            this.setNegativeButton("No") { _, _ -> }
+            this.setView(dialogLayout)
+            this.show()
         }
     }
 
