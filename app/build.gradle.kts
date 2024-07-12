@@ -12,8 +12,8 @@ android {
     defaultConfig {
         applicationId = "pl.Maciejbak"
         minSdk = 26
-        targetSdk = 33
-        versionCode = 3
+        targetSdk = 34
+        versionCode = 5
         versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
