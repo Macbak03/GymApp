@@ -54,7 +54,7 @@ class EditWorkoutHistoryExpandableListAdapter(
 
 
     override fun getChildrenCount(listPosition: Int): Int {
-        return workout[listPosition].first.series?.toInt() ?: 0
+        return workout[listPosition].second.size
     }
 
     override fun getGroup(listPosition: Int): Any {
