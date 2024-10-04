@@ -52,7 +52,7 @@ class EditHistoryActivity : BaseActivity() {
 
         expandableListView = binding.expandableListViewEditHistory
         editWorkoutHistoryExpandableListAdapter =
-            EditWorkoutHistoryExpandableListAdapter(this, workout)
+            EditWorkoutHistoryExpandableListAdapter(this, workout, planName)
         expandableListView.setAdapter(editWorkoutHistoryExpandableListAdapter)
 
         loadWorkoutHistoryDetails()

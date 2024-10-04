@@ -1,9 +1,9 @@
 package com.example.gymapp.model
 
-import com.example.gymapp.exception.ValidationException
+import com.pl.Maciejbak.exception.ValidationException
 
-import com.example.gymapp.model.routine.Weight
-import com.example.gymapp.model.routine.WeightUnit
+import com.pl.Maciejbak.model.routine.Weight
+import com.pl.Maciejbak.model.routine.WeightUnit
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
@@ -17,7 +17,7 @@ class WeightUnitTest {
         val weightString = "75"
         val unit = WeightUnit.kg
 
-        val weight = Weight.fromStringWithUnit(weightString, unit)
+        val weight = Weight.fromStringWithUnit(weightString, unit, 0)
 
         assertEquals(weight.weight, 75f)
         assertEquals(weight.unit, unit)
@@ -29,7 +29,7 @@ class WeightUnitTest {
         val unit = WeightUnit.kg
 
         val exception = assertThrows(ValidationException::class.java) {
-            Weight.fromStringWithUnit(weightString, unit)
+            Weight.fromStringWithUnit(weightString, unit, 0)
         }
         assertEquals("weight cannot be negative", exception.message)
     }
@@ -40,7 +40,7 @@ class WeightUnitTest {
         val unit = WeightUnit.kg
 
         val exception = assertThrows(ValidationException::class.java) {
-            Weight.fromStringWithUnit(weightString, unit)
+            Weight.fromStringWithUnit(weightString, unit, 0)
         }
         assertEquals("weight cannot be empty", exception.message)
     }
@@ -51,7 +51,7 @@ class WeightUnitTest {
         val unit = WeightUnit.kg
 
         val exception = assertThrows(ValidationException::class.java) {
-            Weight.fromStringWithUnit(weightString, unit)
+            Weight.fromStringWithUnit(weightString, unit, 0)
         }
         assertEquals("weight must be a number", exception.message)
     }
