@@ -169,7 +169,7 @@ class NoPlanWorkoutExpandableListAdapter(
         }
         val exercise = getGroup(listPosition) as WorkoutExerciseDraft
         val noPlanWorkoutExpandableTitleLayout = view as NoPlanWorkoutExpandableTitleLayout?
-        noPlanWorkoutExpandableTitleLayout?.setExerciseAttributes(exercise)
+        noPlanWorkoutExpandableTitleLayout?.setExerciseName(exercise)
 
         val addExerciseButton = noPlanWorkoutExpandableTitleLayout?.getAddExerciseButton()
         addExerciseButton?.visibility =
