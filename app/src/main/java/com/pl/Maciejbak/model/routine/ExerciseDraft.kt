@@ -23,7 +23,7 @@ data class ExerciseDraft (
         val name = name
         if(name.isNullOrBlank())
         {
-            throw ValidationException("name cannot be empty", R.id.editTextExerciseName)
+            throw ValidationException("exercise name cannot be empty", R.id.editTextExerciseName)
 
         }
         val pauseDuration = Pause.fromString(pause, pauseUnit, R.id.editTextPause)

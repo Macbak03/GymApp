@@ -2,6 +2,7 @@ package com.pl.Maciejbak.activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -40,6 +41,8 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
     private val defaultWorkoutValue = "0"
     private val defaultPaceValue = "0000"
 
+    private lateinit var prefs: SharedPreferences
+
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             noPlanWorkoutExpandableListAdapter.saveNoPlanSessionToFile()
@@ -47,9 +50,9 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
             val resultIntent = Intent()
             val currentWorkoutName = binding.editTextWorkoutName.text
             resultIntent.putExtra(HomeFragment.ROUTINE_NAME, currentWorkoutName.toString())
-            val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
-            prefs.edit().putString("ROUTINE_NAME", currentWorkoutName.toString())
+            prefs.edit().putString(HomeFragment.ROUTINE_NAME, currentWorkoutName.toString())
                 .apply()
+            prefs.edit().putString(HomeFragment.PLAN_NAME, planName).apply()
             setResult(RESULT_CANCELED, resultIntent)
             isEnabled = false
             onBackPressedDispatcher.onBackPressed()
@@ -62,7 +65,7 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNoPlanWorkoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
         loadWorkout()
 
         planName = HomeFragment.NO_TRAINING_PLAN_OPTION
@@ -111,12 +114,12 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
 
     override fun onStop() {
         super.onStop()
-        val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
         if (isCorrectlyClosed) {
             prefs.edit().clear().apply()
         } else if (isTerminated) {
-            prefs.edit().putString("ROUTINE_NAME", binding.editTextWorkoutName.text.toString())
+            prefs.edit().putString(HomeFragment.ROUTINE_NAME, binding.editTextWorkoutName.text.toString())
                 .apply()
+            prefs.edit().putString(HomeFragment.PLAN_NAME, planName).apply()
             noPlanWorkoutExpandableListAdapter.saveNoPlanSessionToFile()
         }
     }
@@ -145,13 +148,13 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
         if (isUnsaved && !isNewWorkoutWithoutCancel) {
             workout.clear()
             restoreFromFile()
-            val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
-            routineName = prefs.getString("ROUTINE_NAME", "")
+            routineName = prefs.getString(HomeFragment.ROUTINE_NAME, "")
             binding.editTextWorkoutName.setText(routineName)
         }
     }
 
     private fun restoreFromFile() {
+        planName = prefs.getString(HomeFragment.PLAN_NAME, "")
         try {
             val file = File(applicationContext.filesDir, "workout_session.json")
             val jsonContent = file.readText()
@@ -202,7 +205,7 @@ class NoPlanWorkoutActivity : WorkoutBaseActivity() {
     }
 
     private fun saveWorkoutToHistory(date: String) {
-        if (routineName != null && planName != null) {
+        if (planName != null) {
             val planName = this.planName
             val routineName = this.routineName
             if (routineName.isNullOrBlank()){

@@ -48,8 +48,9 @@ class WorkoutActivity : WorkoutBaseActivity() {
             val currentWorkoutName = binding.textViewCurrentWorkout.text
             resultIntent.putExtra(HomeFragment.ROUTINE_NAME, currentWorkoutName)
             val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
-            prefs.edit().putString("ROUTINE_NAME", currentWorkoutName.toString())
+            prefs.edit().putString(HomeFragment.ROUTINE_NAME, currentWorkoutName.toString())
                 .apply()
+            prefs.edit().putString(HomeFragment.PLAN_NAME, planName).apply()
             setResult(RESULT_CANCELED, resultIntent)
             isEnabled = false
             onBackPressedDispatcher.onBackPressed()
@@ -115,8 +116,9 @@ class WorkoutActivity : WorkoutBaseActivity() {
         if (isCorrectlyClosed) {
             prefs.edit().clear().apply()
         } else if (isTerminated) {
-            prefs.edit().putString("ROUTINE_NAME", binding.textViewCurrentWorkout.text.toString())
+            prefs.edit().putString(HomeFragment.ROUTINE_NAME, binding.textViewCurrentWorkout.text.toString())
                 .apply()
+            prefs.edit().putString(HomeFragment.PLAN_NAME, planName).apply()
             workoutExpandableListAdapter.saveSessionToFile()
         }
     }
@@ -211,6 +213,8 @@ class WorkoutActivity : WorkoutBaseActivity() {
     }
 
     private fun restoreFromFile() {
+        val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
+        planName = prefs.getString(HomeFragment.PLAN_NAME, "")
         try {
             val file = File(applicationContext.filesDir, "workout_session.json")
             val jsonContent = file.readText()

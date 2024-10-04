@@ -233,7 +233,6 @@ class WorkoutHistoryDatabaseHelper(
                 val id = getLastID()
                 if (id != null) {
                     addSeries(series, id)
-
                 }
             }
         }

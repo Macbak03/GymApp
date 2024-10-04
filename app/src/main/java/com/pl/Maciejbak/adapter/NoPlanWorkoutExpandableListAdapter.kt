@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.EditText
 import android.widget.ExpandableListView
+import android.widget.Toast
 import com.google.gson.Gson
 import com.pl.Maciejbak.R
 import com.pl.Maciejbak.exception.ValidationException
@@ -370,6 +371,7 @@ class NoPlanWorkoutExpandableListAdapter(
                 val exercise: Exercise? = try {
                     exerciseDraft.toExercise()
                 } catch (exception: ValidationException) {
+                    Toast.makeText(context, exception.message, Toast.LENGTH_SHORT).show()
                     null
                 }
                 if (exercise != null) {

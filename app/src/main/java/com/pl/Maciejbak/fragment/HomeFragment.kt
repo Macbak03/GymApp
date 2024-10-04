@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity.RESULT_CANCELED
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -55,6 +56,9 @@ class HomeFragment : Fragment(), FragmentAnimator {
     private var routineNameResult: String? = null
     private var isNewWorkoutStartedWithoutCancel = false
 
+    private var prefs: SharedPreferences? = null
+    private var savedPlanName: String? = null
+
 
     companion object {
         const val PLAN_NAME = "com.pl.Maciejbak.planname"
@@ -86,6 +90,8 @@ class HomeFragment : Fragment(), FragmentAnimator {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentHomeBinding.inflate(layoutInflater, container, false)
+        prefs = activity?.getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
+        savedPlanName = prefs?.getString(PLAN_NAME, "")
         return binding.root
     }
 
@@ -133,8 +139,9 @@ class HomeFragment : Fragment(), FragmentAnimator {
                     .show()
             }
         }
+
         binding.buttonReturnToWorkout.setOnClickListener {
-            if (isNoPlanOptionSelected()) {
+            if (isNoPlanOptionSelected() && savedPlanName == NO_TRAINING_PLAN_OPTION) {
                 startWorkout(Intent(context, NoPlanWorkoutActivity::class.java))
             } else {
                 startWorkout(Intent(context, WorkoutActivity::class.java))
@@ -148,7 +155,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
         isNewWorkoutStartedWithoutCancel = false
         setLastTraining()
         initSpinnerData()
-        if (!plansDataBase.isTableNotEmpty()) {
+        if (!plansDataBase.isTableNotEmpty() && savedPlanName != NO_TRAINING_PLAN_OPTION) {
             spinner.isEnabled = true
             buttonReturn.visibility = View.GONE
             isUnsaved = false
@@ -243,10 +250,6 @@ class HomeFragment : Fragment(), FragmentAnimator {
         )
         trainingPlanNamesString.add(0, NO_TRAINING_PLAN_OPTION)
         trainingPlansNames = plansDataBase.convertList(trainingPlanNamesString) { TrainingPlan(it) }
-        if (!plansDataBase.isTableNotEmpty()) {
-            val noneTrainingPlanFoundMessage = "Create your first plan"
-            binding.textViewCurrentTrainingPlan.text = noneTrainingPlanFoundMessage
-        }
     }
 
     private fun initSpinner() {
