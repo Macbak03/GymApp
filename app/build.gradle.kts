@@ -13,8 +13,8 @@ android {
         applicationId = "pl.Maciejbak"
         minSdk = 26
         targetSdk = 34
-        versionCode = 5
-        versionName = "1.1"
+        versionCode = 7
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -105,6 +105,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-exoplayer-dash:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
+    implementation("org.apache.commons:commons-csv:1.8")
 
 
     implementation("com.google.android.material:material:1.12.0-alpha03")
