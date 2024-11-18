@@ -2,6 +2,7 @@ package com.pl.Maciejbak.activity
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Rect
 import android.os.Bundle
 import android.view.MotionEvent
@@ -40,6 +41,8 @@ class WorkoutActivity : WorkoutBaseActivity() {
         ArrayList()
     private var workoutHints: MutableList<WorkoutHints> = ArrayList()
 
+    private lateinit var prefs: SharedPreferences
+
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             workoutExpandableListAdapter.saveSessionToFile()
@@ -47,7 +50,6 @@ class WorkoutActivity : WorkoutBaseActivity() {
             val resultIntent = Intent()
             val currentWorkoutName = binding.textViewCurrentWorkout.text
             resultIntent.putExtra(HomeFragment.ROUTINE_NAME, currentWorkoutName)
-            val prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
             prefs.edit().putString(HomeFragment.ROUTINE_NAME, currentWorkoutName.toString())
                 .apply()
             prefs.edit().putString(HomeFragment.PLAN_NAME, planName).apply()
@@ -62,6 +64,8 @@ class WorkoutActivity : WorkoutBaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWorkoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        prefs = getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
 
         if (intent.hasExtra(StartWorkoutMenuFragment.ROUTINE_NAME) && intent.hasExtra(
                 StartWorkoutMenuFragment.PLAN_NAME

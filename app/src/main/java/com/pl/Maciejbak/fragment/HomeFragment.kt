@@ -223,7 +223,7 @@ class HomeFragment : Fragment(), FragmentAnimator {
 
     private fun getSavedRoutineName() {
         val prefs = activity?.getSharedPreferences("TerminatePreferences", Context.MODE_PRIVATE)
-        routineNameResult = prefs?.getString("ROUTINE_NAME", "")
+        routineNameResult = prefs?.getString(ROUTINE_NAME, "")
     }
 
     private fun openStartWorkoutMenuFragment() {
