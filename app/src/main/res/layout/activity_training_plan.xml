@@ -80,4 +80,15 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.88" />
 
+    <!-- Nowy przycisk do ładowania pliku CSV -->
+    <Button
+        android:id="@+id/loadCsvButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Load CSV"
+        android:contentDescription="Load CSV"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="16dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,10 +3,13 @@ package com.pl.Maciejbak.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Canvas
+import android.net.Uri
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.animation.AnimationUtils
+import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -21,11 +24,13 @@ import com.pl.Maciejbak.model.trainingPlans.TrainingPlanElement
 import com.pl.Maciejbak.persistence.PlansDataBaseHelper
 import com.pl.Maciejbak.persistence.RoutinesDataBaseHelper
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import java.io.InputStream
 
 class TrainingPlanActivity : BaseActivity() {
     private lateinit var binding: ActivityTrainingPlanBinding
     private lateinit var recyclerView: RecyclerView
     private lateinit var trainingPlanRecyclerViewAdapter: TrainingPlanRecyclerViewAdapter
+    private lateinit var loadCsvButton: Button // Deklaracja przycisku
 
     private var planName: String? = null
     private var routines: MutableList<TrainingPlanElement> = ArrayList()
@@ -49,19 +54,6 @@ class TrainingPlanActivity : BaseActivity() {
             }
         }
 
-        /*Copyright {2024} {Maciej Bąk}
-
-        Licensed under the Apache License, Version 2.0 (the "License");
-        you may not use this file except in compliance with the License.
-        You may obtain a copy of the License at
-
-        http://www.apache.org/licenses/LICENSE-2.0
-
-        Unless required by applicable law or agreed to in writing, software
-        distributed under the License is distributed on an "AS IS" BASIS,
-        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-        See the License for the specific language governing permissions and
-        limitations under the License.*/
 
         override fun onChildDraw(
             c: Canvas,
@@ -100,7 +92,6 @@ class TrainingPlanActivity : BaseActivity() {
         }
     }
 
-
     companion object {
         const val PLAN_NAME = "com.pl.Maciejbak.planname"
         const val ROUTINE_NAME = "com.pl.Maciejbak.routinename"
@@ -114,6 +105,14 @@ class TrainingPlanActivity : BaseActivity() {
             }
         }
 
+    private val filePickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                result.data?.data?.let { uri ->
+                    loadExercisesFromCSV(uri) // Ładowanie ćwiczeń z wybranego pliku
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         loadTheme()
@@ -124,7 +123,6 @@ class TrainingPlanActivity : BaseActivity() {
         if (intent.hasExtra(TrainingPlansFragment.NEXT_SCREEN)) {
             binding.textViewTrainingPlanName.text =
                 intent.getStringExtra(TrainingPlansFragment.NEXT_SCREEN)
-
         }
         planName = binding.textViewTrainingPlanName.text.toString()
 
@@ -138,8 +136,7 @@ class TrainingPlanActivity : BaseActivity() {
 
         val scaleAnimation = AnimationUtils.loadAnimation(this, R.anim.add_button_animation)
 
-        binding.buttonAddRoutine.setOnClickListener()
-        {
+        binding.buttonAddRoutine.setOnClickListener {
             it.startAnimation(scaleAnimation)
             val explicitIntent = Intent(applicationContext, CreateRoutineActivity::class.java)
             explicitIntent.putExtra(PLAN_NAME, planName)
@@ -163,12 +160,18 @@ class TrainingPlanActivity : BaseActivity() {
         val itemTouchHelper = ItemTouchHelper(simpleCallback)
         itemTouchHelper.attachToRecyclerView(recyclerView)
 
+        // Inicjalizacja przycisku do ładowania CSV
+        loadCsvButton = findViewById(R.id.loadCsvButton)
+
+        // Ustawienie nasłuchiwacza na kliknięcie przycisku
+        loadCsvButton.setOnClickListener {
+            openFileChooser() // Uruchomienie wyboru pliku
+        }
+
         binding.goBackButton.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
     }
-
-
 
     @SuppressLint("NotifyDataSetChanged")
     private fun setRecyclerViewContent() {
@@ -185,7 +188,6 @@ class TrainingPlanActivity : BaseActivity() {
         }
     }
 
-
     private fun showDeleteDialog(position: Int) {
         val builder = this.let { AlertDialog.Builder(it, R.style.YourAlertDialogTheme) }
         val dialogLayout = layoutInflater.inflate(R.layout.text_view_dialog_layout, null)
@@ -196,8 +198,7 @@ class TrainingPlanActivity : BaseActivity() {
             this.setTitle("Are you sure you want to delete")
             this.setPositiveButton("Yes") { _, _ ->
                 val planId = plansDataBase.getPlanId(planName)
-                if(planId != null)
-                {
+                if (planId != null) {
                     trainingPlanRecyclerViewAdapter.deleteSingleRoutine(position)
                     routinesDataBase.deleteRoutines(planId, trainingPlanRecyclerViewAdapter.getDeletedRoutines())
                 }
@@ -210,4 +211,50 @@ class TrainingPlanActivity : BaseActivity() {
         }
     }
 
+    // Funkcja do otwierania okna wyboru pliku
+    private fun openFileChooser() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "*/*" // Akceptuj wszystkie typy plików
+            putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("text/csv", "text/comma-separated-values", "application/csv")) // Obsługuj różne rozszerzenia CSV
+            addCategory(Intent.CATEGORY_OPENABLE)
+        }
+        filePickerLauncher.launch(intent) // Uruchomienie selektora plików
+    }
+
+
+    private fun loadExercisesFromCSV(inputStream: InputStream): List<TrainingPlanElement> {
+        val exercises = mutableListOf<TrainingPlanElement>()
+        inputStream.bufferedReader().use { reader ->
+            val headerLine = reader.readLine() // Przeczytaj pierwszy wiersz
+            val routineNames = headerLine.split(",") // Rozdziel nazwy rutyn
+
+            // Dodaj wszystkie niepuste nazwy rutyn jako TrainingPlanElement
+            for (routineName in routineNames) {
+                val trimmedName = routineName.trim() // Usuń białe znaki
+                if (trimmedName.isNotEmpty()) { // Sprawdź, czy nazwa nie jest pusta
+                    exercises.add(TrainingPlanElement(trimmedName)) // Dodaj do listy
+                }
+            }
+
+            // Przeczytaj pozostałe wiersze, jeśli są potrzebne
+            reader.forEachLine { line ->
+                // Możesz dodać logikę do przetwarzania pozostałych wierszy, jeśli to konieczne
+            }
+        }
+        return exercises // Zwróć załadowane ćwiczenia
+    }
+
+
+
+    // Zaktualizowana funkcja do ładowania ćwiczeń z CSV
+    private fun loadExercisesFromCSV(uri: Uri) {
+        contentResolver.openInputStream(uri)?.use { inputStream ->
+            val exercises = loadExercisesFromCSV(inputStream) // Ładowanie ćwiczeń z pliku
+            Toast.makeText(this, "Loaded ${exercises.size} exercises", Toast.LENGTH_SHORT).show()
+            routines.addAll(exercises) // Dodaj nowe ćwiczenia do listy
+            trainingPlanRecyclerViewAdapter.notifyDataSetChanged() // Powiadom adapter o zmianach
+        } ?: run {
+            Toast.makeText(this, "Failed to open file", Toast.LENGTH_SHORT).show()
+        }
+    }
 }
