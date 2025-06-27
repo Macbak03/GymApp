@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import com.pl.Maciejbak.adapter.NoPlanWorkoutExpandableListAdapter
 import com.pl.Maciejbak.adapter.WorkoutExpandableListAdapter
 import com.pl.Maciejbak.model.routine.ExactPause
 import com.pl.Maciejbak.model.routine.ExactReps
@@ -200,6 +201,35 @@ class WorkoutHistoryDatabaseHelper(
                 }
                 val series =
                     workoutExpandableListAdapter.getWorkoutSeries(index)
+                val id = getLastID()
+                if (id != null) {
+                    addSeries(series, id)
+
+                }
+            }
+        }
+    }
+
+    fun addNoPlanExercises(
+        noPlanWorkoutExpandableListAdapter: NoPlanWorkoutExpandableListAdapter,
+        date: String,
+        planName: String,
+        routineName: String
+    ) {
+        val db = this.writableDatabase
+        db.transaction {
+            val workout = noPlanWorkoutExpandableListAdapter.getNoPlanWorkoutGroup()
+            for(index: Int in 0 until noPlanWorkoutExpandableListAdapter.groupCount){
+                if(workout.isNotEmpty()) {
+                    addExerciseToHistory(
+                        date,
+                        workout[index],
+                        planName,
+                        routineName,
+                    )
+                }
+                val series =
+                    noPlanWorkoutExpandableListAdapter.getNoPlanWorkoutSeries(index)
                 val id = getLastID()
                 if (id != null) {
                     addSeries(series, id)

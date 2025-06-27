@@ -16,23 +16,6 @@ open class BaseActivity : AppCompatActivity() {
 
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                } else {
-                }
-                return
-            }
-        }
-    }
-
-
     override fun onResume() {
         loadTheme()
         super.onResume()
@@ -47,10 +30,6 @@ open class BaseActivity : AppCompatActivity() {
             "DarkBlue" -> setTheme(R.style.Theme_DarkBlue)
             else -> setTheme(R.style.Theme_Default)
         }
-    }
-
-    companion object {
-        private const val MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
     }
 
 }

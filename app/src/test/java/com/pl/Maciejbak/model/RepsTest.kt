@@ -18,7 +18,7 @@ class RepsTest {
         expected: ExactReps
     ) {
         //When
-        val result = Reps.fromString(input)
+        val result = Reps.fromString(input, 0)
         //Then
         assertEquals(expected, result)
     }
@@ -30,7 +30,7 @@ class RepsTest {
         expected: RangeReps
     ) {
         //When
-        val result = Reps.fromString(input)
+        val result = Reps.fromString(input, 0)
         //Then
         assertEquals(expected, result)
     }
@@ -42,7 +42,7 @@ class RepsTest {
         //When
         val exception = assertThrows(ValidationException::class.java)
         {
-            Reps.fromString(input)
+            Reps.fromString(input, 0)
         }
         //Then
         assertEquals(errorMessage, exception.message)

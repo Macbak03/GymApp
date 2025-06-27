@@ -9,18 +9,25 @@
         <attr name="editTextPaceText" format="string"/>
     </declare-styleable>
 
-    <declare-styleable name="RoutineExpandableTitleLayout">
-    </declare-styleable>
+    <declare-styleable name="RoutineExpandableTitleLayout"/>
 
     <declare-styleable name="WorkoutExpandableLayout">
         <attr name="editTextReps" format="string"/>
         <attr name="editTextWeight" format="string"/>
     </declare-styleable>
 
+
     <declare-styleable name="WorkoutExpandableTitleLayout">
     </declare-styleable>
 
-    <declare-styleable name="WorkoutHistoryExpandableLayout">
+
+    <declare-styleable name="NoPlanWorkoutExpandableTitleLayout"/>
+
+    <declare-styleable name="NoPlanWorkoutExpandableLayout">
+        <attr name="editTextNoPlanReps" format="string"/>
+        <attr name="editTextNoPlanWeight" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="WorkoutHistoryExpandableLayout"/>
 
 </resources>
