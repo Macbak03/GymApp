@@ -11,6 +11,7 @@ import com.pl.Maciejbak.persistence.ExercisesDataBaseHelper
 import com.pl.Maciejbak.persistence.RoutinesDataBaseHelper
 import com.pl.Maciejbak.persistence.WorkoutHistoryDatabaseHelper
 import com.pl.Maciejbak.persistence.WorkoutSeriesDataBaseHelper
+import androidx.core.view.get
 
 
 class MainActivity : BaseActivity() {
@@ -37,7 +38,7 @@ class MainActivity : BaseActivity() {
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                binding.bottomNavigationBar.menu.getItem(position).isChecked = true
+                binding.bottomNavigationBar.menu[position].isChecked = true
             }
         })
 
